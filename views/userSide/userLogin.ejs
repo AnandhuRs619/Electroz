@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<!-- Created by CodingLab | www.youtube.com/c/CodingLabYT -->
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="UTF-8">
+  <!--<title> Login and Registration Form in HTML & CSS | CodingLab </title>-->
+  <link rel="stylesheet" href="/style.css">
+  <!-- Fontawesome CDN Link -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+  <div class="container">
+    <input type="checkbox" id="flip">
+    <div class="cover">
+      <div class="front">
+        <img src="images/frontImg.jpg" alt="">
+        <div class="text">
+          <span class="text-1">Every new friend is a <br> new adventure</span>
+          <span class="text-2">Let's get connected</span>
+        </div>
+      </div>
+      <div class="back">
+        <img class="backImg" src="images/backImg.jpg" alt="">
+        <div class="text">
+          <span class="text-1">Complete miles of journey <br> with one step</span>
+          <span class="text-2">Let's get started</span>
+        </div>
+      </div>
+    </div>
+    <div class="forms">
+      <div class="form-content">
+        <div class="login-form">
+          <div class="title">Login</div>
+          <form action="/login" method="post" onsubmit="return loginValidation()">
+            <div class="input-boxes">
+              <div class="input-box">
+                <i class="fas fa-envelope"></i>
+                <input type="text" name="email" id="Email" placeholder="Enter your email" required>
+                <span id="emailError"></span>
+              </div>
+              <div class="input-box">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" id="Password" placeholder="Enter your password" required>
+                <span id="passwordError"></span>
+              </div>
+              <div class="text"><a href="#">Forgot password?</a></div>
+              <div class="button input-box">
+                <input type="submit" value="Submit">
+              </div>
+              <div class="text sign-up-text">Don't have an account? <label for="flip">Signup now</label></div>
+            </div>
+          </form>
+        </div>
+        <div class="signup-form">
+          <div class="title">Signup</div>
+          <form action="/signup" onsubmit="return signupValidation()" method="post">
+            <div class="input-boxes">
+              <div class="input-box">
+                <i class="fas fa-user"></i>
+                <input type="text" name="name" id="Name" placeholder="Enter your name" required>
+                <span id="nameError"></span>
+              </div>
+              <div class="input-box">
+                <i class="fas fa-envelope"></i>
+                <input type="text" name="email" id="SEmail" placeholder="Enter your email" required>
+                <span id="signupEmailError"></span>
+              </div>
+              <div class="input-box">
+                <i class="fa-solid fa-phone"></i>
+                <input type="text" name="number" id="SPhone" placeholder="Enter your phone number" required>
+                <span id="phoneError"></span>
+              </div>
+              <div class="input-box">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" id="SPassword" placeholder="Enter your password" required>
+                <span id="signupPasswordError"></span>
+              </div>
+              <div class="input-box">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password2" id="SPassword2" placeholder="Confirm password" required>
+                <span id="confirmPasswordError"></span>
+              </div>
+              <div class="button input-box">
+                <input type="submit" value="Submit">
+              </div>
+              <div class="text sign-up-text">Already have an account? <label for="flip">Login now</label></div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Login form validation
+    function loginValidation() {
+      var email = document.getElementById("Email").value;
+      var password = document.getElementById("Password").value;
+      var emailError = document.getElementById("emailError");
+      var passwordError = document.getElementById("passwordError");
+
+      if (email.trim() === "") {
+        emailError.innerHTML = "Please enter your email";
+        return false;
+      } else {
+        emailError.innerHTML = "";
+      }
+
+      if (password.trim() === "") {
+        passwordError.innerHTML = "Please enter your password";
+        return false;
+      } else {
+        passwordError.innerHTML = "";
+      }
+
+      return true;
+    }
+
+    // Signup form validation
+    function signupValidation() {
+      var name = document.getElementById("Name").value;
+      var email = document.getElementById("SEmail").value;
+      var phoneNumber = document.getElementById("SPhone").value;
+      var password = document.getElementById("SPassword").value;
+      var confirmPassword = document.getElementById("SPassword2").value;
+      var nameError = document.getElementById("nameError");
+      var signupEmailError = document.getElementById("signupEmailError");
+      var phoneError = document.getElementById("phoneError");
+      var signupPasswordError = document.getElementById("signupPasswordError");
+      var confirmPasswordError = document.getElementById("confirmPasswordError");
+
+      if (name.trim() === "") {
+        nameError.innerHTML = "Please enter your name";
+        return false;
+      } else {
+        nameError.innerHTML = "";
+      }
+
+      if (email.trim() === "") {
+        signupEmailError.innerHTML = "Please enter your email";
+        return false;
+      } else {
+        signupEmailError.innerHTML = "";
+      }
+
+      if (!validateEmail(email)) {
+        signupEmailError.innerHTML = "Please enter a valid email";
+        return false;
+      } else {
+        signupEmailError.innerHTML = "";
+      }
+
+      if (phoneNumber.trim() === "") {
+        phoneError.innerHTML = "Please enter your phone number";
+        return false;
+      } else {
+        phoneError.innerHTML = "";
+      }
+
+      if (!validatePhoneNumber(phoneNumber)) {
+        phoneError.innerHTML = "Please enter a valid phone number";
+        return false;
+      } else {
+        phoneError.innerHTML = "";
+      }
+
+      if (password.trim() === "") {
+        signupPasswordError.innerHTML = "Please enter your password";
+        return false;
+      } else {
+        signupPasswordError.innerHTML = "";
+      }
+
+      if (password.length < 8) {
+        signupPasswordError.innerHTML = "Password must be at least 8 characters long";
+        return false;
+      } else {
+        signupPasswordError.innerHTML = "";
+      }
+
+      if (confirmPassword.trim() === "") {
+        confirmPasswordError.innerHTML = "Please confirm your password";
+        return false;
+      } else {
+        confirmPasswordError.innerHTML = "";
+      }
+
+      if (confirmPassword !== password) {
+        confirmPasswordError.innerHTML = "Passwords do not match";
+        return false;
+      } else {
+        confirmPasswordError.innerHTML = "";
+      }
+
+      return true;
+    }
+
+    // Email validation helper function
+    function validateEmail(email) {
+      var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+      return re.test(email);
+    }
+
+    // Phone number validation helper function
+    function validatePhoneNumber(phoneNumber) {
+      var re = /^[0-9]{10}$/; // Assumes a 10-digit phone number format
+      return re.test(phoneNumber);
+    }
+  </script>
+</body>
+
+</html>
