@@ -1,0 +1,208 @@
+<%-include("../layout/header.ejs")%>
+
+	<!-- BREADCRUMB -->
+	<div id="breadcrumb" class="section">
+		<!-- container -->
+		<div class="container">
+			<!-- row -->
+			<div class="row">
+				<div class="col-md-12">
+					<h3 class="breadcrumb-header">User Profile</h3>
+					<ul class="breadcrumb-tree">
+						<li><a href="#">Home</a></li>
+						<li class="active">User Profile</li>
+					</ul>
+				</div>
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /BREADCRUMB -->
+
+
+	<!-- User Profile -->
+
+	<div class="container rounded bg-white mt-5 mb-5">
+		<div class="row">
+			<div class="col-md-4 border-right" style="background: #fff;padding: 10px 20px;">
+				<div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5"
+						width="150px"
+						src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"><span
+						class="font-weight-bold"><%= userDetails.name %> </span><span
+						class="text-black-50"><%= userDetails.email %></span><span> </span></div>
+				<div class="col-md-12">
+					<div class="p-3 py-6 m-10">
+						<div class="container p-0 m-0 px-1"
+							style="width: 100%;border: 1px solid whitesmoke; border-radius: 5px;padding: 10px 20px;margin: 20px 0px;">
+								<div class="d-flex justify-content-between align-items-center experience">
+									<span>MyAddress</span></div><br>
+								<% if (userAddress.length> 0) { %>
+									<div class="address_Form p-4" style="overflow: scroll; max-height: 300px; ">
+										<% userAddress.forEach((address)=> { %>
+											<div class="address_bg bg-white p-3" style="border-radius: 12px;">
+												<div class="bg-white p-2 address_selecter">
+													<div class="address p-2 px-3">
+														<span style="color: #9a9a9a; font-size: 13.5px;">
+															<span>
+																<%= address.name %>
+															</span>
+															<span>
+																<%= address.addressline %>
+															</span>
+															<span>
+																<%= address.street %>,
+															</span>
+															<span>
+																<%= address.city %>,
+															</span>
+															<span>
+																<%= address.state %>,
+															</span>
+															<br>
+															<span>
+																<%= address.phone %>,
+															</span>
+															<span>
+																<%= address.postCode %>
+															</span>
+														</span>
+													</div>
+												</div>
+											</div>
+											<!-- Address Edit Modal -->
+											<div class="modal fade" id="editAddressModal-<%= address._id %>" tabindex="-1"
+												aria-labelledby="editAddressModalLabel" aria-hidden="true">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title" id="editAddressModalLabel">Edit
+																Address</h5>
+															<button type="button" class="close" data-dismiss="modal"
+																aria-label="Close">
+																<span aria-hidden="true">&times;</span>
+															</button>
+														</div>
+														<form action="/profie/editAddress" method="post">
+														<div class="modal-body">
+																<div class="row mt-2">
+																	<div class="col-md-6"><label
+																			class="labels">Name</label><input
+																			type="text" class="form-control" name="name"
+																			value="<%= address.name %>"></div>
+
+																</div>
+																<div class="row mt-3">
+																	<div class="col-md-6"><label class="labels">Mobile
+																			Number</label><input type="text"
+																			class="form-control" name="phone"
+																			value="<%= address.phone %>"></div>
+																	<div class="col-md-6">
+																		    <label class="labels">Email ID</label>
+																			<input type="text"class="form-control" name="email"value="<%= userAddress.email %>">
+																			<input type="hidden" name="addressId" value="<%= address._id %>">
+																		</div>
+																	<div class="col-md-12"><label class="labels">Address
+																			Line 1</label><input type="text"
+																			class="form-control" name="addressline"
+																			value="<%= address.addressline %>">
+																	</div>
+																	<div class="col-md-6"><label
+																			class="labels">Street</label><input
+																			type="text" class="form-control"
+																			name="street"
+																			value="<%= address.street %>"></div>
+																	<div class="col-md-6"><label
+																			class="labels">City</label><input
+																			type="text" class="form-control" name="city"
+																			value="<%= address.city %>"></div>
+																	<div class="col-md-6"><label
+																			class="labels">State</label><input
+																			type="text" class="form-control"
+																			name="state"
+																			value="<%= address.state %>"></div>
+																	<div class="col-md-6"><label
+																			class="labels">Postcode</label><input
+																			type="text" name="postCode"
+																			class="form-control"
+																			value="<%= address.postCode %>"></div>
+																</div>
+																<div class="row mt-3">
+																	<div class="col-md-6"><label
+																			class="labels">Country</label><input
+																			type="text" class="form-control"
+																			name="country" placeholder="country"
+																			value="<%= address.country %>"></div>
+																</div>
+														</div>
+														<div class="modal-footer">
+															<button type="button" class="btn btn-secondary"
+																data-dismiss="modal">Close</button>
+															<button type="submit"
+																class="btn btn-danger profile-button">Save
+																Address</button>
+														</div>
+													</form>
+													</div>
+												</div>
+											</div>
+											<button class="btn btn-danger profile-button" type="button" data-toggle="modal"
+								data-target="#editAddressModal-<%= address._id %>" data-address-id="">Edit Address</button>
+										<% }); %>
+									</div>
+									<% } else { %>
+										<span>No Address Found</span>
+							<% } %>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-7 border-right">
+				<div class=" card p-3 py-5">
+					<div class=" d-flex justify-content-between align-items-center mb-3">
+						<h4 class="text-left">Address Settings</h4>
+					</div>
+					<div class="row mt-2">
+						<form action="/profie/addAddress" method="post">
+							<div class="col-md-6"><label class="labels">Name</label><input type="text"
+									class="form-control" name="name" placeholder="Enter your name" value=""></div>
+
+					</div>
+					<div class="row mt-3">
+						<div class="col-md-6"><label class="labels">Mobile Number</label><input type="text"
+								class="form-control" name="phone" placeholder="enter phone number" value=""></div>
+						<div class="col-md-6"><label class="labels">Email ID</label><input type="text"
+								class="form-control" name="email" placeholder="enter email id" value=""></div>
+						<div class="col-md-12"><label class="labels">Address Line 1</label><input type="text"
+								class="form-control" name="addressline" placeholder="enter address line 1" value="">
+						</div>
+						<div class="col-md-6"><label class="labels">Street</label><input type="text"
+								class="form-control" name="street" placeholder="enter address street" value=""></div>
+						<div class="col-md-6"><label class="labels">City</label><input type="text" class="form-control"
+								name="city" placeholder="enter address line 2" value=""></div>
+						<div class="col-md-6"><label class="labels">State</label><input type="text" class="form-control"
+								name="state" placeholder="enter address line 2" value=""></div>
+						<div class="col-md-6"><label class="labels">Postcode</label><input type="text" name="postCode"
+								class="form-control" placeholder="enter address line 2" value=""></div>
+
+					</div>
+					<div class="row mt-3">
+						<div class="col-md-6"><label class="labels">Country</label><input type="text"
+								class="form-control" name="country" placeholder="country" value=""></div>
+					</div>
+
+
+					<div class="mt-5 text-center"><button class="btn btn-danger profile-button " type="submit">Save
+							Profile</button></div>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+	</div>
+	</div>
+
+
+	<!-- /User Profile -->
+	<%-include("../layout/footer.ejs")%>

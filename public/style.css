@@ -55,7 +55,7 @@ body{
   position: absolute;
   height: 100%;
   width: 100%;
-  background: #e83d2a;
+  background: #ff0202;
   opacity: 0.5;
   z-index: 12;
 }
@@ -118,8 +118,8 @@ body{
   left: 0;
   bottom: 0;
   height: 3px;
-  width: 25px;
-  background: #e8832a;
+  width: 30px;
+  background: #fc1111;
 }
 .forms .signup-form  .title:before{
   width: 20px;
@@ -148,11 +148,11 @@ body{
 }
 .form-content .input-box input:focus,
 .form-content .input-box input:valid{
-  border-color: #e83d2a;
+  border-color: #e82a2a;
 }
 .form-content .input-box i{
   position: absolute;
-  color: #e83d2a;
+  color: #ff0404;
   font-size: 17px;
 }
 .forms .form-content .text{
@@ -172,17 +172,17 @@ body{
 }
 .forms .form-content .button input{
   color: #fff;
-  background: #e83d2a;
+  background: #e82a2a;
   border-radius: 6px;
   padding: 0;
   cursor: pointer;
   transition: all 0.4s ease;
 }
 .forms .form-content .button input:hover{
-  background: #e83d2a;
+  background: #e82a2a;
 }
 .forms .form-content label{
-  color: #e83d2a;
+  color: #e82a2a;
   cursor: pointer;
 }
 .forms .form-content label:hover{
@@ -196,6 +196,134 @@ body{
 .container #flip{
   display: none;
 }
+
+
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.modal-content {
+  background: #fff;
+  max-width: 450px;
+  margin: 0 auto;
+  padding: 50px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-50%);
+}
+
+.modal-title {
+  font-size: 25px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.modal-title:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 25px;
+  background: #e8832a;
+}
+
+.modal-form {
+  margin-top: 30px;
+}
+
+.modal-form .input-box {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  margin: 10px 0;
+  position: relative;
+}
+
+.modal-form input {
+  height: 100%;
+  width: 100%;
+  outline: none;
+  border: none;
+  padding: 0 30px;
+  font-size: 16px;
+  font-weight: 500;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.modal-form input:focus,
+.modal-form input:valid {
+  border-color: #e82a2a;
+}
+
+.modal-form i {
+  position: absolute;
+  color: #e82a2a;
+  font-size: 17px;
+}
+
+.modal-button {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.modal-button input {
+  color: #fff;
+  background: #e82a2a;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.modal-button input:hover {
+  background: #e82a2a;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+}
+
+.wizard-step {
+  display: none;
+}
+
+.wizard-step.step-1 {
+  display: block;
+}
+
+/* Center the modal on the page */
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  .modal-content {
+    max-width: 100%;
+  }
+}
+
+
+
+
 @media (max-width: 730px) {
   .container .cover{
     display: none;

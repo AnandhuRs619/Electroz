@@ -1,0 +1,329 @@
+<%-include("../layout/adminheader.ejs")%>
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+
+            <div class="page-content">
+                <div class="container-fluid">
+
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">Orders</h4>
+
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
+                                        <li class="breadcrumb-item active">Orders</li>
+                                    </ol>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card" id="orderList">
+                                <div class="card-header border-0">
+                                    <div class="row align-items-center gy-3">
+                                        <div class="col-sm">
+                                            <h5 class="card-title mb-0">Order History</h5>
+                                        </div>
+                                        <div class="col-sm-auto">
+                                            <div class="d-flex gap-1 flex-wrap">
+                                              
+                                    
+                                                <button class="btn btn-soft-danger" id="remove-actions" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                              
+                                <div class="card-body pt-0">
+                                    <div>
+                                        <ul class="nav nav-tabs nav-tabs-custom nav-success mb-3" role="tablist">
+                                            <li class="nav-item">
+                                                <a class="nav-link active All py-3" data-bs-toggle="tab" id="All" href="#home1" role="tab" aria-selected="true">
+                                                    <i class="ri-store-2-fill me-1 align-bottom"></i> All Orders
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link py-3 Delivered" data-bs-toggle="tab" id="Delivered" href="#delivered" role="tab" aria-selected="false">
+                                                    <i class="ri-checkbox-circle-line me-1 align-bottom"></i> Delivered
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link py-3 Pickups" data-bs-toggle="tab" id="Pickups" href="#pickups" role="tab" aria-selected="false">
+                                                    <i class="ri-truck-line me-1 align-bottom"></i> Pickups <span class="badge bg-danger align-middle ms-1">2</span>
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link py-3 Returns" data-bs-toggle="tab" id="Returns" href="#returns" role="tab" aria-selected="false">
+                                                    <i class="ri-arrow-left-right-fill me-1 align-bottom"></i> Returns
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link py-3 Cancelled" data-bs-toggle="tab" id="Cancelled" href="#cancelled" role="tab" aria-selected="false">
+                                                    <i class="ri-close-circle-line me-1 align-bottom"></i> Cancelled
+                                                </a>
+                                            </li>
+                                        </ul>
+
+                                        <div class="table-responsive table-card mb-1">
+                                            <table class="table table-nowrap align-middle" id="orderTable">
+                                                <thead class="text-muted table-light">
+                                                    <tr class="text-uppercase">
+                                                        <th scope="col" style="width: 25px;">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                                                            </div>
+                                                        </th>
+                                                        <th class="sort" data-sort="id">Order ID</th>
+                                                        <th class="sort" data-sort="customer_name">Customer</th>
+                                                        <th class="sort" data-sort="product_name">Product</th>
+                                                        <th class="sort" data-sort="date">Order Date</th>
+                                                        <th class="sort" data-sort="amount">Amount</th>
+                                                        <th class="sort" data-sort="payment">Payment Method</th>
+                                                        <th class="sort" data-sort="status">Delivery Status</th>
+                                                        <th class="sort" data-sort="city">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="list form-check-all">
+                                                    <%Order.forEach((order)=>{%>  
+                                                    <tr data-order-id="<%= order._id %>">
+                                                    <th scope="row">
+                                                      <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="checkAll" value="option1">
+                                                      </div>
+                                                    </th>
+                                                    <td class="id"><a href="" class="fw-medium link-primary">#<%= order._id %></a></td>
+                                                    <td class="customer_name"><%= order.address.name %></td>
+                                                    <td class="product_name"><%=order.products[0].p_name%>
+                                                     
+                                                    </td>
+                                                    <td class="date"><%=order.createdAt.toLocaleDateString()%></td>
+                                                    <td class="amount"><%= order.payment.amount %></td>
+                                                    <td class="payment"><%= order.payment.method %></td>
+                                                    <td class="status">
+                                                      <span class="badge badge-soft-dark"><%= order.status %></span>
+                                                    </td>
+                                                    <td>
+                                                      <ul class="list-inline hstack gap-2 mb-0">
+                                                        <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
+                                                          <a href="#" class="text-primary d-inline-block">
+                                                            <i class="ri-eye-fill fs-16"></i>
+                                                          </a>
+                                                        </li>
+                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
+                                                          <a href="#showModal" data-bs-toggle="modal" id="edit-btn" class="text-primary d-inline-block edit-item-btn" data-order-id="<%= order._id %>">
+                                                            <i class="ri-pencil-fill fs-16"></i>
+                                                          </a>
+                                                        </li>
+                                                        <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
+                                                          <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
+                                                            <i class="ri-delete-bin-5-fill fs-16"></i>
+                                                          </a>
+                                                        </li>
+                                                      </ul>
+                                                    </td>
+                                                  </tr>
+                                                  <%})%>
+                                                </tbody>
+                                              </table>
+                                            <div class="noresult" style="display: none">
+                                                <div class="text-center">
+                                                    <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#405189,secondary:#0ab39c" style="width:75px;height:75px"></lord-icon>
+                                                    <h5 class="mt-2">Sorry! No Result Found</h5>
+                                                    <p class="text-muted">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <div class="pagination-wrap hstack gap-2">
+                                                <a class="page-item pagination-prev disabled" href="#">
+                                                    Previous
+                                                </a>
+                                                <ul class="pagination listjs-pagination mb-0"></ul>
+                                                <a class="page-item pagination-next" href="#">
+                                                    Next
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <%Order.forEach((order)=>{%> 
+                                    <div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-light p-3">
+                                                    <h5 class="modal-title" id="exampleModalLabel">&nbsp;</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                                                </div>
+                                                <form class="tablelist-form" autocomplete="off">
+                                                    <div class="modal-body">
+                                                        <input type="hidden" id="id-field" />
+                                                        <div>
+                                                            <label for="delivered-status" class="form-label">Delivery Status</label>
+                                                            <select class="form-control" data-trigger name="delivered-status" data-order-id="<%=order._id%>" id="delivered-status">
+                                                                <option value="">Delivery Status</option>
+                                                                <option value="Pending">Pending</option>
+                                                                <option value="Inprogress">Inprogress</option>
+                                                                <option value="Cancelled">Cancelled</option>
+                                                                <option value="Pickups">Pickups</option>
+                                                                <option value="Delivered">Delivered</option>
+                                                                <option value="Returns">Returns</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <div class="hstack gap-2 justify-content-end">
+                                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-success" id="updateStatusBtn">Update</button>
+                                                            <!-- <button type="button" class="btn btn-success" id="edit-btn">Update</button> -->
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <%})%>
+                                    <!-- Modal -->
+                                    <div class="modal fade flip" id="deleteOrder" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-body p-5 text-center">
+                                                    <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#405189,secondary:#f06548" style="width:90px;height:90px"></lord-icon>
+                                                    <div class="mt-4 text-center">
+                                                        <h4>You are about to delete a order ?</h4>
+                                                        <p class="text-muted fs-15 mb-4">Deleting your order will remove all of your information from our database.</p>
+                                                        <div class="hstack gap-2 justify-content-center remove">
+                                                            <button class="btn btn-link link-success fw-medium text-decoration-none" id="deleteRecord-close" data-bs-dismiss="modal"><i class="ri-close-line me-1 align-middle"></i> Close</button>
+                                                            <button class="btn btn-danger" id="delete-record">Yes, Delete It</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--end modal -->
+                                </div>
+                            </div>
+
+                        </div>
+                        <!--end col-->
+                    </div>
+                    <!--end row-->
+
+                </div>
+                <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+  $('.edit-item-btn').click(function(e) {
+    e.preventDefault();
+
+    // Get the order ID from the clicked edit button
+    var orderId = $(this).data('order-id');
+
+    // Send the Ajax request to get the order details
+    $.ajax({
+      url: '/admin/orderList', // Replace with your backend endpoint to retrieve order details
+      type: 'GET',
+      data: { orderId: orderId },
+      success: function(response) {
+        // Handle the success response
+        console.log(response);
+
+        // Display the current status in the edit modal
+        $('#delivered-status').val(response.status);
+
+        // Update the order ID in the modal form
+        $('#id-field').val(orderId);
+
+        // Show the edit modal
+        $('#showModal').modal('show');
+      },
+      error: function(error) {
+        // Handle the error response
+        console.error(error);
+      }
+    });
+  });
+
+  $('#updateStatusBtn').click(function(e) {
+    e.preventDefault();
+
+    // Get the selected status and order ID
+    var selectedStatus = $('#delivered-status').val();
+    var orderId = $('#id-field').val();
+
+    // Create an object with the data
+    var data = {
+      orderId: orderId,
+      status: selectedStatus
+    };
+
+    // Send the Ajax request
+    $.ajax({
+      url: '/admin/orderUpdate', // Replace with your backend endpoint to update order status
+      type: 'POST',
+      data: data,
+      success: function(response) {
+        // Handle the success response
+        console.log(response);
+        // Update the UI dynamically with the updated status
+        $('.status[data-order-id="' + orderId + '"]').html('<span class="badge ' + getStatusClass(response.status) + '">' + response.status + '</span>');
+        // Hide the modal
+        $('#showModal').modal('hide');
+      },
+      error: function(error) {
+        // Handle the error response
+        console.error(error);
+      }
+    });
+  });
+});
+
+
+    function getStatusClass(status) {
+                  let statusClass = '';
+              
+                  switch (status) {
+                    case 'Pending':
+                      statusClass = 'badge-soft-warning';
+                      break;
+                    case 'Inprogress':
+                      statusClass = 'badge-soft-primary';
+                      break;
+                    case 'Cancelled':
+                      statusClass = 'badge-soft-danger';
+                      break;
+                    case 'Pickups':
+                      statusClass = 'badge-soft-info';
+                      break;
+                    case 'Delivered':
+                      statusClass = 'badge-soft-success';
+                      break;
+                    case 'Returns':
+                      statusClass = 'badge-soft-secondary';
+                      break;
+                    default:
+                      statusClass = 'badge-soft-dark';
+                      break;
+                  }
+              
+                  return statusClass;
+                }
+  </script>
+  
+
+
+ <%-include("../layout/adminFooter.ejs")%>

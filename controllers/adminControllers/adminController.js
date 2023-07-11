@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const User = require('../../models/userSchema');
 const productModel = require('../../models/productModel');
 const categorySchema =require('../../models/categorySchema');
+const orderModel = require('../../models/OderSchema');
 
 
 // ADMIN LOGIN
@@ -187,7 +188,7 @@ const categoryAdding = async(req,res)=>{
             discount
         })
         await category.save()
-        res.redirect('adminSide/admin-CategoriesList.ejs');
+        res.redirect('/admin/categoryList');
     }catch(error){
         console.error(error);
         res.status(500).send("Internal  Server Error")
@@ -249,6 +250,42 @@ console.log(typeof isBlocked);
       res.status(500).send("Internal Server Error");
     }
   };
+
+const orderlist = async (req,res)=>{
+    try{
+        const Order = await orderModel.find();
+        res.render('adminSide/admin-ordersList',{ Order})
+    }catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+      }
+};
+
+const orderupdate = async (req, res) => {
+    try {
+        const orderId = req.body.orderId;
+      const status = req.body.status;
+      console.log(orderId, status); // Update to use req.body['delivered-status']
+      const updatedOrder = await orderModel.findByIdAndUpdate(
+        orderId,
+        { status: status },
+        { new: true }
+      );
+  
+      if (!updatedOrder) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+  
+      
+      res.json(updatedOrder);
+    }
+     catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  };
+  
+
   
 // Admin logout
 
@@ -279,5 +316,7 @@ module.exports={
     blockUser,
     adminLogout,
     addingNewProduct,
-    categoryEdit
+    categoryEdit,
+    orderlist,
+    orderupdate
 }

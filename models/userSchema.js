@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const productModel =require('./productModel')
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -23,6 +24,60 @@ const userSchema = new mongoose.Schema({
         default: false,
        
     },
+    cart: {
+        items: [{
+            productId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: productModel
+            },
+            quantity: {
+                type: Number,
+                default: 1
+            },
+            realPrice: {
+                type: Number,
+            },
+            price: {
+                type: Number,
+                require: true
+            }
+        }]
+    },
+    address: [{
+          name: {
+            type: String,
+            required: true
+        },
+        addressline: {
+            type: String,
+            required: true
+        },
+        street: {
+            type: String,
+            required: true
+        },
+        city: {
+            type: String,
+            required: true
+        },
+        state: {
+            type: String,
+            required: true
+        },
+        phone: {
+            type: Number,
+            required: true
+        },
+        postCode: {
+            type: Number,
+            required: true
+        },
+        country: {
+            type: String,
+            required: true
+        }
+    }]
+ 
 }, { timestamps: true });
 
 const User = mongoose.model("user", userSchema);

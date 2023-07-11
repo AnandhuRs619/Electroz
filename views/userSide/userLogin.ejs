@@ -46,7 +46,7 @@
                 <input type="password" name="password" id="Password" placeholder="Enter your password" required>
                 <span id="passwordError"></span>
               </div>
-              <div class="text"><a href="#">Forgot password?</a></div>
+              <p class="forgot-password" onclick="openForgotPasswordModal()">Forgot password?</p>
               <div class="button input-box">
                 <input type="submit" value="Submit">
               </div>
@@ -93,6 +93,72 @@
       </div>
     </div>
   </div>
+
+
+  
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <span class="modal-close" onclick="closeForgotPasswordModal()">&times;</span>
+        <div class="wizard-steps">
+          <div class="wizard-step step-1">
+            <h2 class="modal-title">Step 1: Enter Your Phone Number</h2>
+            <form class="modal-form" action="/send-otp" method="POST" onsubmit="hideModal()">
+              <div class="input-box">
+                <input type="tel" name="phone" placeholder="Phone Number" required>
+                <i class="fas fa-phone"></i>
+              </div>
+              <div class="modal-button">
+                <input type="submit" class="next-btn" value="Next">
+              </div>
+            </form>
+          </div>
+          <div class="wizard-step step-2">
+            <h2 class="modal-title">Step 2: Enter OTP</h2>
+            <form class="modal-form" action="/verify-otp" method="POST">
+              <div class="input-box">
+                <input type="text" name="otp" placeholder="Enter OTP" required>
+                <i class="fas fa-lock"></i>
+              </div>
+              <div class="modal-button">
+                <input type="button" class="prev-btn" value="Previous">
+                <input type="submit" class="next-btn" value="Next">
+              </div>
+            </form>
+          </div>
+          <div class="wizard-step step-3">
+            <h2 class="modal-title">Step 3: Reset Password</h2>
+            <form class="modal-form" action="/reset-password" method="POST">
+              <div class="input-box">
+                <input type="password" name="password" placeholder="New Password" required>
+                <i class="fas fa-lock"></i>
+              </div>
+              <div class="input-box">
+                <input type="password" name="password2" placeholder="Confirm Password" required>
+                <i class="fas fa-lock"></i>
+              </div>
+              <div class="modal-button">
+                <input type="button" class="prev-btn" value="Previous">
+                <input type="submit" class="next-btn" value="Next">
+              </div>
+            </form>
+          </div>
+          <div class="wizard-step step-4" id="reset-password-successful">
+            <h2 class="modal-title">Step 4: Password Reset Successful</h2>
+            <p>Your password has been successfully reset.</p>
+            <div class="modal-button">
+              <input type="button" class="prev-btn" value="Previous">
+              <input type="button" class="close-btn" value="Close" onclick="closeForgotPasswordModal()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+   
+  
+  
+  
 
   <script>
     // Login form validation
@@ -209,7 +275,70 @@
       var re = /^[0-9]{10}$/; // Assumes a 10-digit phone number format
       return re.test(phoneNumber);
     }
-  </script>
+
+    // Add your JavaScript code here
+  
+  
+  function hideModal() {
+    var modal = document.getElementById("forgotPasswordModal");
+    modal.classList.remove("show"); // Remove the "show" class
+    modal.setAttribute("aria-hidden", "true"); // Set aria-hidden attribute to "true"
+  }
+
+
+      // Open forgot password modal
+      function openForgotPasswordModal() {
+        document.getElementById("forgotPasswordModal").style.display = "block";
+      }
+  
+     // Close forgot password modal
+  function closeForgotPasswordModal() {
+    const resetPasswordSuccessfulStep = document.getElementById('reset-password-successful');
+  
+    if (resetPasswordSuccessfulStep.style.display === 'block') {
+      // Redirect to the password reset successful URL
+      window.location.href = '/forgot-password/reset-password-successful';
+    } else {
+      // Close the modal
+      document.getElementById("forgotPasswordModal").style.display = "none";
+    }
+  }
+  
+      // Function to navigate to the next step
+      function nextStep() {
+        const currentStep = this.closest('.wizard-step');
+        const nextStep = currentStep.nextElementSibling;
+  
+        currentStep.style.display = 'none';
+        nextStep.style.display = 'block';
+      }
+  
+      // Function to navigate to the previous step
+      function prevStep() {
+        const currentStep = this.closest('.wizard-step');
+        const prevStep = currentStep.previousElementSibling;
+  
+        currentStep.style.display = 'none';
+        prevStep.style.display = 'block';
+  
+      // If the previous step is not the first step, show the previous button
+        if (!prevStep.classList.contains('step-1')) {
+      document.querySelector('.prev-btn').style.display = 'block';
+    }
+      }
+  
+      // Add event listeners to the next and previous buttons
+      const nextBtns = document.querySelectorAll('.next-btn');
+      const prevBtns = document.querySelectorAll('.prev-btn');
+      nextBtns.forEach(btn => btn.addEventListener('click', nextStep));
+      prevBtns.forEach(btn => btn.addEventListener('click', prevStep));
+  
+      // Add event listener to the "Forgot Password" button to open the modal
+      const forgotPasswordBtn = document.querySelector('.forgot-password-btn');
+      forgotPasswordBtn.addEventListener('click', openForgotPasswordModal);
+</script>
+
+  
 </body>
 
 </html>

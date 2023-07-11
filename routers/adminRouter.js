@@ -29,6 +29,8 @@ adminRouter.post('/categoryList',adminController.categoryAdding);
 adminRouter.post('/categoryEdit',adminController.categoryEdit);
 adminRouter.get('/customerLists',adminController.customerList);
 adminRouter.post('/customerUpdate/:id',adminController.blockUser);
+adminRouter.get('/orderList',adminController.orderlist);
+adminRouter.post('/orderUpdate',adminController.orderupdate);
 adminRouter.get('*',function(req,res){
     res.redirect('/admin')
 });
