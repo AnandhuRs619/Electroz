@@ -4,6 +4,7 @@ const User = require('../../models/userSchema');
 const productModel = require('../../models/productModel');
 const categorySchema =require('../../models/categorySchema');
 const orderModel = require('../../models/OderSchema');
+const Coupon = require('../../models/couponSchema');
 
 
 // ADMIN LOGIN
@@ -61,7 +62,7 @@ const dashboard = async (req,res)=>{
 
 const productLists = async (req, res)=>{
     try{
-        const product = await productModel.find();
+        const product = await productModel.find({ isAvailable: true });
         res.render('adminSide/admin-ProductsList',{title : "Product",admin:req.session.admin, product});
     }catch(error){
         console.error(error);
@@ -156,7 +157,8 @@ const editProduct = async(req,res)=>{
 const removeProduct = async(req,res)=>{
     try{
       const prroductId =req.body.productId  
-      await productModel.findByIdAndDelete({_id:prroductId});
+      await productModel.findByIdAndUpdate({_id:prroductId},{
+        isAvailable:false});
       res.json('success');
     }catch(error){
         console.error(error);
@@ -181,7 +183,6 @@ const categoryList = async(req,res)=>{
 const categoryAdding = async(req,res)=>{
     try{
         const {categoryName,description,discount}=req.body;
-        console.log(req.body);
         const category = new categorySchema({
             categoryName,
             description,
@@ -197,7 +198,6 @@ const categoryAdding = async(req,res)=>{
 const categoryEdit = async (req,res)=>{
     try{
         const{ categoryName, description,discount,cataId}= req.body;
-        console.log(categoryName, description,discount, cataId+"da njan evida vannun");
         const data = await categorySchema.findByIdAndUpdate({_id:cataId},{
             $set:{
                 categoryName:categoryName,
@@ -205,7 +205,6 @@ const categoryEdit = async (req,res)=>{
                 discount:discount
             }
         });
-        console.log(data+"new dataaaaa");
         const category = await categorySchema.find();
         res.redirect("/admin/categoryList");
         
@@ -214,7 +213,15 @@ const categoryEdit = async (req,res)=>{
         res.status(500).send("Internal  Server Error")
     }
 }
+const removeCategory = async(req,res)=>{
+    try{
 
+
+    }catch(error){
+        console.error(error);
+        res.status(500).send("Internal  Server Error")
+    }
+}
 // Customers Listing / Add & block 
 
 const customerList = async (req,res)=>{
@@ -253,7 +260,7 @@ console.log(typeof isBlocked);
 
 const orderlist = async (req,res)=>{
     try{
-        const Order = await orderModel.find();
+        const Order = await orderModel.find().populate('userId', 'name');
         res.render('adminSide/admin-ordersList',{ Order})
     }catch (error) {
         console.error(error);
@@ -285,8 +292,75 @@ const orderupdate = async (req, res) => {
     }
   };
   
+const couponList = async(req,res)=>{
+    try{
+        const coupons = await Coupon.find();
+        res.render('adminSide/admin-Couponlist',{coupons});
 
-  
+    }catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+}
+
+const addCoupon = async(req,res)=>{
+    try{
+        const{couponName,couponValue,expiryDate,maxValue,minValue}=req.body
+        console.log(req.body);
+        const coupon = new Coupon({
+           couponName,
+           couponValue,
+           expiryDate,
+           maxValue,
+           minValue,
+        })
+        await coupon.save();
+        res.redirect('/admin/couponList')
+
+    }catch(error){
+        console.error(error);
+        res.status(500).send("Internal  Server Error")
+    }
+}
+
+const editCoupon = async(req,res)=>{
+    try{
+        const{couponName,couponValue,expiryDate,maxValue,minValue,couponId}=req.body;
+        const data = await Coupon.findByIdAndUpdate({_id:couponId},{
+            $set:{
+                couponName,
+                couponValue,
+                maxValue,
+                minValue,
+                expiryDate,
+            }
+        });
+
+        res.redirect('/admin/couponList')
+    }catch(error){
+        console.error(error);
+        res.status(500).send("Internal  Server Error")
+}
+}
+
+const removeCoupon = async (req, res) => {
+  try {
+    const couponId = req.body.couponId;
+
+    // Delete the coupon from the database
+    const deletedCoupon = await Coupon.findByIdAndDelete(couponId);
+
+    if (!deletedCoupon) {
+      return res.status(404).json({ error: 'Coupon not found' });
+    }
+
+    res.json({ message: 'Coupon deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
 // Admin logout
 
 const adminLogout = async(req,res)=>{
@@ -318,5 +392,9 @@ module.exports={
     addingNewProduct,
     categoryEdit,
     orderlist,
+    couponList,
+    addCoupon,
+    editCoupon,
+    removeCoupon,
     orderupdate
 }

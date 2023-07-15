@@ -31,6 +31,10 @@ adminRouter.get('/customerLists',adminController.customerList);
 adminRouter.post('/customerUpdate/:id',adminController.blockUser);
 adminRouter.get('/orderList',adminController.orderlist);
 adminRouter.post('/orderUpdate',adminController.orderupdate);
+adminRouter.get('/couponList',adminController.couponList);
+adminRouter.post('/addcoupon',adminController.addCoupon);
+adminRouter.post('/editCoupon',adminController.editCoupon);
+adminRouter.post('/removeCoupon',adminController.removeCoupon);
 adminRouter.get('*',function(req,res){
     res.redirect('/admin')
 });

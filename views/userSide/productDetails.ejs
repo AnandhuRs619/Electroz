@@ -131,7 +131,7 @@
 									</div>
 
 									<ul class="product-btns">
-										<li><a href="#"><i class="fa fa-heart-o"></i> add to wishlist</a></li>
+										<li><a href="#" id="add-to-wishlist-btn"><i class="fa fa-heart-o"></i> Add to wishlist</a> <span class="text text-success" id="msg"></span></li>
 										<li><a href="#"><i class="fa fa-exchange"></i> add to compare</a></li>
 									</ul>
 
@@ -715,7 +715,46 @@
 					console.log(error);
 				})
 		});
+
+
+		$(document).ready(function() {
+  $('#add-to-wishlist-btn').on('click', function(e) {
+    e.preventDefault();
+    
+    // Retrieve the product information from the form or the DOM
+    var productId = $('#ProductId').val();
+    var productName = '<%=productDetail.name%>';
+    // Add any other relevant product information
+    
+    // Create an object with the product data
+    var productData = {
+      id: productId,
+      name: productName
+      // Add other product properties as needed
+    };
+    
+    // Make an AJAX request to send the product data to the server
+    $.ajax({
+      url: '/Mywishlist/addtoWishlist', // Replace with the appropriate server endpoint
+      method: 'POST',
+      data: productData,
+      success: function(response) {
+        // Handle the successful response from the server
+        console.log(response);
+        // Display a success message to the user or perform any other actions
+      },
+      error: function(error) {
+        // Handle the error response from the server
+        console.log(error);
+        // Display an error message to the user or perform any other actions
+      }
+    });
+  });
+});
+
 	</script>
+
+
 </body>
 
 </html>

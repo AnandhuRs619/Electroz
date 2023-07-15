@@ -268,6 +268,7 @@
 										</div>
 									</div>
 									<div class="add-to-cart">
+										<input type="hidden" name="Id" value="<%=data._id%>" id="ProductId">
 										<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
 									</div>
 								</div>
@@ -298,5 +299,33 @@
 			<!-- /container -->
 		</div>
 		<!-- /SECTION -->
+
+		<script>
+			const form = document.getElementById('formSubmit');
+			const productId = document.getElementById('ProductId');
+			const msg = document.getElementById('msg');
+			form.addEventListener('submit', (event) => {
+				event.preventDefault();
+				const value = {
+					productId :productId.value
+				};
+				console.log(value);
+				fetch('/cart/addingCart', {
+					method: "post",
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(value)
+				})
+					.then(response => response.json())
+					.then((data) => {
+						msg.innerHTML = data
+					})
+					.catch((error) => {
+						console.log(error);
+					})
+			});
+		</script>
+
 
 		<%-include("../layout/footer.ejs")%>

@@ -28,12 +28,18 @@ UserRouter.get('/cart',userController.Cart);
 UserRouter.post("/cart/addingCart",userController.cartAdding);
 UserRouter.get('/cart/remove/:id',userController.cartRemove);
 UserRouter.get('/productList/productDetails/:id',userController.productDetails);
-UserRouter.get('/profile',userController.userProfile);
+UserRouter.get('/manageAddress',userController.userProfile);
+UserRouter.get('/myprofile',userController.Myprofile);
+UserRouter.post('/myprofile/editProfile',userController.editProfile);
+UserRouter.post('/profile/sendOTP',userController.profileOtp);
+UserRouter.post('/profile/changePassword',userController.changePassword);
 UserRouter.post('/profie/addAddress',userController.addAddress);
 UserRouter.post('/profie/editAddress',userController.editAddress);
+UserRouter.get('/Mywishlist',userController.myWishlist);
+UserRouter.post('/Mywishlist/addtoWishlist',userController.addToWishlist);
 UserRouter.get('/Myorders',userController.myOrder);
 UserRouter.post('/order',userController.order);
-UserRouter.get('/Myorders/orderDetials/:_id',userController.orderDetails);
+UserRouter.get('/Myorders/orderDetials',userController.orderDetails);
 
 // EXPORTING
 module.exports = UserRouter;

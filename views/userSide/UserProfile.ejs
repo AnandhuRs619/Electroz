@@ -9,8 +9,9 @@
 				<div class="col-md-12">
 					<h3 class="breadcrumb-header">User Profile</h3>
 					<ul class="breadcrumb-tree">
-						<li><a href="#">Home</a></li>
-						<li class="active">User Profile</li>
+						<li><a href="/">Home</a></li>
+						<li><a href="/myprofile">User Profile</a></li>
+						<li class="active">My Addresses</li>
 					</ul>
 				</div>
 			</div>
@@ -25,16 +26,36 @@
 
 	<div class="container rounded bg-white mt-5 mb-5">
 		<div class="row">
-			<div class="col-md-4 border-right" style="background: #fff;padding: 10px 20px;">
-				<div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5"
-						width="150px"
-						src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"><span
-						class="font-weight-bold"><%= userDetails.name %> </span><span
-						class="text-black-50"><%= userDetails.email %></span><span> </span></div>
+		  <div class="col-md-4 border-right" style="background: #ffffff;padding: 10px 20px;border-radius: 5px;border-style:solid; border-width: 1px; ">
+			  <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+				<img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
+				<div class="flex-grow-1 ms-2">
+				  <h5 class="card-title mb-1"><%= userDetails.name %></h5>
+				  <p class="text-muted mb-0"><%= userDetails.email %></p>
+			  </div>
+		  
+			  <p class="card-text text-muted">Wallet Balance</p>
+			  <h6 class="mb-1">$15,548</h6>
+			  <a href="javascript:void(0)" class="btn btn-primary btn-sm">See Details</a>
+			  </div>
 				<div class="col-md-12">
-					<div class="p-3 py-6 m-10">
+					      <!-- Menu -->
+						  <div class="list-group m-12">
+							<a href="#" class="list-group-item list-group-item-action">
+					  <i class="fas fa-user"></i> Profile Information
+					</a>
+					<a href="#" class="list-group-item list-group-item-action">
+					  <i class="fas fa-wallet"></i> Wallet
+					</a>
+					<a href="/manageAddress" class="list-group-item list-group-item-action">
+					  <i class="fas fa-address-book"></i> Address Manager
+					</a>
+					<a href="/Myorders" class="list-group-item list-group-item-action">
+					  <i class="fas fa-shopping-cart"></i> My Orders
+					</a>
+			
 						<div class="container p-0 m-0 px-1"
-							style="width: 100%;border: 1px solid whitesmoke; border-radius: 5px;padding: 10px 20px;margin: 20px 0px;">
+							style="width: 100%;border: 1px solid whitesmoke; border-radius: 5px; padding: 10px 20px;margin: 20px 0px;">
 								<div class="d-flex justify-content-between align-items-center experience">
 									<span>MyAddress</span></div><br>
 								<% if (userAddress.length> 0) { %>
@@ -158,7 +179,7 @@
 				</div>
 			</div>
 
-			<div class="col-md-7 border-right">
+			<div class="col-md-7 border-right" style="border-style:solid; border-width: 1px; margin: 15px;">
 				<div class=" card p-3 py-5">
 					<div class=" d-flex justify-content-between align-items-center mb-3">
 						<h4 class="text-left">Address Settings</h4>

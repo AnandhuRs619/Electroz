@@ -266,11 +266,11 @@
                                                         </div>
                                                     </div>
                                                     <div class="row gy-3">
-                                                        <%address.forEach((data)=>{%>
+                                                        <%address.forEach((data,i)=>{%>
                                                         <div class="col-lg-4 col-sm-6">
                                                             <div class="form-check card-radio">
-                                                                <input id="shippingAddress01" name="shippingAddress" value="<%= data._id%>" type="radio" class="form-check-input" checked>
-                                                                <label class="form-check-label" for="shippingAddress01">
+                                                                <input id="shippingAddress<%=i%>" name="shippingAddress" value="<%= data._id%>" type="radio" class="form-check-input" checked>
+                                                                <label class="form-check-label" for="shippingAddress<%=i%>">
                                                                     <span class="mb-4 fw-semibold d-block text-muted text-uppercase">Home Address</span>
                                                                     <span class="fs-14 mb-2 d-block"><%= data.name %></span>
                                                                     <span class="text-muted fw-normal text-wrap mb-1 d-block"><%= data.addressline,data.street %></span>
@@ -321,17 +321,17 @@
                                                 </div>
 
                                                 <div class="row g-4">
-                                                    <!-- <div class="col-lg-4 col-sm-6">
+                                                    <div class="col-lg-4 col-sm-6">
                                                         <div data-bs-toggle="collapse" data-bs-target="#paymentmethodCollapse" aria-expanded="true" aria-controls="paymentmethodCollapse">
                                                             <div class="form-check card-radio">
                                                                 <input id="paymentMethod02" name="paymentMethod" type="radio" class="form-check-input" checked>
                                                                 <label class="form-check-label" for="paymentMethod02">
                                                                     <span class="fs-16 text-muted me-2"><i class="ri-bank-card-fill align-bottom"></i></span>
-                                                                    <span class="fs-14 text-wrap">Debit Card</span>
+                                                                    <span class="fs-14 text-wrap">online payment</span>
                                                                 </label>
                                                             </div>
                                                         </div>
-                                                    </div> -->
+                                                    </div>
 
                                                     <div class="col-lg-4 col-sm-6">
                                                         <div data-bs-toggle="collapse" data-bs-target="#paymentmethodCollapse.show" aria-expanded="false" aria-controls="paymentmethodCollapse">

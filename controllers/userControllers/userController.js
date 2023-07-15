@@ -214,7 +214,7 @@ const userLogout = async (req, res) => {
 
 const productList = async (req, res) => {
   try {
-    const product = await products.find();
+    const product = await products.find({ isAvailable: true });
     res.render("userSide/productList", { product });
   } catch (error) {}
 };
@@ -343,6 +343,98 @@ const userProfile = async (req, res) => {
   }
 };
 
+const Myprofile = async (req,res)=>{
+  try{
+    const userId = req.session.user;
+    userDetails = await User.findById({_id:userId});
+
+    res.render("userSide/Myprofile",{userDetails});
+  }catch (error) {
+    console.log(error);
+  }
+}
+
+const editProfile = async(req,res)=>{
+  try {
+    const userId = req.session.user;
+    const { name, number } = req.body;
+
+    // Find the user by their ID and update the fields
+    const user = await User.findByIdAndUpdate(userId, {
+      $set: { name: name, number: number },
+    });
+
+    // Save the updated user
+    await user.save();
+
+    // Send a response indicating the update was successful
+    return res.status(200).json({ message: "Profile updated successfully" });
+  } catch (error) {
+    console.log(error);
+    // Handle any errors that occurred during the update process
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+const profileOtp = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const { number } = req.body;
+    const otp = Math.floor(1000 + Math.random() * 9000);
+
+    // Fast2sms config
+    fast2sms
+      .sendMessage({
+        authorization:"MmiGSpB20ev9fNcuVWXQ1TKjsE3AF5oxP8CwLygtZOYdHkaznIacfJgFCWdENAOwYPho7RIjkipQrutl", // Replace with your actual API key
+        message: `Your verification OTP is: ${otp}`,
+        numbers: [number],
+      })
+      .then((response) => {
+        console.log("OTP sent successfully", response);
+        console.log(otp);
+        // Save the OTP in session or database for verification in the next step
+        req.session.otp = otp;
+        res.status(200).json({ message: "OTP sent successfully" });
+      })
+      .catch((error) => {
+        console.error("Failed to send OTP", error);
+        res.status(500).json({ message: "Failed to send OTP" });
+      });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const changePassword = async (req, res) => {
+  try {
+    const { otp, newPassword } = req.body;
+
+    // Verify the OTP
+    const storedOTP = req.session.otp;
+    if (otp !== storedOTP) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    // Update the user's password
+    const userId = req.session.user;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    // Clear the OTP from the session
+    delete req.session.otp;
+
+    // Send a response indicating the password was changed successfully
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 const addAddress = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -419,6 +511,50 @@ const editAddress = async (req, res) => {
   }
 };
 
+const myWishlist = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const user = await User.findById(userId);
+    const productData = user.wishlist;
+    const productId = productData.map((items) => items.productId);
+    const productDetails = await productModel.find({ _id: { $in: productId } });
+    res.render('userSide/MyWishlist', { productDetails });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const addToWishlist = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const { name, id } = req.body;
+    console.log(req.body);
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    // Check if the product already exists in the wishlist
+    const productExists = user.wishlist.some((item) => item.productId.toString() === id.toString());
+    if (productExists) {
+      return res.status(400).json({ message: 'Product already exists in the wishlist' });
+    }
+    const wishlistItem = {
+      productId: id.toString(),
+      name: name
+    };
+    user.wishlist.push(wishlistItem);
+    await user.save();
+
+    // Return a success response
+    res.status(200).json({ message: 'Product added to wishlist successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
 const myOrder = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -429,11 +565,12 @@ const myOrder = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
+
 const order = async (req, res) => {
   try {
     const userId = req.session.user;
     const { shippingAddress, paymentMethod } = req.body;
-
+    console.log(req.body);
     const user = await User.findById(userId);
 
     const productIds = user.cart.items.map((product) => {
@@ -444,18 +581,17 @@ const order = async (req, res) => {
       };
     });
 
-    const userAddress = user.address.map((address) => {
-      if (address._id.toString() === shippingAddress) {
-        return address;
-      }
-    });
+    const selectedAddress = user.address.find((address) => address._id.toString() === shippingAddress);
+    if (!selectedAddress) {
+      return res.status(400).json({ message: 'Invalid shipping address' });
+    }
+const selecetdadd=selectedAddress._id
+    const totalAmount = productIds.reduce((total, item) => total + Number(item.price), 0);
 
-    let totalAmount = 0;
     const products = await Promise.all(
       productIds.map(async (item) => {
         const productData = await productModel.findById(item.productId);
         if (productData) {
-          totalAmount += Number(productData.price);
           return {
             p_id: productData._id,
             p_name: productData.name,
@@ -472,7 +608,7 @@ const order = async (req, res) => {
 
     const order = new orderModel({
       userId,
-      address: userAddress[0],
+      address:selecetdadd , // Save the selected address reference as an array
       payment: {
         method: paymentMethod,
         amount: totalAmount,
@@ -486,10 +622,13 @@ const order = async (req, res) => {
     // clear
     user.cart.items.splice(0, productIds.length);
     await user.save();
+    console.log("created order")
   } catch (error) {
     console.log(error);
+    return res.status(500).json({ error: 'Server error' });
   }
 };
+
 
 const orderDetails = async (req, res) => {
   try {
@@ -523,8 +662,14 @@ module.exports = {
   cartRemove,
   cartOuantity,
   userProfile,
+  editProfile,
+  profileOtp,
+  changePassword,
+  Myprofile,
   addAddress,
   editAddress,
+  myWishlist,
+  addToWishlist,
   myOrder,
   order,
   orderDetails,
