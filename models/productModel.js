@@ -23,6 +23,12 @@ const productSchema = new mongoose.Schema({
     price: {
         type: String,
         required: true
+        
+    },
+    discountedPrice:{
+        type: Number,
+        required: true
+        
     },
     category: {
         type: String,

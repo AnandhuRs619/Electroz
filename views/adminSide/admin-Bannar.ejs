@@ -1,0 +1,326 @@
+<%-include("../layout/adminheader.ejs")%>
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+
+            <div class="page-content">
+                <div class="container-fluid">
+
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">Banner</h4>
+
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="/admin/Dashboard">Dashboard</a></li>
+                                        <li class="breadcrumb-item active">BannerLists</li>
+                                    </ol>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card"  id="category list">
+                                <div class="card-header border-bottom-dashed">
+
+                                    <div class="row g-4 align-items-center">
+                                        <div class="col-sm">
+                                            <div>
+                                                <h5 class="card-title mb-0">Banner Lists</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-auto">
+                                            <div class="d-flex flex-wrap align-items-start gap-2">
+                                                <button class="btn btn-soft-danger" id="remove-actions" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
+                                                <button  type="button"  class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"   data-bs-target="#showModal"><i class="ri-add-line align-bottom me-1"></i> Add Banner</button>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body border-bottom-dashed border-bottom">
+                                    <form>
+                                        <div class="row g-3">
+                                            <div class="col-xl-6">
+                                                <div class="search-box">
+                                                    <input type="text" class="form-control search" placeholder="Search for customer, email, phone, status or something...">
+                                                    <i class="ri-search-line search-icon"></i>
+                                                </div>
+                                            </div>
+                                            <!--end col-->
+                                            
+                                        </div>
+                                        <!--end row-->
+                                    </form>
+                                </div>
+                                <div class="card-body">
+                                    <div>
+                                        <div class="table-responsive table-card mb-1">
+                                            <table class="table align-middle" id="customerTable">
+                                                <thead class="table-light text-muted">
+                                                    <tr>
+                                                        <th scope="col" style="width: 50px;">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                                                            </div>
+                                                        </th>
+                                                        <!-- <th class="sort" data-sort="id">id</th> -->
+                                                    
+                                                        <th class="sort" data-sort="coupon_value">Banner Name</th>
+                                                        <th class="sort" data-sort="coupon_value">Description</th>
+                                                        <th class="sort" data-sort="coupon_value">Description2</th>
+                                                        <th class="sort" data-sort="expiry_date">Images</th>  
+                                                        <th class="sort" data-sort="action">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="list form-check-all">
+                                                    <% banner.forEach((bdata)=> { %>
+                                                        <tr>
+                                                            <th scope="row">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" name="chk_child" value="option1">
+                                                                </div>
+                                                            </th>
+                                                            
+                                                            <td class="coupon_value"><%=bdata.BannerName%></td>
+                                                            <td class="coupon_value"><%=bdata.description%></td>
+                                                            <td class="coupon_value"><%=bdata.description2%></td>
+                                                            
+                                                            <td>
+                                                                <div class="avatar-rectangle bg-light" style="max-width: 200px; overflow: hidden; border-radius: 10px;">
+                                                                    <% bdata.image.forEach((img) => { %>
+                                                                        <img src="/productimages/<%= img %>" alt="Image" style="max-width: 100%; height: auto;">
+                                                                    <% }); %>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <ul class="list-inline hstack gap-2 mb-0">
+                                                                    <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
+                                                                        <a href="#editModal-<%=bdata._id%>" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn">
+                                                                            <i class="ri-pencil-fill fs-16"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
+                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" data-bs-target="#deleteRecordModal" data-coupon-id="">
+                                                                            <i class="ri-delete-bin-5-fill fs-16"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
+                                                                        <a class="text-success d-inline-block remove-item-btn" data-coupon-id="">
+                                                                            <i class="ri-checkbox-circle-line fs-16"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                        <div class="modal fade" id="editModal-<%=bdata._id%>" tabindex="-1" aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-centered">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header bg-light p-3">
+                                                                        <h5 class="modal-title" id="exampleModalLabel"></h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                                                                    </div>
+                                                                    <form class="tablelist-form" method="post" action=" " autocomplete="off">
+                                                                        <div class="modal-body">
+                                                                            <input type="hidden" name="bannerId" value="<%=bdata._id%>" id="couponId" />
+                                
+                                                                            <div class="mb-3" id="modal-id" style="display: none;">
+                                                                                <label for="id-field1" class="form-label">ID</label>
+                                                                                <input type="text" id="id-field1" class="form-control" placeholder="ID" readonly />
+                                                                            </div>
+                                                                            <div class="mb-3">
+                                                                                <label for="couponvalue-field" class="form-label">Banner Name</label>
+                                                                                <input type="text" id="couponvalue-field" name="BannerName" class="form-control" value="<%=bdata.BannerName%>" required />
+                                                                                <div class="invalid-feedback">Please enter a coupon value.</div>
+                                                                            </div>
+                                                                            <div class="mb-3">
+                                                                                <label for="couponvalue-field" class="form-label">description</label>
+                                                                                <input type="text" id="couponvalue-field" name="description" class="form-control" value="<%=bdata.description%>" required />
+                                                                                <div class="invalid-feedback">Please enter a description .</div>
+                                                                            </div>
+                                                                            <div class="mb-3">
+                                                                                <label for="couponvalue-field" class="form-label">description2</label>
+                                                                                <input type="text" id="couponvalue-field" name="description2" class="form-control" value="<%=bdata.description2%>" required />
+                                                                                <div class="invalid-feedback">Please enter a description .</div>
+                                                                            </div>
+                                                                            <div class="mb-3">
+                                                                                <div class="card">
+                                                                                    <div class="card-header">
+                                                                                        <h4 class="card-title mb-0">File Upload</h4>
+                                                                                    </div><!-- end card header -->
+                                            
+                                                                                    <div class="card-body">
+                                                                                        <input type="file" class="filepond filepond-input-multiple" type="file" name="image" data-allow-reorder="true" data-max-file-size="3MB" data-max-files="3">
+                                                                                    </div>
+                                                                                    <!-- end card body -->
+                                                                                </div>
+                                                                                <!-- end card -->
+                                                                            </div> <!-- end col -->
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <div class="hstack gap-2 justify-content-end">
+                                                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                                                                <button type="submit" class="btn btn-success" id="update-btn">Update Coupon</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <%});%>
+                                                </tbody>
+                                            </table>
+                                                <% if (banner.length === 0){%>
+                                                <div class="noresult">
+                                                    <div class="text-center">
+                                                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                                                        <h5 class="mt-2">Sorry! No Coupons Found</h5>
+                                                        <p class="text-muted mb-0">There are no coupons available.</p>
+                                                    </div>
+                                                </div>
+                                                <% }%>
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <div class="pagination-wrap hstack gap-2">
+                                                <a class="page-item pagination-prev disabled" href="#">
+                                                    Previous
+                                                </a>
+                                                <ul class="pagination listjs-pagination mb-0"></ul>
+                                                <a class="page-item pagination-next" href="#">
+                                                    Next
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                    <div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-light p-3">
+                                                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                                                </div>
+                                                <form class="tablelist-form" method="post" action="/admin/addbanner" enctype="multipart/form-data" autocomplete="off">
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="couponId" value="" id="couponId" />
+            
+                                                        <div class="mb-3" id="modal-id" style="display: none;">
+                                                            <label for="id-field1" class="form-label">ID</label>
+                                                            <input type="text" id="id-field1" class="form-control" placeholder="ID" readonly />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="couponvalue-field" class="form-label">Banner Name</label>
+                                                            <input type="text" id="couponvalue-field" name="BannerName" class="form-control" value="" required />
+                                                            <div class="invalid-feedback">Please enter a Banner Name.</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="couponvalue-field" class="form-label">description</label>
+                                                            <input type="text" id="couponvalue-field" name="description" class="form-control" value="" required />
+                                                            <div class="invalid-feedback">Please enter a description .</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="couponvalue-field" class="form-label">description2</label>
+                                                            <input type="text" id="couponvalue-field" name="description2" class="form-control" value="" required />
+                                                            <div class="invalid-feedback">Please enter a description .</div>
+                                                        </div>
+                                                                    <div class="mb-3">
+                                                                        <div class="card">
+                                                                            <div class="card-header">
+                                                                                <h4 class="card-title mb-0"> File Upload</h4>
+                                                                            </div><!-- end card header -->
+                                    
+                                                                            <div class="card-body">
+                                                                                <input type="file" class="filepond filepond-input-multiple" multiple name="image" data-allow-reorder="true" data-max-file-size="3MB" data-max-files="3">
+                                                                            </div>
+                                                                            <!-- end card body -->
+                                                                        </div>
+                                                                        <!-- end card -->
+                                                                    </div> <!-- end col -->
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <div class="hstack gap-2 justify-content-end">
+                                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-success" id="update-btn">Add Coupon</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    
+<!-- Modal -->
+<div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" id="deleteRecord-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mt-2 text-center">
+                    <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                    <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                        <h4>Are you sure?</h4>
+                        <p class="text-muted mx-4 mb-0">Are you sure you want to remove this record?</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                    <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn w-sm btn-danger" id="delete-record">Yes, Delete It!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end modal -->
+                                </div>
+                            </div>
+
+                        </div>
+                        <!--end col-->
+                    </div>
+                    <!--end row-->
+
+                </div>
+                <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+
+            <script>
+
+$(document).ready(function() {
+        $(document).on('click', '.delete-bin', function() {
+            var couponId = $(this).data('coupon-id');
+            console.log(couponId);
+            $('#couponId').val(couponId);
+            $('#deleteRecordModal').modal('show');
+        });
+
+        $(document).on('click', '#delete-record', function() {
+            var couponId = $('#couponId').val();
+            $.ajax({
+                url: '/admin/deleteCoupon',
+                method: 'POST',
+                data: { couponId: couponId },
+                success: function(response) {
+                    console.log('Coupon deleted successfully');
+                    window.location.href = '/admin/coupons';
+                },
+                error: function(error) {
+                    console.error('Error deleting coupon', error);
+                }
+            });
+        });
+    });
+            </script>
+
+            <%-include("../layout/adminFooter.ejs")%>

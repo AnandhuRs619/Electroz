@@ -257,10 +257,12 @@
 															<%=item.productId.name%>
 														</a></h5>
 													<ul class="list-inline text-muted">
+														<li class="list-inline-item">Category : <span
+															class="fw-medium"><%= item.productId.categoryName %></span></li>
 														<li class="list-inline-item">Color : <span
 																class="fw-medium">Pink</span></li>
 														<li class="list-inline-item">Size : <span
-																class="fw-medium">M</span></li>
+																class="fw-medium">128GB</span></li>
 													</ul>
 
 													<div class="input-step light">
@@ -287,7 +289,8 @@
 												<div class="col-sm">
 													<div class="d-flex flex-wrap my-n1">
 														<div>
-															<a href="#" class="d-block text-body p-1 px-2" data-bs-toggle="modal" data-bs-target="#removeItemModal"><i class="ri-delete-bin-fill text-muted align-bottom me-1"></i> Remove</a>
+															
+															<a href="#" class="d-block text-body p-1 px-2" data-bs-toggle="modal"data-item-id="<%=item.productId%>" data-bs-target="#removeItemModal"><i class="ri-delete-bin-fill text-muted align-bottom me-1 delete-btn"></i> Remove</a>
 														</div>
 														<div>
 															<a href="#" class="d-block text-body p-1 px-2"><i
@@ -306,8 +309,41 @@
 										</div>
 										<!-- end card footer -->
 
-
 									</div>
+														<!-- removeItemModal -->
+					<div id="removeItemModal" class="modal " tabindex="-1" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+										id="close-modal"></button>
+								</div>
+								<div class="modal-body">
+									<div class="mt-2 text-center">
+										<lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
+											colors="primary:#f7b84b,secondary:#f06548"
+											style="width:100px;height:100px"></lord-icon>
+										<div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+											<h4>Are you sure ?</h4>
+											<p class="text-muted mx-4 mb-0">Are you sure You want to remove this Product
+												?</p>
+										</div>
+									</div>
+									<div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+										<!-- Replace the "Remove" button in the modal with this hidden input field -->
+    								<input type="hidden" id="remove-item-id" value="<%=item.productId%>">
+
+										<button type="button" class="btn w-sm btn-light"
+											data-bs-dismiss="modal">Close</button>
+										<button type="button" class="btn w-sm bvscode-file://vscode-app/c:/Users/Anandhu/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/code/electron-sandbox/workbench/workbench.htmltn-danger" id="remove-product"data-item-id="<%=item.productId%>">Yes,
+											Delete It!</button>
+									</div>
+								</div>
+
+							</div><!-- /.modal-content -->
+						</div><!-- /.modal-dialog -->
+					</div><!-- /.modal -->
+
 									<!-- end card -->
 									<% }) %>
 
@@ -327,102 +363,102 @@
 									  
 							</div>
 							<!-- end col -->
-
-
 							<div class="col-xl-4">
 								<div class="sticky-side-div">
-									<div class="card">
-										<div class="card-header border-bottom-dashed">
-											<h5 class="card-title mb-0">Order Summary</h5>
-										</div>
-										<div class="card-header bg-soft-light border-bottom-dashed">
-											<div class="text-center">
-												<h6 class="mb-2">Have a <span class="fw-semibold">promo</span> code ?
-												</h6>
-											</div>
-											<div class="hstack gap-3 px-3 mx-n3">
-												<input class="form-control me-auto" type="text"
-													placeholder="Enter coupon code" aria-label="Add Promo Code here...">
-												<button type="button" class="btn btn-success w-xs">Apply</button>
-											</div>
-										</div>
-										<div class="card-body pt-2">
-											<div class="table-responsive">
-												<table class="table table-borderless mb-0">
-													<tbody>
-														<tr>
-															<td>Sub Total :</td>
-															<td class="text-end" id="cart-subtotal">₹ 359.96</td>
-														</tr>
-														<tr>
-															<td>Discount <span class="text-muted">(VELZON15)</span> :
-															</td>
-															<td class="text-end" id="cart-discount">- ₹ 00</td>
-														</tr>
-														<tr>
-															<td>Shipping Charge :</td>
-															<td class="text-end" id="cart-shipping">₹ 00</td>
-														</tr>
-														<tr>
-															<td>Estimated Tax (12.5%) : </td>
-															<td class="text-end" id="cart-tax">₹ 00</td>
-														</tr>
-														<tr class="table-active">
-															<th>Total :</th>
-															<td class="text-end">
-																<span class="fw-semibold" id="cart-total">
-																	₹415.96
-																</span>
-															</td>
-														</tr>
-													</tbody>
-												</table>
-
-											</div>
-											<!-- end table-responsive -->
-										</div>
+								  <div class="card">
+									<div class="card-header border-bottom-dashed">
+									  <h5 class="card-title mb-0">Order Summary</h5>
 									</div>
-
-
+									<div class="card-header bg-soft-light border-bottom-dashed">
+									  <div class="text-center">
+										<h6 class="mb-2">Have a <span class="fw-semibold">promo</span> code ?</h6>
+									  </div>
+									  <div class="hstack gap-3 px-3 mx-n3">
+										<input class="form-control me-auto" type="text" id="selectedCouponValue" name="selectedCouponValue" placeholder="Enter coupon code" aria-label="Add Promo Code here...">
+										<button type="button" class="btn btn-success w-xs apply-coupon-button ">Apply</button>
+										<!-- Add the "Show Coupons" button and data-bs-toggle attribute to open the modal -->
+										<button type="button" class="btn btn-primary w-xs" id="showCouponButton">Show Coupons</button>
+									  </div>
+									</div>
+									<div class="card-body pt-2">
+									  <div class="table-responsive">
+										<table class="table table-borderless mb-0">
+										  <tbody>
+											<tr>
+											  <td>Sub Total :</td>
+											  <td class="text-end" id="cart-subtotal">₹<%= user.subtotal %> </td>
+											</tr>
+											<tr>
+												<!-- Display the category offer here -->
+												<td>Category Offer <span class="text-muted"></span> :</td>
+												<td class="text-end" id="category-discount">- ₹ <%= totalCategoryDiscountAmount %> </td>
+											  </tr>
+											<tr>
+											  <td>Discount <span class="text-muted">(VELZON15)</span> :</td>
+											  <td class="text-end" id="cart-discount">- ₹<%= discountAmount %> </td>
+											</tr>
+											<tr>
+											  <td>Shipping Charge :</td>
+											  <td class="text-end" id="cart-shipping">₹<%= shippingCharge %> </td>
+											</tr>
+											<tr class="table-active">
+											  <th>Total :</th>
+											  <td class="text-end">
+												<span class="fw-semibold" id="cart-total">₹ <%= finalAmount %></span>
+											  </td>
+											</tr>
+										  </tbody>
+										</table>
+									  </div>
+									  <!-- end table-responsive -->
+									</div>
+								  </div>
 								</div>
-								<!-- end stickey -->
-
-							</div>
+								<!-- end sticky -->
+							  </div>
+							  
+							  <!-- Add the modal here -->
+							  <div class="modal " id="couponModal" tabindex="-1" aria-labelledby="couponModalLabel" aria-hidden="true">
+								<div class="modal-dialog">
+								  <div class="modal-content">
+									<div class="modal-header">
+									  <h5 class="modal-title" id="couponModalLabel">Available Coupons</h5>
+									  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+									  <!-- Add the table to display the coupons here -->
+									  <table class="table">
+										<thead>
+										  <tr>
+											<th>Coupon Name</th>
+											<th>Discount Value</th>
+											<th>Expiry Date</th>
+											<!-- Add other coupon attributes here -->
+										  </tr>
+										</thead>
+										<tbody>
+										  <% coupons.forEach(coupon => { %>
+											<tr>
+											  <td><%= coupon.couponName %></td>
+											  <td><%= coupon.couponValue %></td>
+											  <td><%= coupon.expiryDate %></td>
+											  <!-- Add other coupon attributes here -->
+											</tr>
+										  <% }) %>
+										</tbody>
+									  </table>
+									</div>
+								  </div>
+								</div>
+							  </div>
 						</div>
 						<!-- end row -->
+						  
 					</div>
 					<!-- container-fluid -->
-					<!-- removeItemModal -->
-					<div id="removeItemModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
-						<div class="modal-dialog modal-dialog-centered">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-										id="close-modal"></button>
-								</div>
-								<div class="modal-body">
-									<div class="mt-2 text-center">
-										<lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
-											colors="primary:#f7b84b,secondary:#f06548"
-											style="width:100px;height:100px"></lord-icon>
-										<div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-											<h4>Are you sure ?</h4>
-											<p class="text-muted mx-4 mb-0">Are you sure You want to remove this Product
-												?</p>
-										</div>
-									</div>
-									<div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-										<button type="button" class="btn w-sm btn-light"
-											data-bs-dismiss="modal">Close</button>
-										<button type="submit" class="btn w-sm btn-danger" id="remove-product">Yes,
-											Delete It!</button>
-									</div>
-								</div>
-
-							</div><!-- /.modal-content -->
-						</div><!-- /.modal-dialog -->
-					</div><!-- /.modal -->
-
+					
+						
+					
 				</div>
 			</div>
 			<!-- /container -->
@@ -580,60 +616,150 @@
 		</footer>
 		<!-- /FOOTER -->
 
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 		<script>
-			$(document).ready(function () {
-				// Handle click event on Remove link
-				$('.remove-item-link').click(function (e) {
-					e.preventDefault();
-					var itemId = $(this).data('item-id');
-					$('#remove-product').attr('data-item-id', itemId);
-				});
-
-				// Handle click event on Remove button in the modal
-				$('#remove-product').click(function () {
-					var itemId = $(this).data('item-id');
-					cartRemove(itemId);
-				});
-
-				// Function to remove item from cart
-				function cartRemove(itemId) {
-					// Send AJAX request to remove item from cart
-					$.ajax({
-						url: '/cart/remove/' + itemId,
-						method: 'GET',
-						success: function (response) {
-							// Handle success response
-							console.log('Item removed from cart');
-							// Reload the page to update the cart
-							location.reload();
-						},
-						error: function (xhr, status, error) {
-							// Handle error response
-							console.error(error);
-							alert('Error removing item from cart');
-						}
-					});
-				}
+			document.addEventListener("DOMContentLoaded", function () {
+			  const showCouponButton = document.getElementById("showCouponButton");
+			  const couponModal = new bootstrap.Modal(document.getElementById("couponModal"));
+		  
+			  showCouponButton.addEventListener("click", function () {
+				couponModal.show();
+			  });
 			});
-		</script>
+		  </script>
+  
+<script>
+
+$('.apply-coupon-button').click(function() {
+  var selectedCouponValue = $('#selectedCouponValue').val();
+  var totalAmount = parseInt($('#cart-subtotal').text().replace('₹', '').trim());
+
+  // Create the request body object
+  var requestBody = {
+    selectedCouponValue: selectedCouponValue,
+    totalAmount: totalAmount
+  };
+  console.log(requestBody);
+  // Make the API call to the backend
+  $.ajax({
+    url: '/cart/apply-coupon',
+    method: 'POST',
+    data: JSON.stringify(requestBody),
+    contentType: 'application/json',
+    success: function(response) {
+    if(response.finalAmount){
+		document.getElementById('cart-subtotal').innerText=response.finalAmount
+		document.getElementById('cart-discount').innerText=response.discountAmount
+		const total = document.getElementById('cart-total')
+		total.innerText
+	}
+     console.log(response);
+    },
+    error: function(error) {
+      // Handle the error response from the backend
+      console.error(error);
+
+      // Display an error message to the user (you can implement this based on your UI design)
+      alert('Error applying coupon. Please try again.');
+    }
+  });
+});
+
+</script>
+	<script>
+  $(document).ready(function() {
+
+    // Handle click event on Remove link
+    $('.delete-btn').click(function(e) {
+      e.preventDefault();
+      var itemId = $(this).data('item-id');
+      $('#remove-product').attr('data-item-id', itemId);
+	  console.log(itemId+"p656");
+	  
+    });
+
+    // Handle click event on Remove button in the modal
+    $('#remove-product').click(function(e) {
+      var itemId = $(this).data('item-id');
+	  console.log(itemId+"hai1podaa");
+	
+
+       cartRemove(itemId);
+    });
+
+    // Function to remove item from cart
+    function cartRemove(itemId) {
+
+      $.ajax({
+        url: '/cart/remove/' + itemId, // Update the URL to include the itemId
+        method: 'GET',
+        success: function(response) {
+          // Handle success response
+          console.log('Item removed from cart');
+          // Reload the page to update the cart
+          location.reload();
+        },
+        error: function(xhr, status, error) {
+          // Handle error response
+          console.error(error);
+          alert('Error removing item from cart');
+        }
+      });
+    }
+  });
+</script>
+
+<script>
+$('.minus').click(function() {
+  const input = $(this).siblings('.product-quantity');
+  const newQuantity = parseInt(input.val()) - 1;
+  updateQuantity(input, newQuantity);
+});
+
+$('.plus').click(function() {
+  const input = $(this).siblings('.product-quantity');
+  const newQuantity = parseInt(input.val()) + 1;
+  updateQuantity(input, newQuantity);
+});
+
+function updateQuantity(input, newQuantity) {
+  const productId = input.data('product-id');
+
+  $.ajax({
+    url: `/cart/${productId}/quantity`,
+    method: 'PUT',
+    data: { quantity: newQuantity },
+    success: function(data) {
+      // Update the quantity in the input field
+      input.val(newQuantity);
+    },
+    error: function(xhr, status, error) {
+      console.error(xhr.responseJSON.error);
+    }
+  });
+}
 
 
-		<script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-		<script src="assets/libs/simplebar/simplebar.min.js"></script>
-		<script src="assets/libs/node-waves/waves.min.js"></script>
-		<script src="assets/libs/feather-icons/feather.min.js"></script>
-		<script src="assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
-		<script src="assets/js/plugins.js"></script>
+</script>
+
+		
+
+		<script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+		<script src="/assets/libs/simplebar/simplebar.min.js"></script>
+		<script src="/assets/libs/node-waves/waves.min.js"></script>
+		<script src="/assets/libs/feather-icons/feather.min.js"></script>
+		<script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+		<script src="/assets/js/plugins.js"></script>
 
 		<!-- input step init -->
-		<script src="assets/js/pages/form-input-spin.init.js"></script>
+		<script src="/assets/js/pages/form-input-spin.init.js"></script>
 
 		<!-- ecommerce cart js -->
-		<script src="assets/js/pages/ecommerce-cart.init.js"></script>
+		<script src="/assets/js/pages/ecommerce-cart.init.js"></script>
 
 		<!-- App js -->
-		<script src="assets/js/app.js"></script>
+		<script src="/assets/js/app.js"></script>
 
 		<!-- jQuery Plugins -->
 		<script src="js/jquery.min.js"></script>

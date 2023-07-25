@@ -1,197 +1,208 @@
 <%- include("../layout/header.ejs") %>
 
-<!-- BREADCRUMB -->
-<div id="breadcrumb" class="section">
-  <!-- container -->
-  <div class="container">
-    <!-- row -->
-    <div class="row">
-      <div class="col-md-12">
-        <h3 class="breadcrumb-header">User Profile</h3>
-        <ul class="breadcrumb-tree">
-          <li><a href="#">Home</a></li>
-          <li class="active">User Profile</li>
-        </ul>
-      </div>
-    </div>
-    <!-- /row -->
-  </div>
-  <!-- /container -->
-</div>
-<!-- /BREADCRUMB -->
-
-<!-- User Profile -->
-<div class="container rounded bg-white mt-5 mb-5">
-  <div class="row">
-	<div class="col-md-4 border-right" style="background: #ffffff;padding: 10px 20px;border-radius: 5px;border-style:solid; border-width: 1px; ">
-		<div class="d-flex flex-column align-items-center text-center p-3 py-5">
-		  <img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
-		  <div class="flex-grow-1 ms-2">
-			<h5 class="card-title mb-1"><%= userDetails.name %></h5>
-			<p class="text-muted mb-0"><%= userDetails.email %></p>
-		</div>
-	
-		<p class="card-text text-muted">Wallet Balance</p>
-		<h6 class="mb-1">$15,548</h6>
-		<a href="javascript:void(0)" class="btn btn-primary btn-sm">See Details</a>
-		</div>
-
-    <div class="col-md-12 ">
-      <!-- Menu -->
-      <div class="list-group m-12">
-		<a href="#" class="list-group-item list-group-item-action">
-  <i class="fas fa-user"></i> Profile Information
-</a>
-<a href="#" class="list-group-item list-group-item-action">
-  <i class="fas fa-wallet"></i> Wallet
-</a>
-<a href="/manageAddress" class="list-group-item list-group-item-action">
-  <i class="fas fa-address-book"></i> Address Manager
-</a>
-<a href="/Myorders" class="list-group-item list-group-item-action">
-  <i class="fas fa-shopping-cart"></i> My Orders
-</a>
-      </div>
-    </div>
-
-   
-    </div>
-    <div class="col-md-5">
-      <div class="card p-3 py-5">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4 class="text-left">Profile Information</h4>
+  <!-- BREADCRUMB -->
+  <div id="breadcrumb" class="section">
+    <!-- container -->
+    <div class="container">
+      <!-- row -->
+      <div class="row">
+        <div class="col-md-12">
+          <h3 class="breadcrumb-header">User Profile</h3>
+          <ul class="breadcrumb-tree">
+            <li><a href="#">Home</a></li>
+            <li class="active">User Profile</li>
+          </ul>
         </div>
-        <div class="row mt-2">
-          <form action="/myprofile/editProfile" method="post">
-            <div class="col-md-6">
-              <label class="labels">Name</label>
-              <input type="text" class="form-control" name="name" value="<%= userDetails.name %>">
-            </div>
-            <div class="col-md-6">
-              <label class="labels">Mobile Number</label>
-              <input type="text" class="form-control" name="number" placeholder="<%= userDetails.number %>" value="<%= userDetails.number %>">
-            </div>
-            <div class="col-md-6">
-              <label class="labels">Email ID</label>
-              <input type="text" class="form-control" name="email" placeholder="<%= userDetails.email %>" readonly value="<%= userDetails.email %>">
-            </div>
+      </div>
+      <!-- /row -->
+    </div>
+    <!-- /container -->
+  </div>
+  <!-- /BREADCRUMB -->
+
+  <!-- User Profile -->
+  <div class="container rounded bg-white mt-5 mb-5">
+    <div class="row">
+      <div class="col-md-4 border-right"
+        style="background: #ffffff;padding: 10px 20px;border-radius: 5px;border-style:solid; border-width: 1px; ">
+        <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+          <img class="rounded-circle mt-5" width="150px"
+            src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
+          <div class="flex-grow-1 ms-2">
+            <h5 class="card-title mb-1">
+              <%= userDetails.name %>
+            </h5>
+            <p class="text-muted mb-0">
+              <%= userDetails.email %>
+            </p>
+          </div>
+
+          <p class="card-text text-muted">Wallet Balance</p>
+          <h6 class="mb-1">$15,548</h6>
+          <a href="javascript:void(0)" class="btn btn-primary btn-sm">See Details</a>
+        </div>
+
+        <div class="col-md-12 ">
+          <!-- Menu -->
+          <div class="list-group m-12">
+            <a href="#" class="list-group-item list-group-item-action">
+              <i class="fas fa-user"></i> Profile Information
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+              <i class="fas fa-wallet"></i> Wallet
+            </a>
+            <a href="/manageAddress" class="list-group-item list-group-item-action">
+              <i class="fas fa-address-book"></i> Address Manager
+            </a>
+            <a href="/Myorders" class="list-group-item list-group-item-action">
+              <i class="fas fa-shopping-cart"></i> My Orders
+            </a>
+          </div>
+        </div>
+
+
+      </div>
+      <div class="col-md-5">
+        <div class="card p-3 py-5">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="text-left">Profile Information</h4>
+          </div>
+          <div class="row mt-2">
+            <form action="/myprofile/editProfile" method="post">
+              <div class="col-md-6">
+                <label class="labels">Name</label>
+                <input type="text" class="form-control" name="name" value="<%= userDetails.name %>">
+              </div>
+              <div class="col-md-6">
+                <label class="labels">Mobile Number</label>
+                <input type="text" class="form-control" name="number" placeholder="<%= userDetails.number %>"readonly
+                  value="<%= userDetails.number %>">
+              </div>
+              <div class="col-md-6">
+                <label class="labels">Email ID</label>
+                <input type="text" class="form-control" name="email" placeholder="<%= userDetails.email %>" 
+                  value="<%= userDetails.email %>">
+              </div>
           </div>
           <div class="row mt-3">
             <div class="mt-5 text-center">
               <button class="btn btn-danger profile-button" type="submit">Save Profile</button>
             </div>
           </div>
-        </form>
-          <button class="btn btn-primary" data-toggle="modal" data-target="#changePasswordModal">Change Password</button>
-    
-          
-<!-- Profile update success modal -->
-<div class="modal fade" id="profileUpdateSuccessModal" tabindex="-1" role="dialog" aria-labelledby="profileUpdateSuccessModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="profileUpdateSuccessModalLabel">Profile Update Success</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>Your profile has been successfully updated.</p>
+          </form>
+          <button class="btn btn-primary" data-toggle="modal" data-target="#changePasswordModal">Change
+            Password</button>
+
+
+          <!-- Profile update success modal -->
+          <div class="modal fade" id="profileUpdateSuccessModal" tabindex="-1" role="dialog"
+            aria-labelledby="profileUpdateSuccessModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="profileUpdateSuccessModalLabel">Profile Update Success</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p>Your profile has been successfully updated.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Password change modal -->
+          <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog"
+            aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form id="changePasswordForm" action="/profile/changePassword" method="post">
+                    <div class="form-group">
+                      <label for="newPassword">New Password</label>
+                      <input type="password" id="newPassword" name="newPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="confirmNewPassword">Confirm New Password</label>
+                      <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-control"
+                        required>
+                    </div>
+                    <div class="form-group">
+                      <label for="otp">OTP</label>
+                      <input type="text" id="otp" name="otp" class="form-control" required>
+                    </div>
+                    <input id="user" type="hidden" value="<%=userDetails._id%>">
+                    <div class="d-flex">
+                      <button onclick="(sendOtp())" class="btn btn-primary" id="sendOTPBtn">Send OTP</button>
+                      <button type="submit" class="btn btn-primary" id="changePasswordBtn">Change Password</button>
+                      <h6 class="text-success mt-3" id="succ"></h1>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
-<!-- Password change modal -->
-<div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form id="changePasswordForm" action="/profile/changePassword" method="post">
-          <div class="form-group">
-            <label for="currentPassword">Current Password</label>
-            <input type="password" id="currentPassword" name="currentPassword" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label for="newPassword">New Password</label>
-            <input type="password" id="newPassword" name="newPassword" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label for="confirmNewPassword">Confirm New Password</label>
-            <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label for="otp">OTP</label>
-            <input type="text" id="otp" name="otp" class="form-control" required>
-          </div>
-          <button type="button" class="btn btn-primary" id="sendOTPBtn">Send OTP</button>
-          <button type="submit" class="btn btn-primary" id="changePasswordBtn">Change Password</button>
-        </form>
-      </div>
-    </div>
   </div>
-</div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
 
-    <script>
-      const changePasswordModal = document.getElementById('changePasswordModal');
-      const changePasswordForm = document.getElementById('changePasswordForm');
-      const sendOTPBtn = document.getElementById('sendOTPBtn');
-    
-      // When the modal is shown, trigger the OTP sending
-      changePasswordModal.addEventListener('show.bs.modal', function () {
-        // Clear the previous OTP value
-        document.getElementById('otp').value = '';
-    
-        sendOTPBtn.addEventListener('click', function () {
-          // Send an AJAX request to send the OTP
-          fetch('/profile/sendOTP', {
-            method: 'POST',
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              console.log(data);
-              // Handle the response, such as showing a success message or error message
-            })
-            .catch((error) => {
-              console.log(error);
-              // Handle the error, such as displaying an error message
-            });
-        });
-      });
-    
-      changePasswordForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-    
-        const formData = new FormData(changePasswordForm);
-        const url = changePasswordForm.getAttribute('action');
-    
-        fetch(url, {
-          method: 'POST',
-          body: formData,
+  <script>
+    const sendOtp = () => {
+      const user = document.getElementById('user').value;
+      console.log(user);
+      fetch('/passwordChange/sendOTP', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ user })
+      }).then((response) => response.json())
+        .then((data) => {
+          console.log(data);
         })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data);
-            // Handle the response, such as showing a success message or error message
-            // You can also close the modal or perform any other necessary actions
-          })
-          .catch((error) => {
-            console.log(error);
-            // Handle the error, such as displaying an error message
-          });
-      });
-    </script>
-<!-- /User Profile -->
+    }
+  </script>
+  <script>
+    const changePasswordModal = document.getElementById('changePasswordModal');
+    const changePasswordForm = document.getElementById('changePasswordForm');
+    const sendOTPBtn = document.getElementById('sendOTPBtn');
+    const succ = document.getElementById('succ')
+    changePasswordForm.addEventListener('submit', function (event) {
+      event.preventDefault();
 
-<%- include("../layout/footer.ejs") %>
+      const otp = document.getElementById('otp');
+      const newPassword = document.getElementById('newPassword');
+      const url = changePasswordForm.getAttribute('action');
+      console.log(typeof otp.value, newPassword.value);
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json' // Specify the content type as JSON
+        },
+        body: JSON.stringify({ otp: otp.value, newPassword: newPassword.value }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          succ.innerText = data.message
+          // Handle the response, such as showing a success message or error message
+          // You can also close the modal or perform any other necessary actions
+        })
+        .catch((error) => {
+          console.log(error);
+          // Handle the error, such as displaying an error message
+        });
+    });
+  </script>
+  <!-- /User Profile -->
+
+  <%- include("../layout/footer.ejs") %>

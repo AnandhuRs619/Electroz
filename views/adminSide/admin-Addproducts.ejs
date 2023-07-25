@@ -40,20 +40,7 @@
                                         <div>
                                             <label>Product Description</label>
 
-                                            <div  id="ckeditor-classic">
-                                                <p>Tommy Hilfiger men striped pink sweatshirt. 
-                                                    Crafted with cotton. Material composition is 100% 
-                                                    organic cotton. This is one of the world’s leading designer 
-                                                    lifestyle brands and is internationally recognized for celebrating 
-                                                    the essence of classic American cool style, featuring preppy with a twist 
-                                                    designs.</p>
-                                                <ul>
-                                                    <li>Full Sleeve</li>
-                                                    <li>Cotton</li>
-                                                    <li>All Sizes available</li>
-                                                    <li>4 Different Color</li>
-                                                </ul>
-                                            </div>
+                                            <textarea class="form-control"  id="product-description" name="description" placeholder="Enter the product description" rows="5"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -131,16 +118,37 @@
                                                 <div class="row">
                                                     <div class="col-lg-6">
                                                         <div class="mb-3">
-                                                            <label class="form-label" for="manufacturer-name-input">Manufacturer Name</label>
-                                                            <input type="text" class="form-control" id="manufacturer-name-input" placeholder="Enter manufacturer name">
+                                                            <label class="form-label" for="manufacturer-name-input">Manufacturer Brand</label>
+                                                            <input type="text" class="form-control" id="manufacturer-name-input" name="Brand_name"  placeholder="Enter manufacturer name">
                                                         </div>
                                                     </div>
-                                                    <div class="col-lg-6">
+                                                    <div class="col-lg-3 col-sm-6">
                                                         <div class="mb-3">
-                                                            <label class="form-label" for="manufacturer-brand-input">Manufacturer Brand</label>
-                                                            <input type="text" class="form-control" name="Brand_name" id="manufacturer-brand-input" placeholder="Enter manufacturer brand">
+                                                            <label class="form-label" for="product-size-select">Size</label>
+                                                            <select class="form-select" id="product-size-select" name="size">
+                                                                <option value="medium">128 GB</option>
+                                                                <option value="medium">256 GB</option>
+                                                                <option value="large">512 GB</option>
+                                                                <!-- Add more size options as needed -->
+                                                            </select>
                                                         </div>
                                                     </div>
+                                                    <div class="col-lg-3 col-sm-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="product-color-select">Color</label>
+                                                            <select class="form-select" id="product-color-select" name="color">
+                                                                <option value="red">Red</option>
+                                                                <option value="blue">Blue</option>
+                                                                <option value="green">Green</option>
+                                                                <option value="green">Sliver</option>
+                                                                <option value="green"></option>
+                                                                <option value="green">Green</option>
+                                                                <option value="green">Green</option>
+                                                                <!-- Add more color options as needed -->
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
                                                 </div>
                                                 <!-- end row -->
 
@@ -172,7 +180,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
+                                                  
                                                     <!-- end col -->
                                                 </div>
                                                 <!-- end row -->
@@ -269,7 +277,7 @@
 
                                         <select class="form-select" id="choices-category-input" name="category" data-choices data-choices-search-false>
                                         <% category.forEach(category => { %>
-                                            <option value="<%= category.categoryName%>"><%= category.categoryName%></option>
+                                            <option value="<%= category._id%>"><%= category.categoryName%></option>
                                             <% }); %>
                                         </select>
                                     </div>
@@ -287,5 +295,9 @@
                 <!-- container-fluid -->
             </div>
             <!-- End Page-content -->
+
+
+            <script src="path/to/ckeditor/ckeditor.js"></script>
+
 
 <%-include("../layout/adminFooter.ejs")%>

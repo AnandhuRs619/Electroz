@@ -27,6 +27,7 @@ adminRouter.post('/deleteproduct',adminController.removeProduct);
 adminRouter.get('/categoryList',adminController.categoryList);
 adminRouter.post('/categoryList',adminController.categoryAdding);
 adminRouter.post('/categoryEdit',adminController.categoryEdit);
+adminRouter.patch('/categorydelete/:id',adminController.removeCategory);
 adminRouter.get('/customerLists',adminController.customerList);
 adminRouter.post('/customerUpdate/:id',adminController.blockUser);
 adminRouter.get('/orderList',adminController.orderlist);
@@ -35,6 +36,8 @@ adminRouter.get('/couponList',adminController.couponList);
 adminRouter.post('/addcoupon',adminController.addCoupon);
 adminRouter.post('/editCoupon',adminController.editCoupon);
 adminRouter.post('/removeCoupon',adminController.removeCoupon);
+adminRouter.get('/bannarlist',adminController.banner);
+adminRouter.post('/addbanner',upload.array('image'),adminController.addBanner);
 adminRouter.get('*',function(req,res){
     res.redirect('/admin')
 });

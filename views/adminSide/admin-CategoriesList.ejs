@@ -128,7 +128,7 @@
                                                                         </a>
                                                                     </li>
                                                                     <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteRecordModal">
+                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal"data-category-id="<%= category._id %> href="#deleteRecordModal">
                                                                             <i class="ri-delete-bin-5-fill fs-16"></i>
                                                                         </a>
                                                                     </li>
@@ -254,7 +254,7 @@
                                     
 
                                     <!-- Modal -->
-                                    <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
+                                    <div class="modal zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header">
@@ -289,5 +289,37 @@
                 <!-- container-fluid -->
             </div>
             <!-- End Page-content -->
+
+            <script>
+                $(document).ready(function() {
+                  // Store the category ID to be deleted when the delete button in the table is clicked
+                  let categoryToDeleteId;
+              
+                  // Event listener to invoke the delete confirmation modal
+                  $('.remove-item-btn').click(function() {
+                    categoryToDeleteId = $(this).data('category-id');
+                  });
+              
+                  // Event listener to trigger the AJAX request for deleting the category
+                  $('#delete-record').click(function() {
+                    // Send the AJAX request to delete the category by its ID
+                    $.ajax({
+                      url: `/categorydelete/${categoryToDeleteId}`,
+                      method: 'DELETE',
+                      success: function(data) {
+                        // Handle the success response
+                        // For example, you can reload the page or update the category list after successful deletion
+                        window.location.reload();
+                      },
+                      error: function(xhr, status, error) {
+                        // Handle the error response
+                        console.error(xhr.responseJSON.error);
+                      }
+                    });
+                  });
+                });
+              </script>
+              
+
 
             <%-include("../layout/adminFooter.ejs")%>

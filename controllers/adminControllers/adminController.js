@@ -5,7 +5,7 @@ const productModel = require('../../models/productModel');
 const categorySchema =require('../../models/categorySchema');
 const orderModel = require('../../models/OderSchema');
 const Coupon = require('../../models/couponSchema');
-
+const Banner = require('../../models/bannarModel');
 
 // ADMIN LOGIN
 const adminLogin = async (req,res)=>{
@@ -62,8 +62,19 @@ const dashboard = async (req,res)=>{
 
 const productLists = async (req, res)=>{
     try{
-        const product = await productModel.find({ isAvailable: true });
-        res.render('adminSide/admin-ProductsList',{title : "Product",admin:req.session.admin, product});
+        const product = await productModel.find();
+        // Fetch all categories
+    const categories = await categorySchema.find();
+
+    // Merge category name into each product based on category ID
+    const productsWithCategory = product.map((product) => {
+      const category = categories.find((cat) => cat._id.toString() === product.category.toString());
+      return {
+        ...product.toObject(),
+        categoryName: category ? category.categoryName : '', // Add categoryName property to the product object
+      };
+    });
+        res.render('adminSide/admin-ProductsList',{title : "Product",admin:req.session.admin,  product: productsWithCategory});
     }catch(error){
         console.error(error);
         res.status(500).send("Internal  Server Error");
@@ -81,7 +92,8 @@ const productDetails = async(req,res)=>{
 }
 const productAdding = async(req,res)=>{
     try{
-        const category = await categorySchema.find({isAvailable:true});
+        
+        const category = await categorySchema.find();
         res.render('adminSide/admin-Addproducts',{category});
     }catch(error){
         console.error(error);
@@ -90,9 +102,12 @@ const productAdding = async(req,res)=>{
 }
 const addingNewProduct = async(req,res)=>{
     try{
-        const {name,Brand_name,category,price,stock,discount,description}=req.body;
+        const {name,Brand_name,category,price,stock,discount,description,}=req.body;
         console.log(req.body);
         const files  = req.files;
+        const originalPrice = parseFloat(price);
+    const discountPercentage = parseFloat(discount);
+    const discountedPrice = originalPrice - (originalPrice * (discountPercentage / 100));
         
         const product = new productModel({
             name,
@@ -102,6 +117,7 @@ const addingNewProduct = async(req,res)=>{
             stock,
             discount,
             description,
+            discountedPrice,
             image: files.map(file => file.filename)
         })
 
@@ -130,9 +146,11 @@ const editProduct = async(req,res)=>{
         const {name,Brand_name,category,price,stock,discount,description}=req.body;
         const id = req.params.id;
         const data = req.body;
-        // console.log(id,data);
         const files =req.files
-        // console.log(req.body,id);
+        const originalPrice = parseFloat(price);
+        const discountPercentage = parseFloat(discount);
+        const discountedPrice = originalPrice - (originalPrice * (discountPercentage / 100));
+
         const pData= await productModel.findByIdAndUpdate( id ,{
            $set:{
             name:name,
@@ -142,6 +160,7 @@ const editProduct = async(req,res)=>{
             stock:stock,
             discount:discount,
             description:description,
+            discountedPrice: discountedPrice,
             image: files.map(file => file.filename)
            } 
         });
@@ -215,8 +234,13 @@ const categoryEdit = async (req,res)=>{
 }
 const removeCategory = async(req,res)=>{
     try{
+        const cataId = req.params.id;
+        const category = categorySchema.findByIdAndUpdate(cataId,{isAvailable:false},{new:true})
+        if(!category){
+            return res.status(404).json({ error: 'Category not found' });
+        }
 
-
+        res.json(category);
     }catch(error){
         console.error(error);
         res.status(500).send("Internal  Server Error")
@@ -261,6 +285,8 @@ console.log(typeof isBlocked);
 const orderlist = async (req,res)=>{
     try{
         const Order = await orderModel.find().populate('userId', 'name');
+         // Sort orders by date in descending order (recent first)
+         Order.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         res.render('adminSide/admin-ordersList',{ Order})
     }catch (error) {
         console.error(error);
@@ -346,6 +372,7 @@ const editCoupon = async(req,res)=>{
 const removeCoupon = async (req, res) => {
   try {
     const couponId = req.body.couponId;
+    console.log(couponId);
 
     // Delete the coupon from the database
     const deletedCoupon = await Coupon.findByIdAndDelete(couponId);
@@ -360,6 +387,54 @@ const removeCoupon = async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 };
+
+const banner = async (req,res)=>{
+    try {
+        const banner = await Banner.find();
+        res.render('adminSide/admin-Bannar',{banner})
+    }catch (error){
+        console.error(error);
+        res.status(500).send('Internal Server Error'); 
+    }
+}
+const addBanner = async(req,res)=>{
+    try{
+       const {BannerName,description,description2}=req.body 
+       const Bimages = req.files.map((file) => file.filename);
+     
+       const banner= new Banner({
+        BannerName,
+        description,
+        description2,
+        image: Bimages,
+       })
+       await banner.save();
+       console.log(banner);
+       res.redirect('/admin/bannarlist')
+    }catch (error){
+        console.error(error);
+        res.status(500).send('Internal Server Error'); 
+    }
+}
+
+const editBanner = async(req,res)=>{
+    try{
+        const {BannerName,description,description2,bannerId}=req.body
+        const Bimages = req.files.map((file) => file.filename);
+        const data = await Banner.findByIdAndUpdate({_id:bannerId},{
+            $set:{
+            BannerName,
+            description,
+            description2,
+            image: Bimages,
+            }
+        });
+        res.redirect('/admin/bannarlist')
+    }catch (error){
+        console.error(error);
+        res.status(500).send('Internal Server Error'); 
+    }
+}
 
 // Admin logout
 
@@ -396,5 +471,8 @@ module.exports={
     addCoupon,
     editCoupon,
     removeCoupon,
-    orderupdate
+    orderupdate,
+    removeCategory,
+    banner,
+    addBanner,
 }
