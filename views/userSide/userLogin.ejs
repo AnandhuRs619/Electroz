@@ -91,72 +91,77 @@
           </form>
         </div>
       </div>
-    </div>
+      <!-- <div class="" style=" "> -->
+        <!-- Forgot Password Modal -->
+        
+        <div id="forgotPasswordModal" class="modal" style="display:none; overflow: hidden;margin-left: -200px;margin-top: 0px;padding-top: 177px;">
 
+          <div class="modal-content" style="padding-top: 500px;">
+            <span class="modal-close" onclick="closeForgotPasswordModal()">&times;</span>
+            
+            <div class="wizard-steps">
 
-<!-- Forgot Password Modal -->
-<div id="forgotPasswordModal" class="modal" style="display: none;">
-  <div class="modal-content">
-    <span class="modal-close" onclick="closeForgotPasswordModal()">&times;</span>
-    <div class="wizard-steps">
-      <div class="wizard-step step-1">
-        <h2 class="modal-title">Step 1: Enter Your Phone Number</h2>
-        <form class="modal-form" action="/send-otp" method="POST" onsubmit="hideModal()">
-          <div class="input-box">
-            <input type="tel" name="phone" placeholder="Phone Number" required>
-            <i class="fas fa-phone"></i>
+              <div class="wizard-step step-1">
+                <h2 class="modal-title">Step 1: Enter Your Phone Number</h2>
+                <form class="modal-form" action="/send-otp" method="POST" onsubmit="hideModal()">
+                  <div class="input-box">
+                    <input type="tel" name="phone" placeholder="Phone Number" required>
+                    <i class="fas fa-phone"></i>
+                  </div>
+                  <div class="modal-button">
+                    <input type="submit" class="next-btn" value="Next">
+                  </div>
+                </form>
+              </div>
+              <div class="wizard-step step-2">
+                <h2 class="modal-title">Step 2: Enter OTP</h2>
+                <form class="modal-form" action="/verify-otp" method="POST">
+                  <div class="input-box">
+                    <input type="text" name="otp" placeholder="Enter OTP" required>
+                    <i class="fas fa-lock"></i>
+                    
+                  </div>
+                  <div class="modal-button" style="padding: 10px;">
+                    <input type="button" class="prev-btn" value="Previous">
+                    <input type="submit" class="next-btn" value="Next">
+                  </div>
+                </form>
+              </div>
+              <div class="wizard-step step-3">
+                <h2 class="modal-title">Step 3: Reset Password</h2>
+                <form class="modal-form" action="/reset-password" method="POST">
+                  <div class="input-box">
+                    <input type="password" name="password" placeholder="New Password" required>
+                    <i class="fas fa-lock"></i>
+                  </div>
+                  <div class="input-box">
+                    <input type="password" name="password2" placeholder="Confirm Password" required>
+                    <i class="fas fa-lock"></i>
+                  </div>
+                  <div class="modal-button">
+                    <input type="button" class="prev-btn" value="Previous">
+                    <input type="submit" class="next-btn" value="Next">
+                  </div>
+                </form>
+              </div>
+              <div class="wizard-step step-4" id="reset-password-successful">
+                <h2 class="modal-title">Step 4: Password Reset Successful</h2>
+                <p>Your password has been successfully reset.</p>
+                <div class="modal-button">
+                  <input type="button" class="prev-btn" value="Previous">
+                  <input type="button" class="close-btn" value="Close" onclick="closeForgotPasswordModal()">
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="modal-button">
-            <input type="submit" class="next-btn" value="Next">
-          </div>
-        </form>
-      </div>
-      <div class="wizard-step step-2">
-        <h2 class="modal-title">Step 2: Enter OTP</h2>
-        <form class="modal-form" action="/verify-otp" method="POST">
-          <div class="input-box">
-            <input type="text" name="otp" placeholder="Enter OTP" required>
-            <i class="fas fa-lock"></i>
-          </div>
-          <div class="modal-button">
-            <input type="button" class="prev-btn" value="Previous">
-            <input type="submit" class="next-btn" value="Next">
-          </div>
-        </form>
-      </div>
-      <div class="wizard-step step-3">
-        <h2 class="modal-title">Step 3: Reset Password</h2>
-        <form class="modal-form" action="/reset-password" method="POST">
-          <div class="input-box">
-            <input type="password" name="password" placeholder="New Password" required>
-            <i class="fas fa-lock"></i>
-          </div>
-          <div class="input-box">
-            <input type="password" name="password2" placeholder="Confirm Password" required>
-            <i class="fas fa-lock"></i>
-          </div>
-          <div class="modal-button">
-            <input type="button" class="prev-btn" value="Previous">
-            <input type="submit" class="next-btn" value="Next">
-          </div>
-        </form>
-      </div>
-      <div class="wizard-step step-4" id="reset-password-successful">
-        <h2 class="modal-title">Step 4: Password Reset Successful</h2>
-        <p>Your password has been successfully reset.</p>
-        <div class="modal-button">
-          <input type="button" class="prev-btn" value="Previous">
-          <input type="button" class="close-btn" value="Close" onclick="closeForgotPasswordModal()">
         </div>
+        
       </div>
-    </div>
-  </div>
-</div>
+      
+        <!-- </div>   -->
+      </div>
 
-
-
-
-  </div>
+  
 
 
   

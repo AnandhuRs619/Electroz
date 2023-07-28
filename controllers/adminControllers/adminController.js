@@ -6,7 +6,8 @@ const categorySchema =require('../../models/categorySchema');
 const orderModel = require('../../models/OderSchema');
 const Coupon = require('../../models/couponSchema');
 const Banner = require('../../models/bannarModel');
-
+const sharp = require("sharp")
+const path = require('path');
 // ADMIN LOGIN
 const adminLogin = async (req,res)=>{
     try{
@@ -47,16 +48,28 @@ const adminVerify = async (req,res)=>{
 }
 
 // ADMIN HOME RENDERING
-const dashboard = async (req,res)=>{
+const dashboard = async (req, res) => {
     try {
-        res.render('adminSide/Dashboard');
-    }catch(error){
-        console.error(error);
-        res.status(500).send("Internal  Server Error");
-    }
 
-   
-}
+        
+      // Fetch data for the dashboard
+      const totalUsers = await User.countDocuments();
+      const totalOrders = await orderModel.countDocuments();
+      const totalEarnings = await orderModel.aggregate([
+        { $match: { "payment.method": "Wallet" } },
+        { $group: { _id: null, total: { $sum: { $toInt: "$payment.amount" } } } }
+      ]);
+  
+      // If there are no orders with "Wallet" payment method, set totalEarnings to 0
+      const totalWalletEarnings = totalEarnings.length > 0 ? totalEarnings[0].total : 0;
+  
+      // Pass the dynamic data to the view
+      res.render('adminSide/Dashboard', { totalUsers, totalOrders, totalWalletEarnings });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+  };
 
 // Product Listing and details
 
@@ -109,6 +122,22 @@ const addingNewProduct = async(req,res)=>{
     const discountPercentage = parseFloat(discount);
     const discountedPrice = originalPrice - (originalPrice * (discountPercentage / 100));
         
+    const imagePaths = [];
+
+    for (const image of files) {
+      const imagePath = image.path;
+      console.log(imagePath);
+      const croppedImagePath = imagePath.replace(
+        /(\.[\w\d_-]+)$/i,
+        "-cropped$1"
+      );
+      console.log(croppedImagePath);
+      await sharp(imagePath).resize(1500, 1500).toFile(croppedImagePath);
+
+      // Get the filename without the path and push it to the imagePaths array
+   const imageName = path.basename(croppedImagePath);
+   imagePaths.push(imageName);
+     }
         const product = new productModel({
             name,
             Brand_name,
@@ -118,7 +147,7 @@ const addingNewProduct = async(req,res)=>{
             discount,
             description,
             discountedPrice,
-            image: files.map(file => file.filename)
+            image: imagePaths
         })
 
         await product.save()
@@ -151,6 +180,22 @@ const editProduct = async(req,res)=>{
         const discountPercentage = parseFloat(discount);
         const discountedPrice = originalPrice - (originalPrice * (discountPercentage / 100));
 
+        const imagePaths = [];
+
+    for (const image of files) {
+      const imagePath = image.path;
+      console.log(imagePath);
+      const croppedImagePath = imagePath.replace(
+        /(\.[\w\d_-]+)$/i,
+        "-cropped$1"
+      );
+      console.log(croppedImagePath);
+      await sharp(imagePath).resize(1500, 1500).toFile(croppedImagePath);
+
+      // Get the filename without the path and push it to the imagePaths array
+   const imageName = path.basename(croppedImagePath);
+   imagePaths.push(imageName);
+     }
         const pData= await productModel.findByIdAndUpdate( id ,{
            $set:{
             name:name,
@@ -161,7 +206,7 @@ const editProduct = async(req,res)=>{
             discount:discount,
             description:description,
             discountedPrice: discountedPrice,
-            image: files.map(file => file.filename)
+            image: imagePaths
            } 
         });
         
@@ -400,13 +445,29 @@ const banner = async (req,res)=>{
 const addBanner = async(req,res)=>{
     try{
        const {BannerName,description,description2}=req.body 
-       const Bimages = req.files.map((file) => file.filename);
-     
+       const images = req.files;
+       const imagePaths = [];
+
+       for (const image of images) {
+         const imagePath = image.path;
+         console.log(imagePath);
+         const croppedImagePath = imagePath.replace(
+           /(\.[\w\d_-]+)$/i,
+           "-cropped$1"
+         );
+         console.log(croppedImagePath);
+         await sharp(imagePath).resize(2560, 800).toFile(croppedImagePath);
+   
+         // Get the filename without the path and push it to the imagePaths array
+      const imageName = path.basename(croppedImagePath);
+      imagePaths.push(imageName);
+       }
+       console.log(imagePaths);
        const banner= new Banner({
         BannerName,
         description,
         description2,
-        image: Bimages,
+        image: imagePaths,
        })
        await banner.save();
        console.log(banner);
@@ -420,13 +481,31 @@ const addBanner = async(req,res)=>{
 const editBanner = async(req,res)=>{
     try{
         const {BannerName,description,description2,bannerId}=req.body
-        const Bimages = req.files.map((file) => file.filename);
+        const images = req.files;
+        const imagePaths = [];
+
+        for (const image of images) {
+          const imagePath = image.path;
+          console.log(imagePath);
+          const croppedImagePath = imagePath.replace(
+            /(\.[\w\d_-]+)$/i,
+            "-cropped$1"
+          );
+          console.log(croppedImagePath);
+          await sharp(imagePath).resize(2560, 800).toFile(croppedImagePath);
+    
+          // Get the filename without the path and push it to the imagePaths array
+       const imageName = path.basename(croppedImagePath);
+       imagePaths.push(imageName);
+        }
+        console.log(imagePaths);
+        
         const data = await Banner.findByIdAndUpdate({_id:bannerId},{
             $set:{
             BannerName,
             description,
             description2,
-            image: Bimages,
+            image: imagePaths,
             }
         });
         res.redirect('/admin/bannarlist')
@@ -436,6 +515,20 @@ const editBanner = async(req,res)=>{
     }
 }
 
+const hideBanner = async (req, res) => {
+    try {
+      const id = req.query.id;
+      console.log(id);
+      const bannerData = await Banner.findOne({ _id: id });
+      if (bannerData.is_active) {
+        await Banner.findByIdAndUpdate({ _id: id }, { $set: { is_active: 0 } }); console.log("hidden");
+      }
+      else { await Banner.findByIdAndUpdate({ _id: id }, { $set: { is_active: 1 } }); console.log("unhidden"); }
+      res.redirect('/admin/bannarlist')
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 // Admin logout
 
 const adminLogout = async(req,res)=>{
@@ -475,4 +568,6 @@ module.exports={
     removeCategory,
     banner,
     addBanner,
+    editBanner,
+    hideBanner,
 }

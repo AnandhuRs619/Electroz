@@ -376,15 +376,15 @@
                                             </div>
 
                                             <div class="row g-4">
-                                                <div class="col-lg-4 col-sm-6">
+                                                <div class="col-lg-4 col-sm-4">
                                                     <div data-bs-toggle="collapse"
                                                         data-bs-target="#paymentmethodCollapse" aria-expanded="true"
                                                         aria-controls="paymentmethodCollapse">
                                                         <div class="form-check card-radio">
-                                                            <input id="paymentMethod02" name="paymentMethod"
+                                                            <input id="paymentMethod01" name="paymentMethod"
                                                                 value="onlinePayment" type="radio"
                                                                 class="form-check-input" checked>
-                                                            <label class="form-check-label" for="paymentMethod02">
+                                                            <label class="form-check-label" for="paymentMethod01">
                                                                 <span class="fs-16 text-muted me-2"><i
                                                                         class="ri-bank-card-fill align-bottom"></i></span>
                                                                 <span class="fs-14 text-wrap">online payment</span>
@@ -392,8 +392,25 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="col-lg-4 col-sm-4">
+                                                    <div data-bs-toggle="collapse"
+                                                        data-bs-target="#paymentmethodCollapse" aria-expanded="true"
+                                                        aria-controls="paymentmethodCollapse">
+                                                        <div class="form-check card-radio">
+                                                            <input id="paymentMethod02" name="paymentMethod"
+                                                                value="Wallet" type="radio"
+                                                                class="form-check-input" checked>
+                                                            <label class="form-check-label" for="paymentMethod02">
+                                                                <span class="fs-16 text-muted me-2"><i
+                                                                        class="ri-bank-card-fill align-bottom"></i></span>
+                                                                <span class="fs-14 text-wrap">Wallet payment</span>
+                                                                <span class="fs-14 text-wrap">₹<%= walletAmount %></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                                                <div class="col-lg-4 col-sm-6">
+                                                <div class="col-lg-4 col-sm-4">
                                                     <div data-bs-toggle="collapse"
                                                         data-bs-target="#paymentmethodCollapse.show"
                                                         aria-expanded="false" aria-controls="paymentmethodCollapse">
@@ -779,14 +796,18 @@
             event.preventDefault();
             var razorpayKey = "rzp_test_tfaNKW9QlZ9Yp9";
             const selectedAddress = document.querySelector('input[name="shippingAddress"]:checked').value;
-            const Online = document.getElementById("paymentMethod02");
+            const Online = document.getElementById("paymentMethod01");
             const COD = document.getElementById("paymentMethod03");
+            const wallet =document.getElementById('paymentMethod02')
             const amount = document.getElementById("finalAmount").value;
+            console.log(wallet);
             let paymentMethod;
             if (COD.checked) {
                 paymentMethod = COD.value;
             } else if (Online.checked) {
                 paymentMethod = Online.value;
+            }else if (wallet.checked) {
+                paymentMethod = wallet.value;
             } else {
                 selectedOption = null;
             }

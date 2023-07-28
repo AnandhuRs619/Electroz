@@ -47,12 +47,19 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+   
+  walletamount: {
+      type: Number,
+      required: true
+    
+  },
   wishlist: [{
     productId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: productModel
     }
   }],
+ 
   address: [{
     name: {
       type: String,

@@ -38,8 +38,12 @@
           </div>
 
           <p class="card-text text-muted">Wallet Balance</p>
-          <h6 class="mb-1">$15,548</h6>
-          <a href="javascript:void(0)" class="btn btn-primary btn-sm">See Details</a>
+         
+            <h6 class="mb-1">₹<%= userDetails.walletamount %></h6>
+          
+            <!-- Handle the case when the wallet is empty or no wallet data is available -->
+          
+          <a href="/profile/WalletHistory" class="btn btn-primary btn-sm">See Details</a>
         </div>
 
         <div class="col-md-12 ">
@@ -48,7 +52,7 @@
             <a href="#" class="list-group-item list-group-item-action">
               <i class="fas fa-user"></i> Profile Information
             </a>
-            <a href="#" class="list-group-item list-group-item-action">
+            <a href="/profile/WalletHistory" class="list-group-item list-group-item-action">
               <i class="fas fa-wallet"></i> Wallet
             </a>
             <a href="/manageAddress" class="list-group-item list-group-item-action">

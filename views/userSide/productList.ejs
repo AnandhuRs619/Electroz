@@ -226,7 +226,7 @@
 					<div class="col-md-12">
 						<ul class="breadcrumb-tree">
 							<li><a href="/">Home</a></li>
-							<li class="active">ALl Categories (227,490 Results)</li>
+							<li class="active">ALl Categories (<%= totalProduct.length %> Results)</li>
 							<!-- <li><a href="#">All Categories</a></li> -->
 							<!-- <li><a href="#">Accessories</a></li> -->
 						</ul>
@@ -248,61 +248,82 @@
 					
 					<div id="aside" class="col-md-3">
 						<!-- aside Widget -->
-						<div class="aside">
+						<div class="store-filter-widget">
 							<h3 class="aside-title">Categories</h3>
 							<div class="checkbox-filter">
+							  <div class="input-checkbox">
+								<input type="checkbox" id="categoryFilter" name="category" value="">
+								<label for="categoryFilter">
+								  <span></span>
+								  All Categories
+								  <small>(<%= totalProduct.length %>)</small>
+								</label>
+							  </div>
 							  <% category.forEach((data) => { %>
-								<div class="input-checkbox">
-								  <input type="checkbox" id="category-<%= data._id %>" name="category" value="<%= data._id %>">
-								  <label for="category-<%= data._id %>">
-									<span></span>
-									<%= data.categoryName %>
-									<small>(<%= productCountPerCategory[data] || 0 %>)</small>
-								  </label>
-								</div>
+							  <div class="input-checkbox">
+								<input type="checkbox" id="category-<%= data._id %>" name="category" value="<%= data.categoryName %>">
+								<label for="category-<%= data._id %>">
+								  <span></span>
+								  <%= data.categoryName %>
+								  <small>(<%= productCountPerCategory[data.categoryName] || 0 %>)</small>
+								</label>
+							  </div>
 							  <% }) %>
 							</div>
 						  </div>
 						<!-- /aside Widget -->
 
 						<!-- aside Widget -->
-						<div class="aside">
+						<div class="store-filter-widget">
 							<h3 class="aside-title">Price</h3>
 							<div class="price-filter">
-								<div id="price-slider"></div>
-								<div class="input-number price-min">
-									<input id="price-min" type="number">
-									<span class="qty-up">+</span>
-									<span class="qty-down">-</span>
-								</div>
-								<span>-</span>
-								<div class="input-number price-max">
-									<input id="price-max" type="number">
-									<span class="qty-up">+</span>
-									<span class="qty-down">-</span>
-								</div>
-							</div>
-						</div>
-						<!-- /aside Widget -->
-
-						<!-- aside Widget -->
-						<div class="aside">
-							<h3 class="aside-title">Brand</h3>
-							<div class="checkbox-filter">
-							  <% brands.forEach((brand) => { %> 
-								<div class="input-checkbox">
-								  <input type="checkbox" id="brand-<%= brand %>" name="brand" value="<%= brand %>">
-								  <label for="brand-<%= brand %>">
-									<span></span>
-									<%= brand %>
-									<!-- Optionally, display the count of products for each brand -->
-									<small>(<%= productCountPerBrand[brand] || 0 %>)</small>
-								  </label>
-								</div>
-							  <% }) %>
+							  <div class="input-number price-min">
+								<input id="minPriceFilter" type="number" placeholder="Min Price">
+								<span class="qty-up">+</span>
+								<span class="qty-down">-</span>
+							  </div>
+							  <span>-</span>
+							  <div class="input-number price-max">
+								<input id="maxPriceFilter" type="number" placeholder="Max Price">
+								<span class="qty-up">+</span>
+								<span class="qty-down">-</span>
+							  </div>
 							</div>
 						  </div>
 						<!-- /aside Widget -->
+
+						<!-- aside Widget -->
+						<div class="store-filter-widget">
+							<h3 class="aside-title">Brand</h3>
+							<div class="checkbox-filter">
+							  <div class="input-checkbox">
+								<input type="checkbox" id="brandFilter" name="brand" value="">
+								<label for="brandFilter">
+								  <span></span>
+								  All Brands
+								  <small>(<%= totalProduct.length %>)</small>
+								</label>
+							  </div>
+							  <% brands.forEach((brand) => { %>
+							  <div class="input-checkbox">
+								<input type="checkbox" id="brand-<%= brand %>" name="brand" value="<%= brand %>">
+								<label for="brand-<%= brand %>">
+								  <span></span>
+								  <%= brand %>
+								  <small>(<%= productCountPerBrand[brand] || 0 %>)</small>
+								</label>
+							  </div>
+							  <% }) %>
+							</div>
+						
+							<!-- Apply Filter Button -->
+					  
+							<button class="btn btn-sm btn-primary" id="applyFilterBtn">Apply</button>
+
+							 
+						 <!-- /store top filter -->
+						 <!-- /aside Widget -->
+						  </div>
 
 						<!-- aside Widget -->
 						<div class="aside">
@@ -341,6 +362,7 @@
 							</div>
 						</div>
 						<!-- /aside Widget -->
+						
 					</div>
 					<!-- /ASIDE -->
 
@@ -351,17 +373,9 @@
 							<div class="store-sort">
 								<label>
 									Sort By:
-									<select class="input-select">
+									<select class="input-select" id="sortSelect">
 										<option value="0">High to Low</option>
 										<option value="1">Low to High</option>
-									</select>
-								</label>
-
-								<label>
-									Show:
-									<select class="input-select">
-										<option value="0">6</option>
-										<option value="1">9</option>
 									</select>
 								</label>
 							</div>
@@ -370,8 +384,8 @@
 						<!-- /store top filter -->
 
 						<!-- store products -->
-						<div class="row">
-							 <div id="searchResults"></div>
+						<div class="row"id="searchResults">
+							 <!-- <div id="searchResults"></div> -->
 							<!-- product -->
 							<%product.forEach((data,index)=>{%>
 							<div class="col-md-4 col-xs-6">
@@ -416,12 +430,20 @@
 
 					  <!-- store bottom filter -->
 					  <div class="store-filter clearfix">
-						<span class="store-qty">Showing <%= (page - 1) * productPerPage + 1 %>-
-						  <%= Math.min(page * productPerPage, totalProduct.length) %> of <%= totalProduct.length %> products</span>
-						  <ul class="store-pagination" id="pagination">
-						  <!-- Pagination links will be rendered here -->
+						<span class="store-qty">
+						  Showing <%= (page - 1) * productPerPage + 1 %>-
+						  <%= Math.min(page * productPerPage, totalProduct.length) %> of <%= totalProduct.length %> products
+						</span>
+						<ul class="store-pagination" id="pagination">
+						  <% for (let i = 1; i <= totalPages; i++) { %>
+							<li <%= page === i ? 'class="active"' : '' %>><a href="/productList?page=<%= i %>"><%= i %></a></li>
+						  <% } %>
+						  <% if (page < totalPages) { %>
+							<li><a href="/productList?page=<%= page + 1 %>"><i class="fa fa-angle-right"></i></a></li>
+						  <% } %>
 						</ul>
 					  </div>
+					  
 					  <!-- /store bottom filter -->
 					</div>
 					<!-- /STORE -->
@@ -434,61 +456,116 @@
 		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 		<script>
-			// Function to fetch paginated products via AJAX and update the store products section
-			async function fetchProducts(page) {
-			  try {
-				const response = await fetch(`/api/products?page=${page}`);
-				const data = await response.json();
+			// Get the pagination links
+			const paginationLinks = document.querySelectorAll('#pagination a');
 		  
-				// Update the product list in the DOM
-				const storeProductsContainer = document.getElementById("storeProducts");
-				let html = "";
-		  
-				data.products.forEach((product) => {
-				  html += `
-					<!-- Render your product card HTML here based on the 'product' data -->
-					<div class="col-md-4 col-xs-6">
-					  <div class="product-card">
-						<img src="${product.image}" alt="${product.name}">
-						<h3>${product.name}</h3>
-						<p>$${product.price}</p>
-					  </div>
-					</div>
-				  `;
-				});
-		  
-				storeProductsContainer.innerHTML = html;
-		  
-				// Update the pagination links
-				const paginationContainer = document.getElementById("pagination");
-				let paginationHTML = "";
-		  
-				for (let i = 1; i <= data.totalPages; i++) {
-				  paginationHTML += `
-					<li ${i === data.currentPage ? 'class="active"' : ""}>
-					  <a href="#" onclick="handlePaginationClick(${i})">${i}</a>
-					</li>
-				  `;
-				}
-		  
-				paginationContainer.innerHTML = paginationHTML;
-			  } catch (error) {
-				console.error("Error fetching products:", error);
-			  }
-			}
-		  
-			// Function to handle pagination link clicks
-			function handlePaginationClick(page) {
-			  // Fetch and update products for the selected page
-			  fetchProducts(page);
-			}
-		  
-			// Call the initialization function when the page loads
-			document.addEventListener("DOMContentLoaded", () => {
-			  // Fetch and render the initial products on page load
-			  fetchProducts(1);
+			// Add click event listener to each pagination link
+			paginationLinks.forEach(link => {
+			  link.addEventListener('click', (event) => {
+				event.preventDefault();
+				// Get the page number from the link's href attribute
+				const pageNumber = link.getAttribute('href').split('=')[1];
+				// Navigate to the selected page
+				window.location.href = `/productList?page=${pageNumber}`;
+			  });
 			});
-		  </script>
+		</script>
+			<script>
+  // Function to build the filter query string
+  function buildFilterQuery() {
+    const selectedCategory = document.querySelector('input[name="category"]:checked').value;
+    const selectedBrand = document.querySelector('input[name="brand"]:checked').value;
+    const minPrice = parseFloat(document.getElementById("minPriceFilter").value);
+    const maxPrice = parseFloat(document.getElementById("maxPriceFilter").value);
+
+    let filterQuery = "";
+    if (selectedCategory) {
+      filterQuery += `&category=${encodeURIComponent(selectedCategory)}`;
+    }
+    if (selectedBrand) {
+      filterQuery += `&brand=${encodeURIComponent(selectedBrand)}`;
+    }
+    if (!isNaN(minPrice)) {
+      filterQuery += `&minPrice=${minPrice}`;
+    }
+    if (!isNaN(maxPrice)) {
+      filterQuery += `&maxPrice=${maxPrice}`;
+    }
+
+    return filterQuery;
+  }
+
+  // Function to update the product listing on the frontend
+  function updateProductsUI(products) {
+    const searchResultsContainer = document.getElementById("searchResults");
+    searchResultsContainer.innerHTML = "";
+
+    products.forEach(function (data) {
+      const item = `
+	  <div class="col-md-4 col-xs-6">
+								<div  class="product">
+									<a href="/productList/productDetails/${data._id}">
+										<div  class="product-img" >
+											<img src="/productimages/${data.image[0]}"alt="${data.name}">
+											<div class="product-label">
+												<span class="sale">-30%</span>
+												<span class="new">NEW</span>
+											</div>
+										</div>
+									</a>
+									<div class="product-body">
+										<p class="product-category"></p>
+										<h3 class="product-name"><a href="#">${data.name}</a></h3>
+										<h4 class="product-price">₹${data.price}<del class="product-old-price">₹990.00</del></h4>
+										<div class="product-rating">
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+										</div>
+										<div class="product-btns">
+											<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
+											<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
+											<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
+										</div>
+									</div>
+									<div class="add-to-cart">
+										<input type="hidden" name="Id" value="${data._id}" id="ProductId">
+										<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
+									</div>
+								</div>
+							</div>
+      `;
+      searchResultsContainer.innerHTML += item;
+    });
+  }
+
+  // Function to fetch filtered products from the backend
+  function fetchFilteredProducts() {
+    const filterQuery = buildFilterQuery();
+    const sortType = document.getElementById("sortSelect").value;
+    const page = 1; // Assuming you want to reset to the first page after applying filters
+
+    fetch(`/productList/filter?page=${page}&sort=${sortType}${filterQuery}`)
+      .then(response => response.json())
+      .then(data => {
+        updateProductsUI(data);
+      })
+      .catch(error => {
+        console.error("Error fetching filtered products:", error);
+      });
+  }
+
+  // Filter products based on selected options and update the UI
+  document.getElementById("applyFilterBtn").addEventListener("click", function () {
+    fetchFilteredProducts();
+  });
+
+  // ... Other code for search functionality and pagination remains the same
+</script>
+
+		
 		  
 		<script>
 		$(document).ready(function () {

@@ -8,6 +8,7 @@ const orderModel = require("../../models/OderSchema");
 const Coupon = require("../../models/couponSchema");
 const Category = require("../../models/categorySchema");
 const Razorpay = require('razorpay');
+const Bannar = require("../../models/bannarModel");
 
 //  Razorpoy
 const key_id = process.env.RAZORPAY_API_Id
@@ -20,7 +21,8 @@ const razorpay = new Razorpay({
 // HOME RENDERING
 const home = async (req, res) => {
   try {
-    res.render("userSide/Home");
+    const banner = await Bannar.findOne({is_active:1});
+    res.render("userSide/Home",{banner});
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal  Server Error");
@@ -223,18 +225,46 @@ const productList = async (req, res) => {
   try {
     const productPerPage = 9;
     const page = parseInt(req.query.page) || 1;
+    const sortType = req.query.sort // "0" for high to low, "1" for low to high
 
+    // Get the filters from the request query
+    const selectedCategory = req.query.category;
+    const selectedBrand = req.query.brand;
+    const minPrice = parseFloat(req.query.minPrice);
+    const maxPrice = parseFloat(req.query.maxPrice);
+
+    // Build the filter object based on the selected options
+    const filter = { isAvailable: true };
+    if (selectedCategory) {
+      filter.categoryName = selectedCategory;
+    }
+    if (selectedBrand) {
+      filter.Brand_name = selectedBrand;
+    }
+    if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+      filter.discountedPrice = { $gte: minPrice, $lte: maxPrice };
+    } else if (!isNaN(minPrice)) {
+      filter.discountedPrice = { $gte: minPrice };
+    } else if (!isNaN(maxPrice)) {
+      filter.discountedPrice = { $lte: maxPrice };
+    }
+
+    // Fetch products based on the filter and sort options
     const [totalProduct, product, categories] = await Promise.all([
-      productModel.find({ isAvailable: true }),
-      productModel.find({ isAvailable: true }).skip((page - 1) * productPerPage).limit(productPerPage),
+      productModel.find(filter),
+      productModel
+        .find(filter)
+        .skip((page - 1) * productPerPage)
+        .limit(productPerPage)
+        .sort({ price: sortType }),
       Category.find({ isAvailable: true }),
     ]);
-
+   
     const totalPages = Math.ceil(totalProduct.length / productPerPage);
 
     const categoryCountMap = await productModel.aggregate([
       { $match: { isAvailable: true } },
-      { $group: { _id: "$category", count: { $sum: 1 } } },
+      { $group: { _id: "$categoryName", count: { $sum: 1 } } },
     ]).then((data) => Object.fromEntries(data.map((categoryData) => [categoryData._id, categoryData.count])));
 
     const brandCountMap = await productModel.aggregate([
@@ -261,6 +291,11 @@ const productList = async (req, res) => {
       brands,
       productCountPerBrand: brandCountMap,
       productCountPerCategory: categoryCountMap,
+      selectedCategory,
+      selectedBrand,
+      minPrice,
+      maxPrice,
+      sortType,
     });
   } catch (error) {
     console.error(error);
@@ -268,6 +303,67 @@ const productList = async (req, res) => {
   }
 };
 
+const filterProducts = async (req, res) => {
+  try {
+    const productPerPage = 9;
+    const page = parseInt(req.query.page) || 1;
+    const sortType = req.query.sort;
+    const selectedCategory = req.query.category; // Get the selected category from the query parameter
+    const selectedBrand = req.query.brand; // Get the selected brand from the query parameter
+    const minPrice = parseFloat(req.query.minPrice); // Get the minimum price from the query parameter
+    const maxPrice = parseFloat(req.query.maxPrice); // Get the maximum price from the query parameter
+    console.log(selectedCategory);
+    console.log(selectedBrand);
+    console.log(minPrice);
+    console.log(maxPrice);
+    // Build the filter query based on the selected options
+    const filterQuery = {
+      isAvailable: true,
+    };
+
+    if (selectedCategory) {
+      filterQuery.categoryName = selectedCategory;
+    }
+
+    if (selectedBrand) {
+      filterQuery.Brand_name = selectedBrand;
+    }
+
+    if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+      filterQuery.discountedPrice = { $gte: minPrice, $lte: maxPrice };
+    } else if (!isNaN(minPrice)) {
+      filterQuery.discountedPrice = { $gte: minPrice };
+    } else if (!isNaN(maxPrice)) {
+      filterQuery.discountedPrice = { $lte: maxPrice };
+    }
+
+    const [totalProduct, product, categories] = await Promise.all([
+      productModel.find(filterQuery).countDocuments(),
+      productModel
+        .find(filterQuery)
+        .skip((page - 1) * productPerPage)
+        .limit(productPerPage)
+        .sort({ price: sortType }),
+      Category.find({ isAvailable: true }),
+    ]);
+
+    // ... Other code for category and brand count map remains the same
+
+    const productsWithCategory = product.map((prod) => {
+      const category = categories.find((cat) => cat._id.toString() === prod.category.toString());
+      return {
+        ...prod.toObject(),
+        categoryName: category ? category.categoryName : "",
+      };
+    });
+
+    // Send the filtered products as JSON response
+    res.json(productsWithCategory);
+  } catch (error) {
+    console.error("Error filtering products:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 const productDetails = async (req, res) => {
   try {
     const id = req.params.id;
@@ -352,6 +448,7 @@ const searchProduct = async (req, res) => {
     console.log(search);
     const searchPattern = new RegExp(search, "i");
     const searchedProducts = await productModel.find({ name: searchPattern }).exec();
+    console.log(searchedProducts);
     const searchedProductIds = searchedProducts.map((product) => product._id);
 
     const otherProducts = await productModel.find({
@@ -427,36 +524,28 @@ const cartRemove = async (req, res) => {
 
 const cartOuantity = async (req, res) => {
   try {
+    const { quantity, productId } = req.body;
     const userId = req.session.user;
-    const productId = req.params.productId;
-    const { quantity } = req.body;
+    const userDetails = await User.findById({ _id: userId });
+    const cart = userDetails.cart.items;
+    const existingCartItem = cart.find((item) => item.productId == productId);
 
-    // Find the user and update the product quantity in the cart
-    const user = await User.findById(userId);
-      console.log(productId);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+    // Retrieve the product details from the database (assuming there's a Product model)
+    const productDetails = await productModel.findById({ _id: productId });
 
-    // Find the product in the cart items array
-    const cartItem = user.cart.items.find(item => item.productId.toString() === productId);
+    // Update the quantity and calculate the updated price
+    existingCartItem.quantity = quantity;
+    existingCartItem.price = existingCartItem.quantity * productDetails.discountedPrice // Assuming productDetails contains the product's price
 
-    if (!cartItem) {
-      return res.status(404).json({ error: 'Product not found in cart' });
-    }
-
-    // Update the quantity of the product in the cart
-    cartItem.quantity = quantity;
-
-    // Save the updated user document
-    await user.save();
-
-    res.json(user.cart.items);
+    userDetails.save();
+    console.log(existingCartItem);
+    res.json("halooo");
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 const checkout = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -468,7 +557,7 @@ const checkout = async (req, res) => {
       // Handle the scenario when cart data is missing or user details are not found
       return res.status(404).send("Cart data not found");
     }
-
+    const walletAmount = user.walletamount;
     // Calculate total amount and total category discount amount
     let totalAmount = 0;
     let totalCategoryDiscountAmount = 0;
@@ -500,7 +589,7 @@ const checkout = async (req, res) => {
 
     const address = userDetails.address;
     const cartItems = userDetails.cart.items;
-    res.render("userSide/Checkout", { user,cartItems, address, totalAmount, discountAmount, finalAmount, shippingCharge, totalCategoryDiscountAmount });
+    res.render("userSide/Checkout", { user,cartItems, address, walletAmount,totalAmount, discountAmount, finalAmount, shippingCharge, totalCategoryDiscountAmount });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -582,11 +671,11 @@ const Myprofile = async (req,res)=>{
 const editProfile = async(req,res)=>{
   try {
     const userId = req.session.user;
-    const { name, number } = req.body;
+    const { name, email } = req.body;
 
     // Find the user by their ID and update the fields
     const user = await User.findByIdAndUpdate(userId, {
-      $set: { name: name, number: number },
+      $set: { name: name, email: email },
     });
 
     // Save the updated user
@@ -848,8 +937,9 @@ const order = async (req, res) => {
     const userId = req.session.user;
     console.log(req.body);
     const { shippingAddress, paymentMethod,finalAmount } = req.body;
-    const user = await User.findById(userId);
-
+    console.log(paymentMethod);
+    const user = await User.findById(userId)
+    const walletAmount = user.walletamount;
     const productIds = user.cart.items.map((product) => {
       return {
         productId: product.productId,
@@ -903,7 +993,49 @@ const order = async (req, res) => {
 
       console.log('created COD order');
       return res.status(200).json({ message: 'Order created successfully' });
-    } else {
+    } else if (paymentMethod === "Wallet") {
+      if (walletAmount >= finalAmount) {
+        user.walletamount -= finalAmount;
+        await user.save();
+        const order = new orderModel({
+          userId,
+          address: selectedAdd,
+          payment: {
+            method: paymentMethod,
+            amount: finalAmount,
+          },
+          products,
+        });
+    
+        // Save the order with wallet payment method
+        await order.save();
+    
+        // Clear the cart after successful wallet order
+        user.cart.items.splice(0, productIds.length);
+        await user.save();
+        console.log('created wallet order');
+        return res.status(200).json({ message: 'Order created successfully' });
+      } else {
+        // If wallet amount is less than the final amount, pay the remaining amount online
+    
+        // Deduct the wallet amount from the final amount
+        const remainingAmount = finalAmount - walletAmount;
+        user.walletamount = 0;
+        await user.save();
+        const options = {
+          amount: remainingAmount * 100,
+          currency: 'INR',
+          receipt: 'order_receipt',
+          payment_capture: 1,
+        };
+    
+        const razorpayOrder = await razorpay.orders.create(options);
+      
+        return res.json({ orderId: razorpayOrder.id, remainingAmount});
+      }
+         
+         
+    }else {
       // For Online Payment, create a Razorpay order and send the order ID back to the frontend
       const options = {
         amount: finalAmount * 100,
@@ -1027,16 +1159,45 @@ const orderDetails = async (req, res) => {
 
 const cancelOrder = async (req, res) => {
   try {
+   
     const orderId = req.params.id;
-    console.log(orderId);
-    // Find the order by ID and update the status to "Cancelled"
-    const updatedOrder = await orderModel.findByIdAndUpdate(orderId, { status: 'Cancelled' }, { new: true });
+    
 
-    if (!updatedOrder) {
+    // Find the order by ID
+    const order = await orderModel.findById(orderId);
+
+    if (!order) {
       return res.status(404).json({ error: 'Order not found' });
     }
 
-    // Redirect to the Myorders page after cancelling the order
+    // Check if the order has already been delivered
+    if (order.status === 'Delivered') {
+      return res.status(400).json({ error: 'Cannot cancel a delivered order' });
+    }
+
+    // Check if the cancel request has already been sent
+    if (order.status ==='Cancelled') {
+      return res.status(400).json({ error: 'Cancel request already sent for this order' });
+    } 
+    if (order.status ==='Cancel Request') {
+      return res.status(400).json({ error: 'Cancel request already sent for this order' });
+    }
+    if (order.payment.method === 'onlinePayment') {
+      // Calculate the total amount of the order products and add it to the wallet
+      const totalAmount = order.payment.amount;
+      // Assuming there's a wallet field in the user model, you can add the totalAmount to the wallet
+      // Replace 'userId' with the actual user ID or wherever you store the user data
+      const userId = order.userId; 
+      const user = await User.findByIdAndUpdate(userId, { $inc: { 'walletamount': totalAmount } });
+      console.log(user);
+    }
+    // Update the order status to "Cancel Request" and set the "orderCancelRequest" flag to true
+    const updatedOrder = await orderModel.findByIdAndUpdate(
+      orderId,
+      { $set: { orderCancelRequest: true, status: 'Cancel Request' } },
+      { new: true }
+    );
+
     res.redirect("/Myorders");
   } catch (error) {
     console.error(error);
@@ -1044,22 +1205,64 @@ const cancelOrder = async (req, res) => {
   }
 };
 
-const returnOrder =async(req,res)=>{
-  try{
-    const orderId = req.params.id;
-    const updatedOrder = await orderModel.findByIdAndUpdate(orderId,{status:'Returns'},{new:true});
 
-    if(!updatedOrder){
-      return res.status(404).json({error:'Order not found'});
+const returnOrder = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    
+    const order = await orderModel.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
     }
 
-     res.json(updatedOrder);
+    if (order.status ==='Returns'|| order.status ==='Returns Request'||order.status ==='Cancelled') {
+      return res.status(400).json({ error: ' request already sent for this order' });
+    }
+    if (order.status !== 'Delivered') {
+      return res.status(400).json({ error: 'Cannot request return for non-delivered orders' });
+    }
+
+    const currentDate = new Date();
+    const orderedDate = order.orderDate; // Assuming you have an 'orderDate' field in your 'orderModel'
+
+    // Calculate the difference in days between current date and ordered date
+    const timeDifference = currentDate - orderedDate;
+    const daysDifference = timeDifference / (1000 * 60 * 60 * 24);
+
+    // Check if the return request is within 7 days of the ordered date
+    if (daysDifference > 14) {
+      return res.status(400).json({ error: 'Return request date has expired. You can only request return within 14 days of the order date.' });
+    }
+
+    const totalAmount = order.payment.amount;
+
+    const userId = order.userId; 
+    const user = await User.findByIdAndUpdate(userId, { $inc: { 'walletamount': totalAmount } });
+    console.log(user);
+    const updatedOrder = await orderModel.findByIdAndUpdate(
+      orderId,
+      { $set: { orderReturnRequest: true, status: 'Returns Request' } },
+      { new: true }
+    );
+
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+const WalletHistory = async(req,res)=>{
+  try{
+    const Walletdetials = await orderModel.find({ "payment.method": "Wallet" });
+
+    res.render('userSide/WalletHistory',{Walletdetials})
+    
   }catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 }
-
 
 
 //  EXPORTING
@@ -1099,4 +1302,6 @@ module.exports = {
   savePayment,
   paswordChange,
   searchProduct,
+  filterProducts,
+  WalletHistory,
 };

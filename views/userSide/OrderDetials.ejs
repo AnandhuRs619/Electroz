@@ -292,21 +292,9 @@
 													<td colspan="2" class="fw-medium p-0">
 														<table class="table table-borderless m-0">
 															<tbody>
-																<tr>
-																	<td>Sub Total:</td>
-																	<td class="text-end">₹<%= totalAmount %></td>
-																</tr>
-																<tr>
-																	<td>Discount:</td>
-																	<td class="text-end">-₹<%= discountAmount %></td>
-																</tr>
-																<tr>
-																	<td>Shipping Charge:</td>
-																	<td class="text-end">₹<%= shippingCharge.toFixed(2) %></td>
-																</tr>
 																<tr class="border-top border-top-dashed">
 																	<th scope="row">Total :</th>
-																	<th class="text-end">₹<%= finalAmount.toFixed(2) %></th>
+																	<th class="text-end">₹<%= order.payment.amount %></th>
 																</tr>
 															</tbody>
 														</table>
@@ -572,7 +560,7 @@
 										<p class="text-muted mb-0">Total Amount:</p>
 									</div>
 									<div class="flex-grow-1 ms-2">
-										<h6 class="mb-0">₹<%= totalAmount %></h6>
+										<h6 class="mb-0">₹<%= order.payment.amount %></h6>
 									</div>
 								</div>
 							</div>

@@ -38,6 +38,8 @@ adminRouter.post('/editCoupon',adminController.editCoupon);
 adminRouter.post('/removeCoupon',adminController.removeCoupon);
 adminRouter.get('/bannarlist',adminController.banner);
 adminRouter.post('/addbanner',upload.array('image'),adminController.addBanner);
+adminRouter.post('/editbanner',upload.array('image'),adminController.editBanner);
+adminRouter.get("/hideBanner",adminController.hideBanner);
 adminRouter.get('*',function(req,res){
     res.redirect('/admin')
 });

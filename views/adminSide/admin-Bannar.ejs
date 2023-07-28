@@ -113,11 +113,11 @@
                                                                             <i class="ri-delete-bin-5-fill fs-16"></i>
                                                                         </a>
                                                                     </li>
-                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                                        <a class="text-success d-inline-block remove-item-btn" data-coupon-id="">
-                                                                            <i class="ri-checkbox-circle-line fs-16"></i>
-                                                                        </a>
-                                                                    </li>
+                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Apply">
+                                                                        <a class="text-success d-inline-block apply-item-btn"href="/admin/hideBanner?id=<%= bdata._id %>" >
+                                                                        <i class="ri-eye-off-fill fs-16"></i>
+                                                                      </a>
+                                                                    </li>                                                                    
                                                                 </ul>
                                                             </td>
                                                         </tr>
@@ -128,7 +128,7 @@
                                                                         <h5 class="modal-title" id="exampleModalLabel"></h5>
                                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
                                                                     </div>
-                                                                    <form class="tablelist-form" method="post" action=" " autocomplete="off">
+                                                                    <form class="tablelist-form" method="post" action="/admin/editbanner" enctype="multipart/form-data" autocomplete="off">
                                                                         <div class="modal-body">
                                                                             <input type="hidden" name="bannerId" value="<%=bdata._id%>" id="couponId" />
                                 
@@ -158,7 +158,7 @@
                                                                                     </div><!-- end card header -->
                                             
                                                                                     <div class="card-body">
-                                                                                        <input type="file" class="filepond filepond-input-multiple" type="file" name="image" data-allow-reorder="true" data-max-file-size="3MB" data-max-files="3">
+                                                                                        <input type="file" class="filepond filepond-input-multiple"  multiple name="image" data-allow-reorder="true" data-max-file-size="3MB" data-max-files="3">
                                                                                     </div>
                                                                                     <!-- end card body -->
                                                                                 </div>
@@ -294,6 +294,33 @@
                 <!-- container-fluid -->
             </div>
             <!-- End Page-content -->
+
+
+
+<!-- Add this script in your HTML file or include it from an external file -->
+<script>
+    function applyBanner(bannerId) {
+      fetch(`/applyBanner/${bannerId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.text())
+        .then((data) => {
+          console.log(data); // You can handle the response from the backend here
+          // Perform any necessary actions on the frontend after applying the banner
+        })
+        .catch((error) => {
+          console.error(error);
+          // Handle any errors that occur during the AJAX request
+        });
+    }
+  </script>
+  
+
+
+
 
             <script>
 

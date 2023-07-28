@@ -23,9 +23,11 @@ UserRouter.post('/send-otp',userController.sendOtp);
 UserRouter.post('/verify-otp',userController.verifyotp);
 UserRouter.post('/reset-password',userController.resetPassword);
 UserRouter.get('/productList',userController.productList);
+UserRouter.get('/productList/filter',userController.filterProducts);
 UserRouter.get('/checkout',userController.checkout);
 UserRouter.get('/cart',userController.Cart);
 UserRouter.post("/cart/addingCart",userController.cartAdding);
+UserRouter.post('/cart/quantity', userController.cartOuantity);
 UserRouter.get('/cart/remove/:itemId',userController.cartRemove);
 UserRouter.post('/cart/apply-coupon',userController.coupon);
 UserRouter.get('/productList/productDetails/:id',userController.productDetails);
@@ -45,8 +47,8 @@ UserRouter.post('/save-payment',userController.savePayment);
 UserRouter.get('/Myorders/orderDetials',userController.orderDetails);
 UserRouter.post('/orders/cancel/:id', userController.cancelOrder);
 UserRouter.post('/orders/return/:id',userController.returnOrder);
-UserRouter.put('/products/:productId/quantity', userController.cartOuantity);
 UserRouter.post('/searchProduct', userController.searchProduct);
+UserRouter.get('/profile/WalletHistory',userController.WalletHistory);
 
 
 

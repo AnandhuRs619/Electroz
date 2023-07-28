@@ -1,7 +1,7 @@
 var taxRate = 0.125,
   shippingRate = 65,
   discountRate = 0.15,
-  currencySign = "$";
+  currencySign = "₹";
 function recalculateCart() {
   var t = 0,
     e =
