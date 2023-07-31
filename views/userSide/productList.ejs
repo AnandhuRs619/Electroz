@@ -251,17 +251,9 @@
 						<div class="store-filter-widget">
 							<h3 class="aside-title">Categories</h3>
 							<div class="checkbox-filter">
-							  <div class="input-checkbox">
-								<input type="checkbox" id="categoryFilter" name="category" value="">
-								<label for="categoryFilter">
-								  <span></span>
-								  All Categories
-								  <small>(<%= totalProduct.length %>)</small>
-								</label>
-							  </div>
 							  <% category.forEach((data) => { %>
 							  <div class="input-checkbox">
-								<input type="checkbox" id="category-<%= data._id %>" name="category" value="<%= data.categoryName %>">
+								<input type="checkbox" id="category-<%= data._id %>" name="category" value="<%= data._id %>">
 								<label for="category-<%= data._id %>">
 								  <span></span>
 								  <%= data.categoryName %>
@@ -295,15 +287,7 @@
 						<!-- aside Widget -->
 						<div class="store-filter-widget">
 							<h3 class="aside-title">Brand</h3>
-							<div class="checkbox-filter">
-							  <div class="input-checkbox">
-								<input type="checkbox" id="brandFilter" name="brand" value="">
-								<label for="brandFilter">
-								  <span></span>
-								  All Brands
-								  <small>(<%= totalProduct.length %>)</small>
-								</label>
-							  </div>
+							<div class="checkbox-filter">	
 							  <% brands.forEach((brand) => { %>
 							  <div class="input-checkbox">
 								<input type="checkbox" id="brand-<%= brand %>" name="brand" value="<%= brand %>">
@@ -473,28 +457,28 @@
 			<script>
   // Function to build the filter query string
   function buildFilterQuery() {
-    const selectedCategory = document.querySelector('input[name="category"]:checked').value;
-    const selectedBrand = document.querySelector('input[name="brand"]:checked').value;
-    const minPrice = parseFloat(document.getElementById("minPriceFilter").value);
-    const maxPrice = parseFloat(document.getElementById("maxPriceFilter").value);
+  const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(input => input.value);
+  const selectedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(input => input.value);
+  const minPrice = parseFloat(document.getElementById("minPriceFilter").value);
+  const maxPrice = parseFloat(document.getElementById("maxPriceFilter").value);
+  const sortSelect = document.getElementById("sortSelect").value;
 
-    let filterQuery = "";
-    if (selectedCategory) {
-      filterQuery += `&category=${encodeURIComponent(selectedCategory)}`;
-    }
-    if (selectedBrand) {
-      filterQuery += `&brand=${encodeURIComponent(selectedBrand)}`;
-    }
-    if (!isNaN(minPrice)) {
-      filterQuery += `&minPrice=${minPrice}`;
-    }
-    if (!isNaN(maxPrice)) {
-      filterQuery += `&maxPrice=${maxPrice}`;
-    }
-
-    return filterQuery;
+  let filterQuery = "";
+  if (selectedCategories.length > 0) {
+    filterQuery += `&category=${selectedCategories.join(",")}`;
   }
-
+  if (selectedBrands.length > 0) {
+    filterQuery += `&brand=${selectedBrands.join(",")}`;
+  }
+  if (!isNaN(minPrice)) {
+    filterQuery += `&minPrice=${minPrice}`;
+  }
+  if (!isNaN(maxPrice)) {
+    filterQuery += `&maxPrice=${maxPrice}`;
+  }
+  console.log(filterQuery);
+  return filterQuery;
+}
   // Function to update the product listing on the frontend
   function updateProductsUI(products) {
     const searchResultsContainer = document.getElementById("searchResults");
@@ -551,12 +535,13 @@
       .then(response => response.json())
       .then(data => {
         updateProductsUI(data);
+		console.log(response);
+	
       })
       .catch(error => {
         console.error("Error fetching filtered products:", error);
       });
   }
-
   // Filter products based on selected options and update the UI
   document.getElementById("applyFilterBtn").addEventListener("click", function () {
     fetchFilteredProducts();

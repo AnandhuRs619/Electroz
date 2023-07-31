@@ -21,6 +21,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(function (req, res, next) {
   res.set("Cache-Control", "no-cache, private, no-store, must-revalidate");
   next();

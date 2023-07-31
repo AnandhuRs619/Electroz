@@ -315,39 +315,47 @@
     }
   }
   
-      // Function to navigate to the next step
-      function nextStep() {
-        const currentStep = this.closest('.wizard-step');
-        const nextStep = currentStep.nextElementSibling;
-  
-        currentStep.style.display = 'none';
-        nextStep.style.display = 'block';
-      }
-  
-      // Function to navigate to the previous step
-      function prevStep() {
-        const currentStep = this.closest('.wizard-step');
-        const prevStep = currentStep.previousElementSibling;
-  
-        currentStep.style.display = 'none';
-        prevStep.style.display = 'block';
-  
-      // If the previous step is not the first step, show the previous button
-        if (!prevStep.classList.contains('step-1')) {
-      document.querySelector('.prev-btn').style.display = 'block';
-    }
-      }
-  
-      // Add event listeners to the next and previous buttons
-      const nextBtns = document.querySelectorAll('.next-btn');
-      const prevBtns = document.querySelectorAll('.prev-btn');
-      nextBtns.forEach(btn => btn.addEventListener('click', nextStep));
-      prevBtns.forEach(btn => btn.addEventListener('click', prevStep));
-  
-      // Add event listener to the "Forgot Password" button to open the modal
-      const forgotPasswordBtn = document.querySelector('.forgot-password-btn');
-      forgotPasswordBtn.addEventListener('click', openForgotPasswordModal);
+     // Function to navigate to the next step
+function nextStep() {
+  const currentStep = this.closest('.wizard-step');
+  const nextStep = currentStep.nextElementSibling;
+
+  currentStep.style.display = 'none';
+  nextStep.style.display = 'block';
+}
+
+// Function to navigate to the previous step
+function prevStep() {
+  const currentStep = this.closest('.wizard-step');
+  const prevStep = currentStep.previousElementSibling;
+
+  currentStep.style.display = 'none';
+  prevStep.style.display = 'block';
+
+  // If the previous step is not the first step, show the previous button
+  if (!prevStep.classList.contains('step-1')) {
+    document.querySelector('.prev-btn').style.display = 'block';
+  }
+}
+
+// Add event listeners to the next and previous buttons
+const nextBtns = document.querySelectorAll('.next-btn');
+const prevBtns = document.querySelectorAll('.prev-btn');
+nextBtns.forEach(btn => btn.addEventListener('click', nextStep));
+
+// Prevent form submission on next button click
+nextBtns.forEach(btn => btn.addEventListener('click', (event) => {
+  event.preventDefault();
+  nextStep.call(btn);
+}));
+
+prevBtns.forEach(btn => btn.addEventListener('click', prevStep));
+
+// Add event listener to the "Forgot Password" button to open the modal
+const forgotPasswordBtn = document.querySelector('.forgot-password-btn');
+forgotPasswordBtn.addEventListener('click', openForgotPasswordModal);
 </script>
+
 
   
 </body>

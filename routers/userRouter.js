@@ -4,7 +4,6 @@ const User = require("../models/userSchema");
 
 // REQIRNIG 
 const userController = require('../controllers/userControllers/userController');
-const profileController = require('../controllers/userControllers/profileController');
 
 const userAuth = require('../middleware/user');
 
@@ -30,6 +29,7 @@ UserRouter.post("/cart/addingCart",userController.cartAdding);
 UserRouter.post('/cart/quantity', userController.cartOuantity);
 UserRouter.get('/cart/remove/:itemId',userController.cartRemove);
 UserRouter.post('/cart/apply-coupon',userController.coupon);
+UserRouter.post('/cart/remove-coupon',userController.removeCoupon);
 UserRouter.get('/productList/productDetails/:id',userController.productDetails);
 UserRouter.get('/manageAddress',userController.userProfile);
 UserRouter.get('/myprofile',userController.Myprofile);
@@ -49,6 +49,8 @@ UserRouter.post('/orders/cancel/:id', userController.cancelOrder);
 UserRouter.post('/orders/return/:id',userController.returnOrder);
 UserRouter.post('/searchProduct', userController.searchProduct);
 UserRouter.get('/profile/WalletHistory',userController.WalletHistory);
+UserRouter.get('/download-invoice',userController.downloadInvoice);
+UserRouter.post('/invoiceData',userController.generateInvoice);
 
 
 

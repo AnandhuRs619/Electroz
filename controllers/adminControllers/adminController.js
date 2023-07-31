@@ -50,27 +50,131 @@ const adminVerify = async (req,res)=>{
 // ADMIN HOME RENDERING
 const dashboard = async (req, res) => {
     try {
-
-        
       // Fetch data for the dashboard
       const totalUsers = await User.countDocuments();
       const totalOrders = await orderModel.countDocuments();
       const totalEarnings = await orderModel.aggregate([
-        { $match: { "payment.method": "Wallet" } },
-        { $group: { _id: null, total: { $sum: { $toInt: "$payment.amount" } } } }
+        {
+          $group: {
+            _id: null,
+            total: { $sum: { $toDouble: "$payment.amount" } },
+          },
+        },
+      ]);
+      
+      // If there are no orders, the totalEarnings array will be empty
+      // In that case, set the totalEarningsAmount to 0
+      const totalEarningsAmount = totalEarnings.length > 0 ? totalEarnings[0].total : 0;
+      
+      console.log("Total Earnings:", totalEarningsAmount);
+      const totalRefunds = await orderModel.aggregate([
+        { $match: { orderReturnRequest: true } },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: { $toDouble: "$payment.amount" } },
+          },
+        },
       ]);
   
-      // If there are no orders with "Wallet" payment method, set totalEarnings to 0
-      const totalWalletEarnings = totalEarnings.length > 0 ? totalEarnings[0].total : 0;
+      // If there are no orders with refund requests, the totalRefunds array will be empty
+      // In that case, set the totalRefundAmount to 0
+      const totalRefundAmount = totalRefunds.length > 0 ? totalRefunds[0].total : 0;
+  
+      console.log("Total Refund Amount:", totalRefundAmount);
+      const mostSoldBrands = await orderModel.aggregate([
+        { $unwind: "$products" },
+        { $group: { _id: "$products.p_name", count: { $sum: "$products.quantity" } } },
+        { $sort: { count: -1 } },
+        { $limit: 5 } // Get the top 5 most sold brands
+      ]);
+  
+
+      console.log(mostSoldBrands);
+
+      // Extract the brand names from the mostSoldBrands data
+      const brandNames = mostSoldBrands.map(brand => brand._id);
+      const mostSoldCategories = await orderModel.aggregate([
+        { $unwind: "$products" },
+        { $group: { _id: "$products.category", count: { $sum: "$products.quantity" } } },
+        { $sort: { count: -1 } },
+        { $limit: 5 }, // Get the top 5 most sold categories
+      ]);
+  
+      // Extract the category names and counts from the mostSoldCategories data
+      const categoryCounts = mostSoldCategories.map(category => ({ category: category._id[0], count: category.count }));
+  
+
+     
+      const orderConversionRatio = totalUsers > 0 ? (totalOrders / totalUsers) * 100 : 0;
+     
   
       // Pass the dynamic data to the view
-      res.render('adminSide/Dashboard', { totalUsers, totalOrders, totalWalletEarnings });
+      res.render('adminSide/Dashboard', {
+        totalUsers,
+        totalOrders,
+        totalEarningsAmount,
+        totalRefundAmount,
+        mostSoldBrands,
+        brandNames,
+        totalRefunds,
+        orderConversionRatio
+      });
     } catch (error) {
       console.error(error);
       res.status(500).send("Internal Server Error");
     }
   };
-
+  const ChartData = async (req, res) => {
+    try {
+      // Fetch total earnings and refunded amounts based on month
+      const totalEarnings = await orderModel.aggregate([
+        { $group: { _id: { $month: "$createdAt" }, total: { $sum: "$payment.amount" } } }
+      ]);
+      const totalRefunded = await orderModel.aggregate([
+        { $match: { orderReturnRequest: true } },
+        { $group: { _id: { $month: "$createdAt" }, total: { $sum: "$payment.amount" } } }
+      ]);
+  
+      // If there are no earnings or refunds for a particular month, set the total to 0
+      const earningsByMonth = Array.from({ length: 12 }, (_, i) =>
+        totalEarnings.find((monthData) => monthData._id === i + 1)?.total || 0
+      );
+      const refundedByMonth = Array.from({ length: 12 }, (_, i) =>
+        totalRefunded.find((monthData) => monthData._id === i + 1)?.total || 0
+      );
+  
+      // Fetch total orders based on month
+      const totalOrdersByMonth = await orderModel.aggregate([
+        {
+          $group: {
+            _id: { $month: "$createdAt" },
+            total: { $sum: 1 }
+          }
+        },
+        {
+          $sort: {
+            _id: 1
+          }
+        }
+      ]);
+  
+      // Extract the total order counts from the totalOrdersByMonth data
+      const orderCountsByMonth = Array.from({ length: 12 }, (_, i) =>
+        totalOrdersByMonth.find((monthData) => monthData._id === i + 1)?.total || 0
+      );
+  
+      // Send the data as a JSON response
+      res.json({
+        earningsByMonth,
+        refundedByMonth,
+        orderCountsByMonth,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
 // Product Listing and details
 
 const productLists = async (req, res)=>{
@@ -544,6 +648,7 @@ const adminLogout = async(req,res)=>{
 
 module.exports={
     dashboard,
+    ChartData,
     adminLogin,
     adminVerify,
     productDetails,

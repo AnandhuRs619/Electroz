@@ -94,6 +94,10 @@ const orderSchema = new mongoose.Schema({
   expectedDelivery: {
     type: Date,
   },
+  invoiceNumber: {
+    type: String,
+    unique:true,
+  },
 });
 
 const orderModel = mongoose.model("order", orderSchema);

@@ -1,7 +1,7 @@
 // user.js (user schema)
 const mongoose = require('mongoose');
 const productModel = require('./productModel');
-
+const Coupon = require('./couponSchema');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -43,11 +43,16 @@ const userSchema = new mongoose.Schema({
       },
     }]
   },
+  
   subtotal: {
     type: Number,
     default: 0
   },
-   
+  appliedCoupon: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Coupon,
+    default: null,
+  },
   walletamount: {
       type: Number,
       required: true

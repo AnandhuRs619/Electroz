@@ -13,6 +13,7 @@ const upload = require('../middleware/multer');
 // ADMIN SIDE login & Dashboar
 adminRouter.get('/adminLogin',adminAuth.isAdmin,adminController.adminLogin);
 adminRouter.get('/Dashboard',adminAuth.isLogOut, adminController.dashboard);
+adminRouter.get('/api/dashboard',adminController.ChartData);
 adminRouter.post('/adminLogin',adminAuth.isAdmin,adminController.adminVerify);
 adminRouter.get('/Logout',adminController.adminLogout);
 

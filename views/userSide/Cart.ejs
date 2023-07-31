@@ -413,7 +413,7 @@
 									<!-- end col -->
 									<div class="col-12 col-xl-4 ">
 										<div class="">
-											<div class="card " style="max-width: 500px;" >
+											<div class="card " style="max-width: 700px;" >
 												<div class="card-header border-bottom-dashed">
 													<h5 class="card-title mb-0">Order Summary</h5>
 												</div>
@@ -454,9 +454,14 @@
 																	</td>
 																</tr>
 																<tr>
-																	<td>Discount <span
-																			class="text-muted">(VELZON15)</span> :
-																	</td>
+																	<td>
+																		<% if (couponName) { %>
+																		  Discount <span class="text-muted"><%= couponName %></span> :
+																		  <button class="btn btn-danger remove-coupon-button">&times;</button>
+																		<% } else { %>
+																		  No coupon applied.
+																		<% } %>
+																	  </td>
 																	<td class="text-end" id="cart-discount">- ₹<%=
 																			discountAmount %>
 																	</td>
@@ -709,6 +714,34 @@
 		</script>
 
 		<script>
+			  $('.remove-coupon-button').click(function () {
+    // Make the API call to remove the applied coupon
+    $.ajax({
+      url: '/cart/remove-coupon',
+      method: 'POST',
+      contentType: 'application/json',
+      success: function (response) {
+        if (response.finalAmount) {
+          document.getElementById('cart-subtotal').innerText = response.finalAmount;
+          document.getElementById('cart-discount').innerText = 0; // Reset discount amount to zero
+          const total = document.getElementById('cart-total');
+          total.innerText = response.finalAmount;
+        }
+        console.log(response);
+      },
+      error: function (xhr, status, error) {
+        // Handle the error response from the backend
+        console.error(error);
+
+        // Display the error message to the user
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+          alert(xhr.responseJSON.message);
+        } else {
+          alert('Error removing coupon. Please try again.');
+        }
+      }
+    });
+  });
 
 			$('.apply-coupon-button').click(function () {
 				var selectedCouponValue = $('#selectedCouponValue').val();
@@ -735,13 +768,17 @@
 						}
 						console.log(response);
 					},
-					error: function (error) {
-						// Handle the error response from the backend
-						console.error(error);
+					error: function (xhr, status, error) {
+      // Handle the error response from the backend
+      console.error(error);
 
-						// Display an error message to the user (you can implement this based on your UI design)
-						alert('Error applying coupon. Please try again.');
-					}
+      // Display the error message to the user
+      if (xhr.responseJSON && xhr.responseJSON.message) {
+        alert(xhr.responseJSON.message);
+      } else {
+        alert('Error applying coupon. Please try again.');
+      }
+    }
 				});
 			});
 
