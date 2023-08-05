@@ -15,8 +15,8 @@ const key_id = process.env.RAZORPAY_API_Id;
 const key_secret = process.env.RAZORPAY_API_Key;
 const  fasttwoAPI = process.env.AUTH
 const razorpay = new Razorpay({
-  key_id: "rzp_test_tfaNKW9QlZ9Yp9", // Replace with your actual Razorpay test key
-  key_secret: "OVrPNai520EfZTw0ROQySCN7", // Replace with your actual Razorpay test secret
+  key_id: key_id, // Replace with your actual Razorpay test key
+  key_secret: key_secret, // Replace with your actual Razorpay test secret
 });
 
 const landingpage = async(req,res)=>{
@@ -900,8 +900,7 @@ const paswordChange = async (req, res) => {
     // Fast2sms config
     fast2sms
       .sendMessage({
-        authorization:
-          "MmiGSpB20ev9fNcuVWXQ1TKjsE3AF5oxP8CwLygtZOYdHkaznIacfJgFCWdENAOwYPho7RIjkipQrutl", // Replace with your actual API key
+        authorization:fasttwoAPI, // Replace with your actual API key
         message: `Your verification OTP is: ${otp}`,
         numbers: [number],
       })
