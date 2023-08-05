@@ -227,10 +227,6 @@ const resetPassword = async (req, res) => {
     const password2 = req.body.confirmPassword;
     const phone = req.session.userNumber; // Ensure session is set correctly
 
-    console.log(phone);
-    console.log(password);
-    console.log(password2);
-
     if (password === password2) {
       // Find the user by phone number
       const user = await User.findOne({ number: phone });
@@ -457,7 +453,6 @@ const Cart = async (req, res) => {
     );
     const user = await User.findById(userId);
     const couponId = user.appliedCoupon;
-    console.log(couponId);
     const coupons = await Coupon.find();
     const coupon = await Coupon.findById(couponId);
     let couponName = ""; // Declare the couponName variable here
@@ -535,12 +530,10 @@ const searchProduct = async (req, res) => {
   try {
     const user = req.session._id;
     const search = req.body.search;
-    console.log(search);
     const searchPattern = new RegExp(search, "i");
     const searchedProducts = await productModel
       .find({ name: searchPattern })
       .exec();
-    console.log(searchedProducts);
     const searchedProductIds = searchedProducts.map((product) => product._id);
 
     const otherProducts = await productModel
@@ -590,8 +583,6 @@ const cartRemove = async (req, res) => {
     const userId = req.session.user;
     const productId = req.params.itemId;
     const user = await User.findById(userId);
-
-    console.log(productId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -636,7 +627,6 @@ const cartOuantity = async (req, res) => {
       existingCartItem.quantity * productDetails.discountedPrice; // Assuming productDetails contains the product's price
 
     userDetails.save();
-    console.log(existingCartItem);
     res.json("halooo");
   } catch (error) {
     console.error(error);
@@ -714,7 +704,6 @@ const coupon = async (req, res) => {
     const userId = req.session.user;
     const selectedCouponValue = req.body.selectedCouponValue;
     const totalAmount = req.body.totalAmount;
-    console.log(req.body);
     const user = await User.findById(userId);
 
     if (!user) {
@@ -924,8 +913,6 @@ const changePassword = async (req, res) => {
   try {
     const { otp, newPassword } = req.body;
     const password = await securePassword(newPassword);
-    console.log(password);
-    console.log(typeof password);
     // Verify the OTP
     const storedOTP = req.session.otp;
     if (otp !== storedOTP.toString()) {
@@ -963,7 +950,6 @@ const addAddress = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    console.log(req.body);
     // Create a new address object
     const newAddress = {
       name,
@@ -1046,7 +1032,6 @@ const addToWishlist = async (req, res) => {
   try {
     const userId = req.session.user;
     const { name, id } = req.body;
-    console.log(req.body);
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -1110,9 +1095,7 @@ const myOrder = async (req, res) => {
 const order = async (req, res) => {
   try {
     const userId = req.session.user;
-    console.log(req.body);
     const { shippingAddress, paymentMethod, finalAmount } = req.body;
-    console.log(paymentMethod);
     const user = await User.findById(userId);
     const walletAmount = user.walletamount;
     const productIds = user.cart.items.map((product) => {
@@ -1148,8 +1131,6 @@ const order = async (req, res) => {
         }
       })
     );
-
-    console.log(typeof paymentMethod + "halo");
     if (paymentMethod === "COD") {
       const order = new orderModel({
         userId,
@@ -1379,7 +1360,6 @@ const cancelOrder = async (req, res) => {
       const user = await User.findByIdAndUpdate(userId, {
         $inc: { walletamount: totalAmount },
       });
-      console.log(user);
     }
     // Update the order status to "Cancel Request" and set the "orderCancelRequest" flag to true
     const updatedOrder = await orderModel.findByIdAndUpdate(
@@ -1441,7 +1421,6 @@ const returnOrder = async (req, res) => {
     const user = await User.findByIdAndUpdate(userId, {
       $inc: { walletamount: totalAmount },
     });
-    console.log(user);
     const updatedOrder = await orderModel.findByIdAndUpdate(
       orderId,
       { $set: { orderReturnRequest: true, status: "Returns Request" } },
@@ -1456,9 +1435,7 @@ const returnOrder = async (req, res) => {
 };
 const WalletHistory = async (req, res) => {
   try {
-    const Walletdetials = await orderModel.find({"payment.method": "Wallet"});
-    console.log(Walletdetials);
-     
+    const Walletdetials = await orderModel.find({"payment.method": "Wallet"});  
     res.render("userSide/WalletHistory", { Walletdetials });
   } catch (error) {
     console.error(error);
@@ -1467,10 +1444,8 @@ const WalletHistory = async (req, res) => {
 };
 const generateInvoice = async (req,res) => {
   const data = req.body;
-  console.log("orderId"+ data.Orderdetials);
   const order = await orderModel.findById({_id:data.Orderdetials});
   const orderDetails = order.products
-  console.log(orderDetails)
   
   try {
     const invoiceOptions = {
@@ -1533,7 +1508,6 @@ const downloadInvoice = async (req, res) => {
   try {
     const userId = req.session.user;
     const orderId = req.query.id;
-    console.log(orderId);
     // Fetch user details from the userModel
     const userDetails = await User.findOne({ userId });
 
