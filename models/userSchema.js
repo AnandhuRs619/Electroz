@@ -55,9 +55,7 @@ const userSchema = new mongoose.Schema({
     default: null,
   },
   walletamount: {
-      type: Number,
-      required: true
-    
+      type: Number
   },
   wishlist: [{
     productId: {
