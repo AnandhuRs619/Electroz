@@ -8,6 +8,8 @@ const Coupon = require('../../models/couponSchema');
 const Banner = require('../../models/bannarModel');
 const sharp = require("sharp")
 const path = require('path');
+const ExcelJS = require('exceljs')
+const PDFDocument =require('pdfkit')
 // ADMIN LOGIN
 const adminLogin = async (req,res)=>{
     try{
@@ -81,7 +83,7 @@ const dashboard = async (req, res) => {
       // In that case, set the totalRefundAmount to 0
       const totalRefundAmount = totalRefunds.length > 0 ? totalRefunds[0].total : 0;
   
-      console.log("Total Refund Amount:", totalRefundAmount);
+    
       const mostSoldBrands = await orderModel.aggregate([
         { $unwind: "$products" },
         { $group: { _id: "$products.p_name", count: { $sum: "$products.quantity" } } },
@@ -127,48 +129,34 @@ const dashboard = async (req, res) => {
   };
   const ChartData = async (req, res) => {
     try {
-      // Fetch total earnings and refunded amounts based on month
+      // Fetch total earnings based on month
+      const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       const totalEarnings = await orderModel.aggregate([
-        { $group: { _id: { $month: "$createdAt" }, total: { $sum: "$payment.amount" } } }
-      ]);
-      const totalRefunded = await orderModel.aggregate([
-        { $match: { orderReturnRequest: true } },
-        { $group: { _id: { $month: "$createdAt" }, total: { $sum: "$payment.amount" } } }
-      ]);
-  
-      // If there are no earnings or refunds for a particular month, set the total to 0
-      const earningsByMonth = Array.from({ length: 12 }, (_, i) =>
-        totalEarnings.find((monthData) => monthData._id === i + 1)?.total || 0
-      );
-      const refundedByMonth = Array.from({ length: 12 }, (_, i) =>
-        totalRefunded.find((monthData) => monthData._id === i + 1)?.total || 0
-      );
-  
-      // Fetch total orders based on month
-      const totalOrdersByMonth = await orderModel.aggregate([
+        { 
+          $match: { status: "Delivered" } // Match only delivered orders
+        },
         {
-          $group: {
-            _id: { $month: "$createdAt" },
-            total: { $sum: 1 }
-          }
+          $group: { 
+            _id: { $month: "$createdAt" }, 
+            total: { $sum: { $toInt: "$payment.amount" } } // Convert string to integer
+          } 
         },
         {
           $sort: {
             _id: 1
           }
         }
-      ]);
+      ]); 
+      const earningsByMonth = Array.from({ length: 12 }, () => 0);
   
-      // Extract the total order counts from the totalOrdersByMonth data
-      const orderCountsByMonth = Array.from({ length: 12 }, (_, i) =>
-        totalOrdersByMonth.find((monthData) => monthData._id === i + 1)?.total || 0
-      );
-  
-      // Send the data as a JSON response
+      totalEarnings.forEach(monthData => {
+        const monthIndex = monthData._id - 1;
+        earningsByMonth[monthIndex] = monthData.total;
+      });
+      
+      // Send the earnings data as a JSON response
       res.json({
-        earningsByMonth,
-        refundedByMonth,
-        orderCountsByMonth,
+        labels,earningsByMonth,
       });
     } catch (error) {
       console.error(error);
@@ -176,7 +164,133 @@ const dashboard = async (req, res) => {
     }
   };
 // Product Listing and details
+const salesReport = async (req, res) => {
+  try {
+    const reportType = req.body.reportType;
+    const fileFormat = req.body.fileFormat;
+    const sortby = req.body.sortOption
 
+    console.log(reportType, fileFormat,sortby);
+
+    const orders = await orderModel.find({status:'Delivered'}).populate("products userId")
+    // .exec(); // Make sure to use .exec() to execute the query
+  
+  console.log(orders);
+
+    if (fileFormat === "pdf") {
+      const doc = new PDFDocument();
+
+      const tableHeaderStyle = {
+        fontSize: 14,
+        bold: true,
+      };
+
+      const tableContentStyle = {
+        fontSize: 10,
+      };
+
+      let yPos = 100;
+
+      // Drawing the starting horizontal line
+      doc.moveTo(50, yPos).lineTo(500, yPos).stroke();
+
+      yPos += 5;
+
+      doc.font("Helvetica-Bold").fontSize(12);
+      doc.text("Order ID", 50, yPos, { continued: true });
+      doc.text("Customer Name", 150, yPos);
+      doc.text("Total Amount", 400, yPos);
+
+      yPos += 20; // Increase the vertical position after the table headers
+
+      doc.font("Helvetica").fontSize(10);
+      orders.forEach((order) => {
+        doc.text(order._id.toString(), 50, yPos, { continued: true });
+        doc.text(order.userId.name, 150, yPos);
+        doc.text(order.payment.amount, 400, yPos);
+
+        doc
+          .moveTo(50, yPos + 15)
+          .lineTo(500, yPos + 15)
+          .stroke();
+        yPos += 25;
+
+        doc
+          .moveTo(50, yPos - 50)
+          .lineTo(50, yPos)
+          .stroke();
+        doc
+          .moveTo(200, yPos - 50)
+          .lineTo(200, yPos)
+          .stroke();
+        doc
+          .moveTo(400, yPos - 50)
+          .lineTo(400, yPos)
+          .stroke();
+
+        doc
+          .moveTo(500, yPos - 50)
+          .lineTo(500, yPos)
+          .stroke();
+      });
+
+      doc.end();
+
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=sales_report.pdf"
+      );
+
+      doc.pipe(res);
+    } else if (fileFormat === "excel") {
+      // Generate Excel report
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Sales Report");
+
+      // Set the column headers
+      worksheet.columns = [
+        { header: "Order ID", key: "_id", width: 30 },
+        { header: "Date", key:"createdAt", width: 30 },
+        { header: "Customer Name", key: "user.name", width: 30 },
+        { header: "Total Amount", key: "totalPrice", width: 15 },
+        { header: "Payment Method", key: "paymentMethod", width: 15 },
+      ];
+
+      // Add data rows to the worksheet
+      orders.forEach((order) => {
+        worksheet.addRow({
+          _id: order._id.toString(),
+          createdAt: order.createdAt.toLocaleDateString(),
+          "user.name": order.userId.name,
+          totalPrice: order.payment.amount.toString(),
+          paymentMethod: order.payment.method.toString(),
+        });
+      });
+
+      // Generate the Excel file buffer
+      const excelBuffer = await workbook.xlsx.writeBuffer();
+
+      // Set the appropriate headers for file download
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=sales_report.xlsx"
+      );
+
+      // Send the generated Excel file as the response
+      res.send(excelBuffer);
+    } else {
+      throw new Error("Invalid file format");
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
 const productLists = async (req, res)=>{
     try{
         const product = await productModel.find();
@@ -324,9 +438,15 @@ const editProduct = async(req,res)=>{
 }
 const removeProduct = async(req,res)=>{
     try{
-      const prroductId =req.body.productId  
-      await productModel.findByIdAndUpdate({_id:prroductId},{
+      const productId =req.body.productId 
+     const productdata = await productModel.findOne({_id:productId});
+     if(productdata.isAvailable){
+      await productModel.findByIdAndUpdate({_id:productId},{
         isAvailable:false});
+      }else{
+        await productModel.findByIdAndUpdate({_id:productId},{
+          isAvailable:true});
+      }
       res.json('success');
     }catch(error){
         console.error(error);
@@ -649,6 +769,7 @@ const adminLogout = async(req,res)=>{
 module.exports={
     dashboard,
     ChartData,
+    salesReport,
     adminLogin,
     adminVerify,
     productDetails,

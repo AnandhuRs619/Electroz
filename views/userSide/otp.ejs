@@ -17,17 +17,72 @@
         <i class="bx bxs-check-shield"></i>
       </header>
       <h4>Enter OTP Code</h4>
-      <form name="otp" action="/otpPage" method="post">
-        <div  class="input-field">
-          <input type="number" name="one"/>
-          <input type="number" disabled name="two"/>
-          <input type="number" disabled name="three"/>
-          <input type="number" disabled name="four"/>
-        </div>
-        <button>  Verify OTP</button>
-      </form>
+      <% if (signUp == 1) { %>
+        <form name="otp" action="/otpPage" method="post">
+          <div class="input-field">
+            <input type="number" name="one" />
+            <input type="number" disabled name="two" />
+            <input type="number" disabled name="three" />
+            <input type="number" disabled name="four" />
+          </div>
+          <button>Verify OTP</button>
+        </form>
+      <% } else { %>
+        <form name="otp" action="/verify-otp" method="post">
+          <div class="input-field">
+            <input type="number" name="one" />
+            <input type="number" disabled name="two" />
+            <input type="number" disabled name="three" />
+            <input type="number" disabled name="four" />
+          </div>
+          <button>Verify OTP</button>
+        </form>
+      <% } %>
+      <div id="resend-container">
+        <p>Didn't receive OTP? Click below to resend.</p>
+        <button id="resend-button">Resend OTP</button>
+        <p id="timer">Wait 60 seconds before resending.</p>
+      </div>
     </div>
-
+    
+    <script>
+      const resendContainer = document.getElementById('resend-container');
+      const resendButton = document.getElementById('resend-button');
+      const timerElement = document.getElementById('timer');
+      
+      let countdown = 60;
+      let intervalId;
+      
+      function startTimer() {
+        timerElement.style.display = 'block';
+        resendButton.style.display = 'none';
+        intervalId = setInterval(() => {
+          countdown--;
+          timerElement.textContent = `Wait ${countdown} seconds before resending.`;
+          if (countdown <= 0) {
+            clearInterval(intervalId);
+            timerElement.style.display = 'none';
+            resendButton.style.display = 'block';
+          }
+        }, 1000);
+      }
+      
+      function resetTimer() {
+        clearInterval(intervalId);
+        countdown = 60;
+        timerElement.style.display = 'none';
+        resendButton.style.display = 'none';
+        setTimeout(() => {
+          resendButton.style.display = 'block';
+        }, 1000);
+      }
+      
+      resendButton.addEventListener('click', () => {
+        // Simulate OTP resend action (you should replace this with your actual logic)
+        resetTimer();
+        startTimer();
+      });
+    </script>
 
   </body>
 </html>

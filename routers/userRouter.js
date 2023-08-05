@@ -8,19 +8,20 @@ const userController = require('../controllers/userControllers/userController');
 const userAuth = require('../middleware/user');
 
 // ROUTERS
+UserRouter.get('/' ,userAuth.isLogin,userController.landingpage);
 UserRouter.get('/login',userAuth.isLogin,userController.login);
-UserRouter.get('/',userAuth.isLogOut,userController.home);
+UserRouter.get('/home',userAuth.isLogOut,userController.home);
 UserRouter.post('/signup',userController.Signup);
 
 UserRouter.post("/otpPage",userController.verifyOtp);
 UserRouter.post('/login',userAuth.isLogin,userController.verifyLogin);
+UserRouter.get('/forgotPassword',userController.forgotpassword);
 
 UserRouter.get('/logout',userAuth.isLogOut,userController.userLogout)
-UserRouter.use(userAuth.isLogOut);
-UserRouter.get('/forgotPassword',userController.forgotpassword);
 UserRouter.post('/send-otp',userController.sendOtp);
-UserRouter.post('/verify-otp',userController.verifyotp);
-UserRouter.post('/reset-password',userController.resetPassword);
+UserRouter.post('/verify-otp',userController.verifyotpforpassword);
+UserRouter.post('/newPassword',userController.resetPassword);
+UserRouter.use(userAuth.isLogOut);
 UserRouter.get('/productList',userController.productList);
 UserRouter.get('/productList/filter',userController.filterProducts);
 UserRouter.get('/checkout',userController.checkout);

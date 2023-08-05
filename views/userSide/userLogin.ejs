@@ -46,7 +46,7 @@
                 <input type="password" name="password" id="Password" placeholder="Enter your password" required>
                 <span id="passwordError"></span>
               </div>
-              <p class="forgot-password" onclick="openForgotPasswordModal()">Forgot password?</p>
+              <a href="/forgotPassword"><p class="forgot-password" >Forgot password?</p></a>
               <div class="button input-box">
                 <input type="submit" value="Submit">
               </div>
@@ -94,24 +94,23 @@
       <!-- <div class="" style=" "> -->
         <!-- Forgot Password Modal -->
         
-        <div id="forgotPasswordModal" class="modal" style="display:none; overflow: hidden;margin-left: -200px;margin-top: 0px;padding-top: 177px;">
-
+        <div id="forgotPasswordModal" class="modal" style="display: none; overflow: hidden; margin-left: -200px; margin-top: 0px; padding-top: 177px;">
           <div class="modal-content" style="padding-top: 500px;">
             <span class="modal-close" onclick="closeForgotPasswordModal()">&times;</span>
-            
             <div class="wizard-steps">
-
               <div class="wizard-step step-1">
                 <h2 class="modal-title">Step 1: Enter Your Phone Number</h2>
-                <form class="modal-form" action="/send-otp" method="POST" onsubmit="hideModal()">
+                <form class="modal-form" action="/send-otp" method="post">
                   <div class="input-box">
-                    <input type="tel" name="phone" placeholder="Phone Number" required>
+                    <input type="number" name="phone" placeholder="Phone Number" required>
                     <i class="fas fa-phone"></i>
                   </div>
                   <div class="modal-button">
                     <input type="submit" class="next-btn" value="Next">
                   </div>
                 </form>
+                <button class="resend-btn" onclick="resendOTP()">Resend OTP</button>
+                <p id="resend-timer" style="display: none;">Resend OTP in <span id="timer"></span> seconds</p>
               </div>
               <div class="wizard-step step-2">
                 <h2 class="modal-title">Step 2: Enter OTP</h2>
@@ -160,18 +159,7 @@
       
         <!-- </div>   -->
       </div>
-
-  
-
-
-  
-    
-   
-  
-  
-  
-
-  <script>
+<script>
     // Login form validation
     function loginValidation() {
       var email = document.getElementById("Email").value;
@@ -339,18 +327,18 @@ function prevStep() {
 }
 
 // Add event listeners to the next and previous buttons
-const nextBtns = document.querySelectorAll('.next-btn');
-const prevBtns = document.querySelectorAll('.prev-btn');
-nextBtns.forEach(btn => btn.addEventListener('click', nextStep));
+// const nextBtns = document.querySelectorAll('.next-btn');
+// const prevBtns = document.querySelectorAll('.prev-btn');
+// nextBtns.forEach(btn => btn.addEventListener('click', nextStep));
 
 // Prevent form submission on next button click
-nextBtns.forEach(btn => btn.addEventListener('click', (event) => {
-  event.preventDefault();
-  nextStep.call(btn);
-}));
+// nextBtns.forEach(btn => btn.addEventListener('click', (event) => {
+//   event.preventDefault();
+//   nextStep.call(btn);
+// }));
 
-prevBtns.forEach(btn => btn.addEventListener('click', prevStep));
-
+// prevBtns.forEach(btn => btn.addEventListener('click', prevStep));
+ 
 // Add event listener to the "Forgot Password" button to open the modal
 const forgotPasswordBtn = document.querySelector('.forgot-password-btn');
 forgotPasswordBtn.addEventListener('click', openForgotPasswordModal);

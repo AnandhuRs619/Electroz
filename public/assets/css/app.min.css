@@ -91,6 +91,98 @@
 :root .nav-tabs {
   --vz-nav-tabs-link-active-bg: #f2f2f7;
 }
+
+/* charts */
+
+.charts {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-gap: 20px;
+  width: 100%;
+  padding: 20px;
+  padding-top: 0;
+}
+
+.chart {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+  width: 100%;
+}
+
+.chart h2 {
+  margin-bottom: 5px;
+  font-size: 20px;
+  color: #666;
+  text-align: center
+}
+
+@media (max-width:1115px) {
+  .sidebar {
+      width: 60px;
+  }
+  .main {
+      width: calc(100% - 60px);
+      left: 60px;
+  }
+}
+
+@media (max-width:880px) {
+  /* .topbar {
+      grid-template-columns: 1.6fr 6fr 0.4fr 1fr;
+  } */
+  .fa-bell {
+      justify-self: left;
+  }
+  .cards {
+      width: 100%;
+      padding: 35px 20px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 20px;
+  }
+  .charts {
+      grid-template-columns: 1fr;
+  }
+  .doughnut-chart {
+      padding: 50px;
+  }
+  #doughnut {
+      padding: 50px;
+  }
+}
+
+@media (max-width:500px) {
+  .topbar {
+      grid-template-columns: 1fr 5fr 0.4fr 1fr;
+  }
+  .logo h2 {
+      font-size: 20px;
+  }
+  .search {
+      width: 80%;
+  }
+  .search input {
+      padding: 0 20px;
+  }
+  .fa-bell {
+      margin-right: 5px;
+  }
+  .cards {
+      grid-template-columns: 1fr;
+  }
+  .doughnut-chart {
+      padding: 10px;
+  }
+  #doughnut {
+      padding: 0px;
+  }
+  .user {
+      width: 40px;
+      height: 40px;
+  }
+}
 :root .choices,
 :root .ck,
 :root .flatpickr-calendar,

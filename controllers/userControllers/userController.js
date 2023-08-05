@@ -1,7 +1,7 @@
 const User = require("../../models/userSchema");
 const bcrypt = require("bcrypt");
 const products = require("../../models/productModel");
-require("dotenv");
+const dotenv = require('dotenv').config();
 const fast2sms = require("../../confg/fast2sms-config");
 const productModel = require("../../models/productModel");
 const orderModel = require("../../models/OderSchema");
@@ -13,10 +13,22 @@ const easyinvoice = require("easyinvoice");
 //  Razorpoy
 const key_id = process.env.RAZORPAY_API_Id;
 const key_secret = process.env.RAZORPAY_API_Key;
+const  fasttwoAPI = process.env.AUTH
 const razorpay = new Razorpay({
   key_id: "rzp_test_tfaNKW9QlZ9Yp9", // Replace with your actual Razorpay test key
   key_secret: "OVrPNai520EfZTw0ROQySCN7", // Replace with your actual Razorpay test secret
 });
+
+const landingpage = async(req,res)=>{
+  try{
+    const banner = await Bannar.findOne({ is_active: 1 });
+    res.render("userSide/landingpage",{ banner })
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal  Server Error");
+  }
+}
 
 // HOME RENDERING
 const home = async (req, res) => {
@@ -65,8 +77,7 @@ const Signup = async (req, res) => {
     // Fast2sms config
     fast2sms
       .sendMessage({
-        authorization:
-          "MmiGSpB20ev9fNcuVWXQ1TKjsE3AF5oxP8CwLygtZOYdHkaznIacfJgFCWdENAOwYPho7RIjkipQrutl", // Replace with your actual API key
+        authorization: fasttwoAPI, // Replace with your actual API key
         message: `Your verification OTP is: ${otp}`,
 
         numbers: [number],
@@ -74,10 +85,11 @@ const Signup = async (req, res) => {
       .then((response) => {
         console.log("OTP sent successfully", response);
         console.log(otp);
+        const signUp = 1;
         // Save the OTP in session or database for verification in the next step
         req.session.otp = otp;
         // Redirect the user to the verify OTP page
-        res.render("userSide/otp");
+        res.render("userSide/otp",{signUp});
       })
       .catch((error) => {
         console.error("Failed to send OTP", error);
@@ -111,6 +123,7 @@ const verifyOtp = async (req, res) => {
 
 const verifyLogin = async (req, res) => {
   try {
+   
     const email = req.body.email;
     const password = req.body.password;
     const userData = await User.findOne({ email: email });
@@ -146,76 +159,94 @@ const forgotpassword = async (req, res) => {
 };
 
 const sendOtp = async (req, res) => {
-  try {
-    const phoneNumber = req.body.phone;
-    console.log(phoneNumber);
-    console.log(req.body);
-    // OTP generation
-    const otp = Math.floor(1000 + Math.random() * 9000);
-    console.log(otp);
+    try {
+      const number = req.body.number;
+      req.session.userNumber = number;
+      const signinPage = 2;
+      let cartCount;
+      const userExist = await User.findOne({ number: number });
+      if (userExist) {
+          const otp = Math.floor(Math.random() * 9000) + 1000;
+         // Fast2sms config
     fast2sms
-      .sendMessage({
-        authorization:
-          "MmiGSpB20ev9fNcuVWXQ1TKjsE3AF5oxP8CwLygtZOYdHkaznIacfJgFCWdENAOwYPho7RIjkipQrutl", // Replace with your actual API key
-        message: `Your verification OTP is: ${otp}`,
-        phoneNumber,
-      })
-      .then((response) => {
-        // Store the OTP and phone number in session for verification
-        req.session.phone = phoneNumber;
-        req.session.otp = otp;
-        req.session.save(() => {
-          res.redirect("/verify-otp");
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).send("Failed to send OTP. Please try again later.");
-      });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
+    .sendMessage({
+      authorization: fasttwoAPI, // Replace with your actual API key
+      message: `Your verification OTP is: ${otp}`,
+
+      numbers: [number],
+    })
+    .then((response) => {
+      console.log("OTP sent successfully", response);
+      console.log(otp);
+      const signUp = 0;
+      // Save the OTP in session or database for verification in the next step
+      req.session.otp = otp;
+      // Redirect the user to the verify OTP page
+      res.render("userSide/otp",{signUp});
+    })
+    .catch((error) => {
+      console.error("Failed to send OTP", error);
+      // Handle error and display appropriate message to the user
+    });
+
+  } else {
+    const msg = "Please Enter The Currect Number";
+    let cartCount;
+    res.render("userSide/forgotPassword",)
+}
+} catch (error) {
+      const msg = "Server Error Wait for the Admin Response";
+      let cartCount;
+      console.log("error At the number validation inreset place" + error);
+      res.status(500).render("userSide/forgotPassword", )
   }
-};
+}
 
-const verifyotp = async (req, res) => {
+const verifyotpforpassword = async (req, res) => {
   try {
-    const otp = req.body.otp;
-    const { phone, otp: storedOtp } = req.session;
-
-    if (otp === storedOtp) {
-      res.redirect("/reset-password");
+    const num1 = req.body.one;
+    const num2 = req.body.two;
+    const num3 = req.body.three;
+    const num4 = req.body.four;
+    const code = parseInt(num1 + num2 + num3 + num4);
+    if (code === req.session.otp) {
+      delete req.session.otp;
+      res.render("userSide/resetPassword");
     } else {
-      res.status(400).send("Invalid OTP. Please try again.");
+      res.send("please enter a valid OTP");
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal  Server Error");
   }
 };
 
 const resetPassword = async (req, res) => {
   try {
     const password = req.body.password;
-    const password2 = req.body.password2;
-    const phone = req.session.phone;
+    const password2 = req.body.confirmPassword;
+    const phone = req.session.userNumber; // Ensure session is set correctly
+
+    console.log(phone);
+    console.log(password);
+    console.log(password2);
 
     if (password === password2) {
       // Find the user by phone number
-      const user = await User.findOne({ phone });
+      const user = await User.findOne({ number: phone });
 
       if (!user) {
         return res.status(404).send("User not found.");
       }
 
-      // Update the user's password
-      user.password = password;
-      await user.save();
+      const newpassword = await securePassword(password);
 
-      // Clear the session after password update
-      req.session.destroy(() => {
-        res.redirect("/forgot-password/reset-password-successful");
-      });
+      // Update the user's password
+      user.password = newpassword;
+
+      await user.save(); // Save the updated user
+
+      res.status(200).send("Password updated successfully.");
     } else {
       res.status(400).send("Passwords do not match. Please try again.");
     }
@@ -228,7 +259,7 @@ const userLogout = async (req, res) => {
   try {
     req.session.user = null;
     req.session.user = 0;
-    res.redirect("/login");
+    res.redirect("/");
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal  Server Error");
@@ -838,8 +869,7 @@ const profileOtp = async (req, res) => {
     // Fast2sms config
     fast2sms
       .sendMessage({
-        authorization:
-          "MmiGSpB20ev9fNcuVWXQ1TKjsE3AF5oxP8CwLygtZOYdHkaznIacfJgFCWdENAOwYPho7RIjkipQrutl", // Replace with your actual API key
+        authorization: fasttwoAPI, // Replace with your actual API key
         message: `Your verification OTP is: ${otp}`,
         numbers: [number],
       })
@@ -899,8 +929,6 @@ const changePassword = async (req, res) => {
     console.log(typeof password);
     // Verify the OTP
     const storedOTP = req.session.otp;
-    console.log("njan varuthan" + otp);
-    console.log("njan evida ull ala" + storedOTP);
     if (otp !== storedOTP.toString()) {
       return res.status(400).json({ message: "Invalid OTP" });
     }
@@ -1429,8 +1457,9 @@ const returnOrder = async (req, res) => {
 };
 const WalletHistory = async (req, res) => {
   try {
-    const Walletdetials = await orderModel.find({ "payment.method": "Wallet" });
-
+    const Walletdetials = await orderModel.find({"payment.method": "Wallet"});
+    console.log(Walletdetials);
+     
     res.render("userSide/WalletHistory", { Walletdetials });
   } catch (error) {
     console.error(error);
@@ -1547,6 +1576,7 @@ const downloadInvoice = async (req, res) => {
 
 //  EXPORTING
 module.exports = {
+  landingpage,
   home,
   login,
   Signup,
@@ -1557,7 +1587,7 @@ module.exports = {
   verifyOtp,
   checkout,
   forgotpassword,
-  verifyotp,
+  verifyotpforpassword,
   sendOtp,
   resetPassword,
   Cart,

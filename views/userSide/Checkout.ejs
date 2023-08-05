@@ -189,10 +189,10 @@
                     <li class="active"><a href="/">Home</a></li>
                     <li><a href="#">Hot Deals</a></li>
                     <li><a href="/productList">Categories</a></li>
-                    <li><a href="#">Laptops</a></li>
-                    <li><a href="#">Smartphones</a></li>
-                    <li><a href="#">Cameras</a></li>
-                    <li><a href="#">Accessories</a></li>
+                    <li><a href="/productList">Laptops</a></li>
+                    <li><a href="/productList">Smartphones</a></li>
+                    <li><a href="/productList">Cameras</a></li>
+                    <li><a href="/productList">Accessories</a></li>
                 </ul>
                 <!-- /NAV -->
             </div>
@@ -249,15 +249,6 @@
                                                     <i
                                                         class="ri-bank-card-line fs-16 p-2 bg-soft-primary text-primary rounded-circle align-middle me-2"></i>
                                                     Payment Info
-                                                </button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link fs-15 p-3" id="pills-finish-tab"
-                                                    data-bs-toggle="pill" data-bs-target="#pills-finish" type="button"
-                                                    role="tab" aria-controls="pills-finish" aria-selected="false">
-                                                    <i
-                                                        class="ri-checkbox-circle-line fs-16 p-2 bg-soft-primary text-primary rounded-circle align-middle me-2"></i>
-                                                    Finish
                                                 </button>
                                             </li>
                                         </ul>
@@ -440,27 +431,10 @@
                                                     Order
                                                 </button>
                                             </div>
+
                                         </div>
                                         <!-- end tab pane -->
-
-                                        <div class="tab-pane " id="pills-finish" role="tabpanel"
-                                            aria-labelledby="pills-finish-tab">
-                                            <div class="text-center py-5">
-
-                                                <div class="mb-4">
-                                                    <lord-icon src="https://cdn.lordicon.com/lupuorrc.json"
-                                                        trigger="loop" colors="primary:#0ab39c,secondary:#405189"
-                                                        style="width:120px;height:120px"></lord-icon>
-                                                </div>
-                                                <h5>Thank you ! Your Order is Completed !</h5>
-                                                <p class="text-muted">You will receive an order confirmation email with
-                                                    details of your order.</p>
-
-                                                <h3 class="fw-semibold">Order ID: <a
-                                                        href="apps-ecommerce-order-details.html"
-                                                        class="text-decoration-underline">VZ2451</a></h3>
-                                            </div>
-                                        </div>
+                                    
                                         <!-- end tab pane -->
                                     </div>
                                     <!-- end tab content -->
@@ -563,6 +537,27 @@
     <!-- end main content-->
     </div>
     <!-- END layout-wrapper -->
+    <div id="success-Payment" class="modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-5">
+                    <div class="text-end">
+                        <button type="button" class="btn-close text-end" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="mt-2">
+                        <lord-icon src="https://cdn.lordicon.com/tqywkdcz.json" trigger="hover" style="width:150px;height:150px">
+                        </lord-icon>
+                        <h4 class="mb-3 mt-4">Your Transaction is Successfull !</h4>
+                        <p class="text-muted fs-15 mb-4">Successful transaction is the status of operation whose result is the payment of the amount paid by the customer in favor of the merchant.</p>
+                        <div class="hstack gap-2 justify-content-center">
+                            <a href="/Myorders" class="btn btn-soft-success" id="trackOrderLink"><i class="ri-links-line align-bottom"></i> Track your Order</a>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div><!-- end col -->
 
     <!-- removeItemModal -->
     <div id="removeItemModal" class="modal  zoomIn" tabindex="-1" aria-hidden="true">
@@ -798,26 +793,25 @@
             const selectedAddress = document.querySelector('input[name="shippingAddress"]:checked').value;
             const Online = document.getElementById("paymentMethod01");
             const COD = document.getElementById("paymentMethod03");
-            const wallet =document.getElementById('paymentMethod02')
+            const wallet = document.getElementById('paymentMethod02');
             const amount = document.getElementById("finalAmount").value;
-            console.log(wallet);
+    
             let paymentMethod;
             if (COD.checked) {
                 paymentMethod = COD.value;
             } else if (Online.checked) {
                 paymentMethod = Online.value;
-            }else if (wallet.checked) {
+            } else if (wallet.checked) {
                 paymentMethod = wallet.value;
             } else {
                 selectedOption = null;
             }
-            console.log(paymentMethod);
+    
             $.ajax({
                 type: 'post',
                 url: "/order",
                 data: { paymentMethod: paymentMethod, shippingAddress: selectedAddress, finalAmount: amount },
                 success: function (res) {
-                    console.log(res);
                     if (res.orderId) {
                         var options = {
                             key: razorpayKey,
@@ -829,17 +823,16 @@
                             order_id: res.orderId,
                             handler: function (response) {
                                 // This function will be called after successful payment
-                                console.log(response);
                                 $.ajax({
                                     type: 'post',
                                     url: "/save-payment",
                                     data: { paymentMethod: paymentMethod, shippingAddress: selectedAddress, finalAmount: amount },
                                     success: function (res) {
-                                          console.log(res);
-                                          window.location.href = "/Myorders"
-                                       }
-                                    })
-                                // Redirect to the success page or update the UI as neede
+                                        // Show the success modal
+                                        $('#success-Payment').modal('show');
+                                    }
+                                });
+                                // Redirect to the success page or update the UI as needed
                             },
                             prefill: {
                                 name: 'Customer Name',
@@ -856,10 +849,11 @@
                         var rzp = new Razorpay(options);
                         rzp.open();
                     } else if (res.message === 'Order created successfully') {
-                        window.location.href = "/Myorders"
+                        // Show the success modal
+                        $('#success-Payment').modal('show');
                     }
                 }
-            })
+            });
         });
     </script>
 
