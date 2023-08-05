@@ -735,7 +735,7 @@ const coupon = async (req, res) => {
     console.log(formattedExpiryDate);
     console.log(newDate);
 
-    if (formattedExpiryDate < newDate) {
+    if (formattedExpiryDate > newDate) {
       return res.status(400).json({ message: "Coupon has expired" });
     }
 
