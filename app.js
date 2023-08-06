@@ -5,19 +5,19 @@ const UserRouter = require("./routers/userRouter");
 const adminRouter = require("./routers/adminRouter");
 const Db = require("./confg/db");
 const session = require("express-session");
-const MongoStore = require('connect-mongo')(session);
-const mongoose = require('mongoose');
+// const MongoStore = require('connect-mongo')(session);
+// const mongoose = require('mongoose');
 
 env.config({ path: './.env' }); 
-const url = process.env.URL
-mongoose.connect(url);
+// const url = process.env.URL
+// mongoose.connect(url);
 
 app.use(
   session({
     secret: "your-secret-key",
     resave: false,
     saveUninitialized: false,
-    store: new MongoStore({mongooseConnection: mongoose.connection })
+    // store: new MongoStore({mongooseConnection: mongoose.connection })
   })
 );
 app.use(express.json());

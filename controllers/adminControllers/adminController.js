@@ -68,7 +68,7 @@ const dashboard = async (req, res) => {
       // In that case, set the totalEarningsAmount to 0
       const totalEarningsAmount = totalEarnings.length > 0 ? totalEarnings[0].total : 0;
       
-      console.log("Total Earnings:", totalEarningsAmount);
+      
       const totalRefunds = await orderModel.aggregate([
         { $match: { orderReturnRequest: true } },
         {
@@ -92,7 +92,7 @@ const dashboard = async (req, res) => {
       ]);
   
 
-      console.log(mostSoldBrands);
+      
 
       // Extract the brand names from the mostSoldBrands data
       const brandNames = mostSoldBrands.map(brand => brand._id);
@@ -174,8 +174,6 @@ const salesReport = async (req, res) => {
 
     const orders = await orderModel.find({status:'Delivered'}).populate("products userId")
     // .exec(); // Make sure to use .exec() to execute the query
-  
-  console.log(orders);
 
     if (fileFormat === "pdf") {
       const doc = new PDFDocument();
@@ -334,7 +332,6 @@ const productAdding = async(req,res)=>{
 const addingNewProduct = async(req,res)=>{
     try{
         const {name,Brand_name,category,price,stock,discount,description,}=req.body;
-        console.log(req.body);
         const files  = req.files;
         const originalPrice = parseFloat(price);
     const discountPercentage = parseFloat(discount);
@@ -344,12 +341,10 @@ const addingNewProduct = async(req,res)=>{
 
     for (const image of files) {
       const imagePath = image.path;
-      console.log(imagePath);
       const croppedImagePath = imagePath.replace(
         /(\.[\w\d_-]+)$/i,
         "-cropped$1"
       );
-      console.log(croppedImagePath);
       await sharp(imagePath).resize(1500, 1500).toFile(croppedImagePath);
 
       // Get the filename without the path and push it to the imagePaths array
@@ -402,12 +397,11 @@ const editProduct = async(req,res)=>{
 
     for (const image of files) {
       const imagePath = image.path;
-      console.log(imagePath);
       const croppedImagePath = imagePath.replace(
         /(\.[\w\d_-]+)$/i,
         "-cropped$1"
       );
-      console.log(croppedImagePath);
+      
       await sharp(imagePath).resize(1500, 1500).toFile(croppedImagePath);
 
       // Get the filename without the path and push it to the imagePaths array
@@ -428,7 +422,7 @@ const editProduct = async(req,res)=>{
            } 
         });
         
-        console.log(pData);
+        
         res.redirect('/admin/productLists')
 
     }catch(error){
@@ -532,7 +526,6 @@ const blockUser = async (req, res) => {
     try {
       const id = req.params.id;
       const {isBlocked}=req.body
-console.log(typeof isBlocked);
  
     if (isBlocked === 'true') {
         await User.findByIdAndUpdate(id, { $set: { isBlocked: true } });
@@ -567,7 +560,7 @@ const orderupdate = async (req, res) => {
     try {
         const orderId = req.body.orderId;
       const status = req.body.status;
-      console.log(orderId, status); // Update to use req.body['delivered-status']
+       // Update to use req.body['delivered-status']
       const updatedOrder = await orderModel.findByIdAndUpdate(
         orderId,
         { status: status },
@@ -601,7 +594,7 @@ const couponList = async(req,res)=>{
 const addCoupon = async(req,res)=>{
     try{
         const{couponName,couponValue,expiryDate,maxValue,minValue}=req.body
-        console.log(req.body);
+        
         const coupon = new Coupon({
            couponName,
            couponValue,
@@ -674,19 +667,18 @@ const addBanner = async(req,res)=>{
 
        for (const image of images) {
          const imagePath = image.path;
-         console.log(imagePath);
          const croppedImagePath = imagePath.replace(
            /(\.[\w\d_-]+)$/i,
            "-cropped$1"
          );
-         console.log(croppedImagePath);
+         
          await sharp(imagePath).resize(2560, 800).toFile(croppedImagePath);
    
          // Get the filename without the path and push it to the imagePaths array
       const imageName = path.basename(croppedImagePath);
       imagePaths.push(imageName);
        }
-       console.log(imagePaths);
+       
        const banner= new Banner({
         BannerName,
         description,
@@ -694,7 +686,7 @@ const addBanner = async(req,res)=>{
         image: imagePaths,
        })
        await banner.save();
-       console.log(banner);
+       
        res.redirect('/admin/bannarlist')
     }catch (error){
         console.error(error);
@@ -710,19 +702,19 @@ const editBanner = async(req,res)=>{
 
         for (const image of images) {
           const imagePath = image.path;
-          console.log(imagePath);
+          
           const croppedImagePath = imagePath.replace(
             /(\.[\w\d_-]+)$/i,
             "-cropped$1"
           );
-          console.log(croppedImagePath);
+         
           await sharp(imagePath).resize(2560, 800).toFile(croppedImagePath);
     
           // Get the filename without the path and push it to the imagePaths array
        const imageName = path.basename(croppedImagePath);
        imagePaths.push(imageName);
         }
-        console.log(imagePaths);
+        
         
         const data = await Banner.findByIdAndUpdate({_id:bannerId},{
             $set:{
@@ -742,7 +734,7 @@ const editBanner = async(req,res)=>{
 const hideBanner = async (req, res) => {
     try {
       const id = req.query.id;
-      console.log(id);
+     
       const bannerData = await Banner.findOne({ _id: id });
       if (bannerData.is_active) {
         await Banner.findByIdAndUpdate({ _id: id }, { $set: { is_active: 0 } }); console.log("hidden");
