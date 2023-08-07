@@ -1,7 +1,7 @@
 const User = require("../../models/userSchema");
 const bcrypt = require("bcrypt");
 const products = require("../../models/productModel");
-const dotenv = require('dotenv').config();
+const dotenv = require("dotenv").config();
 const fast2sms = require("../../confg/fast2sms-config");
 const productModel = require("../../models/productModel");
 const orderModel = require("../../models/OderSchema");
@@ -10,26 +10,25 @@ const Category = require("../../models/categorySchema");
 const Razorpay = require("razorpay");
 const Bannar = require("../../models/bannarModel");
 const easyinvoice = require("easyinvoice");
-const sms = require("../../middleware/SmsVarification")
+const sms = require("../../middleware/SmsVarification");
 //  Razorpoy
 const key_id = process.env.RAZORPAY_API_Id;
 const key_secret = process.env.RAZORPAY_API_Key;
-const  fasttwoAPI = process.env.AUTH
+const fasttwoAPI = process.env.AUTH;
 const razorpay = new Razorpay({
   key_id: key_id, // Replace with your actual Razorpay test key
   key_secret: key_secret, // Replace with your actual Razorpay test secret
 });
 
-const landingpage = async(req,res)=>{
-  try{
+const landingpage = async (req, res) => {
+  try {
     const banner = await Bannar.findOne({ is_active: 1 });
-    res.render("userSide/landingpage",{ banner })
-
+    res.render("userSide/landingpage", { banner });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal  Server Error");
   }
-}
+};
 
 // HOME RENDERING
 const home = async (req, res) => {
@@ -90,7 +89,7 @@ const Signup = async (req, res) => {
         // Save the OTP in session or database for verification in the next step
         req.session.otp = otp;
         // Redirect the user to the verify OTP page
-        res.render("userSide/otp",{signUp});
+        res.render("userSide/otp", { signUp });
       })
       .catch((error) => {
         console.error("Failed to send OTP", error);
@@ -124,7 +123,6 @@ const verifyOtp = async (req, res) => {
 
 const verifyLogin = async (req, res) => {
   try {
-   
     const email = req.body.email;
     const password = req.body.password;
     const userData = await User.findOne({ email: email });
@@ -160,63 +158,67 @@ const forgotpassword = async (req, res) => {
 };
 
 const sendOtp = async (req, res) => {
-    try {
-      const number = req.body.number;
-      req.session.userNumber = number;
-      const signinPage = 2;
-      const userExist = await User.findOne({ number: number });
-      if (userExist) {
-          const otp = Math.floor(Math.random() * 9000) + 1000;
-         // Fast2sms config
-    fast2sms
-    .sendMessage({
-      authorization: fasttwoAPI, // Replace with your actual API key
-      message: `Your verification OTP is: ${otp}`,
+  try {
+    const number = req.body.number;
+    req.session.userNumber = number;
+    const signinPage = 2;
+    const userExist = await User.findOne({ number: number });
+    if (userExist) {
+      const otp = Math.floor(Math.random() * 9000) + 1000;
+      // Fast2sms config
+      fast2sms
+        .sendMessage({
+          authorization: fasttwoAPI, // Replace with your actual API key
+          message: `Your verification OTP is: ${otp}`,
 
-      numbers: [number],
-    })
-    .then((response) => {
-      console.log("OTP sent successfully", response);
-      console.log(otp);
-      const signUp = 0;
-      // Save the OTP in session or database for verification in the next step
-      req.session.otp = otp;
-      // Redirect the user to the verify OTP page
-      res.render("userSide/otp",{ signUp, userExist });
-    })
-    .catch((error) => {
-      console.error("Failed to send OTP", error);
-      // Handle error and display appropriate message to the user
-    });
-
-  } else {
-    const msg = "Please Enter The Currect Number";
-    res.redirect("userSide/forgotPassword",)
-}
-} catch (error) {
-      const msg = "Server Error Wait for the Admin Response";
-      let cartCount;
-      console.log("error At the number validation inreset place" + error);
-      res.status(500).redirect("userSide/forgotPassword", )
+          numbers: [number],
+        })
+        .then((response) => {
+          console.log("OTP sent successfully", response);
+          console.log(otp);
+          const signUp = 0;
+          // Save the OTP in session or database for verification in the next step
+          req.session.otp = otp;
+          // Redirect the user to the verify OTP page
+          res.render("userSide/otp", { signUp, userExist });
+        })
+        .catch((error) => {
+          console.error("Failed to send OTP", error);
+          // Handle error and display appropriate message to the user
+        });
+    } else {
+      const msg = "Please Enter The Currect Number";
+      res.redirect("userSide/forgotPassword");
+    }
+  } catch (error) {
+    const msg = "Server Error Wait for the Admin Response";
+    let cartCount;
+    console.log("error At the number validation inreset place" + error);
+    res.status(500).redirect("userSide/forgotPassword");
   }
-}
+};
 
 const againOtp = async (req, res) => {
   try {
     const phonenumber = req.body.phonenumber;
 
     // Generate a new OTP (you can use your logic to generate OTP)
-    const newOtp = Math.floor(Math.random() * 9000) + 1000;
-    
+    const newOtp =6199
+
     // Send the new OTP using the sms module
-    const smsResponse = await sms.sendMessage(phonenumber, `Your new OTP is: ${newOtp}`);
-    
+    fast2sms
+    .sendMessage({
+      authorization: fasttwoAPI, // Replace with your actual API key
+      message: `Your verification OTP is: ${newOtp}`,
+
+      numbers: [phonenumber],
+    })
     console.log(`New OTP sent successfully: ${newOtp}`);
     req.session.otp = newOtp;
-    res.json({ success: true, message: 'New OTP sent successfully' });
+    res.json({ success: true, message: "New OTP sent successfully" });
   } catch (error) {
-    console.error('Error sending new OTP:', error);
-    res.status(500).json({ success: false, message: 'Failed to send new OTP' });
+    console.error("Error sending new OTP:", error);
+    res.status(500).json({ success: false, message: "Failed to send new OTP" });
   }
 };
 
@@ -350,7 +352,7 @@ const productList = async (req, res) => {
     });
 
     const brands = await productModel.distinct("Brand_name");
-
+    console.log(productsWithCategory);
     res.render("userSide/productList", {
       product: productsWithCategory,
       category: categories,
@@ -907,7 +909,7 @@ const paswordChange = async (req, res) => {
     // Fast2sms config
     fast2sms
       .sendMessage({
-        authorization:fasttwoAPI, // Replace with your actual API key
+        authorization: fasttwoAPI, // Replace with your actual API key
         message: `Your verification OTP is: ${otp}`,
         numbers: [number],
       })
@@ -1453,18 +1455,18 @@ const returnOrder = async (req, res) => {
 };
 const WalletHistory = async (req, res) => {
   try {
-    const Walletdetials = await orderModel.find({"payment.method": "Wallet"});  
+    const Walletdetials = await orderModel.find({ "payment.method": "Wallet" });
     res.render("userSide/WalletHistory", { Walletdetials });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 };
-const generateInvoice = async (req,res) => {
+const generateInvoice = async (req, res) => {
   const data = req.body;
-  const order = await orderModel.findById({_id:data.Orderdetials});
-  const orderDetails = order.products
-  
+  const order = await orderModel.findById({ _id: data.Orderdetials });
+  const orderDetails = order.products;
+
   try {
     const invoiceOptions = {
       documentTitle: "Invoice",
@@ -1496,7 +1498,7 @@ const generateInvoice = async (req,res) => {
       information: {
         number: "nwewonw", // Access _id directly from the order object
         date: data.date,
-        "due-date": 'nana',
+        "due-date": "nana",
       },
       products: [],
       subtotal: data.Totalamount,
@@ -1505,12 +1507,12 @@ const generateInvoice = async (req,res) => {
 
     orderDetails.forEach((data) => {
       invoiceOptions.products.push({
-          quantity: data.quantity,
-          description: data.p_name,
-          'tax-rate': 0,
-          price: data.price,
+        quantity: data.quantity,
+        description: data.p_name,
+        "tax-rate": 0,
+        price: data.price,
       });
-  });
+    });
 
     const result = await easyinvoice.createInvoice(invoiceOptions);
     const pdfBuffer = Buffer.from(result.pdf, "base64");
