@@ -10,6 +10,7 @@ const Category = require("../../models/categorySchema");
 const Razorpay = require("razorpay");
 const Bannar = require("../../models/bannarModel");
 const easyinvoice = require("easyinvoice");
+const sms = require("../../middleware/SmsVarification")
 //  Razorpoy
 const key_id = process.env.RAZORPAY_API_Id;
 const key_secret = process.env.RAZORPAY_API_Key;
@@ -163,7 +164,6 @@ const sendOtp = async (req, res) => {
       const number = req.body.number;
       req.session.userNumber = number;
       const signinPage = 2;
-      let cartCount;
       const userExist = await User.findOne({ number: number });
       if (userExist) {
           const otp = Math.floor(Math.random() * 9000) + 1000;
@@ -182,7 +182,7 @@ const sendOtp = async (req, res) => {
       // Save the OTP in session or database for verification in the next step
       req.session.otp = otp;
       // Redirect the user to the verify OTP page
-      res.render("userSide/otp",{signUp});
+      res.render("userSide/otp",{ signUp, userExist });
     })
     .catch((error) => {
       console.error("Failed to send OTP", error);
@@ -191,16 +191,34 @@ const sendOtp = async (req, res) => {
 
   } else {
     const msg = "Please Enter The Currect Number";
-    let cartCount;
-    res.render("userSide/forgotPassword",)
+    res.redirect("userSide/forgotPassword",)
 }
 } catch (error) {
       const msg = "Server Error Wait for the Admin Response";
       let cartCount;
       console.log("error At the number validation inreset place" + error);
-      res.status(500).render("userSide/forgotPassword", )
+      res.status(500).redirect("userSide/forgotPassword", )
   }
 }
+
+const againOtp = async (req, res) => {
+  try {
+    const phonenumber = req.body.phonenumber;
+
+    // Generate a new OTP (you can use your logic to generate OTP)
+    const newOtp = Math.floor(Math.random() * 9000) + 1000;
+    
+    // Send the new OTP using the sms module
+    const smsResponse = await sms.sendMessage(phonenumber, `Your new OTP is: ${newOtp}`);
+    
+    console.log(`New OTP sent successfully: ${newOtp}`);
+    req.session.otp = newOtp;
+    res.json({ success: true, message: 'New OTP sent successfully' });
+  } catch (error) {
+    console.error('Error sending new OTP:', error);
+    res.status(500).json({ success: false, message: 'Failed to send new OTP' });
+  }
+};
 
 const verifyotpforpassword = async (req, res) => {
   try {
@@ -1562,6 +1580,7 @@ module.exports = {
   forgotpassword,
   verifyotpforpassword,
   sendOtp,
+  againOtp,
   resetPassword,
   Cart,
   cartAdding,

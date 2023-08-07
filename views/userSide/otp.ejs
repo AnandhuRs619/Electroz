@@ -43,45 +43,66 @@
         <button id="resend-button">Resend OTP</button>
         <p id="timer">Wait 60 seconds before resending.</p>
       </div>
-    </div>
     
-    <script>
-      const resendContainer = document.getElementById('resend-container');
-      const resendButton = document.getElementById('resend-button');
-      const timerElement = document.getElementById('timer');
-      
-      let countdown = 60;
-      let intervalId;
-      
-      function startTimer() {
-        timerElement.style.display = 'block';
-        resendButton.style.display = 'none';
-        intervalId = setInterval(() => {
-          countdown--;
-          timerElement.textContent = `Wait ${countdown} seconds before resending.`;
-          if (countdown <= 0) {
-            clearInterval(intervalId);
-            timerElement.style.display = 'none';
-            resendButton.style.display = 'block';
-          }
-        }, 1000);
-      }
-      
-      function resetTimer() {
-        clearInterval(intervalId);
-        countdown = 60;
-        timerElement.style.display = 'none';
-        resendButton.style.display = 'none';
-        setTimeout(() => {
-          resendButton.style.display = 'block';
-        }, 1000);
-      }
-      
-      resendButton.addEventListener('click', () => {
-        // Simulate OTP resend action (you should replace this with your actual logic)
-        resetTimer();
-        startTimer();
+   
+   <script>
+    var timerInterval;
+    var timeout;
+
+    (function () {
+      var timer = document.getElementById('timer');
+      var button = document.getElementById('resend-button');
+      timer.style.display = 'inline-block';
+      button.style.display = 'none';
+      var seconds = 60;
+      timer.innerHTML = 'Wait  '+ seconds + 'seconds before resending.';
+      timerInterval = setInterval(function () {
+        seconds--;
+        if (seconds <= 0) {
+          clearInterval(timerInterval);
+          timer.style.display = 'none';
+          button.style.display = 'inline-block';
+          timeout = setTimeout(function () {
+            button.style.display = 'none';
+          }, 10000);
+        } else {
+          timer.innerHTML ='Wait   '+ seconds + 'seconds before resending.';
+        }
+      }, 1000);
+    })();
+    
+    const resendButton = document.getElementById('resend-button');
+  resendButton.addEventListener('click', () => {
+    fetch('/resend-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // You can include additional data in the request body if required
+      // body: JSON.stringify({ phonenumber: phoneNumber }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          stopTimer(); // Reset the timer
+          alert('New OTP sent successfully');
+        } else {
+          alert('Failed to resend OTP');
+        }
+      })
+      .catch(error => {
+        console.error('An error occurred:', error);
       });
+  });
+
+  function stopTimer() {
+      clearInterval(timerInterval);
+      clearTimeout(timeout);
+      var timer = document.getElementById("timer");
+      var button = document.getElementById("resend-button");
+      timer.style.display = "none";
+      button.style.display = "inline-block";
+    }
     </script>
 
   </body>

@@ -1,6 +1,6 @@
 
 
-fetch("http://localhost:4000/admin/Dashboard/chart")
+fetch("/admin/Dashboard/chart")
 .then((response) => response.json())
 .then((data)=>{
     var ctx = document.getElementById("lineChart").getContext("2d");

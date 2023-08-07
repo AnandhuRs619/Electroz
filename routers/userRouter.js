@@ -19,6 +19,7 @@ UserRouter.get('/forgotPassword',userController.forgotpassword);
 
 UserRouter.get('/logout',userAuth.isLogOut,userController.userLogout)
 UserRouter.post('/send-otp',userController.sendOtp);
+UserRouter.post('/Resend-otp',userController.againOtp);
 UserRouter.post('/verify-otp',userController.verifyotpforpassword);
 UserRouter.post('/newPassword',userController.resetPassword);
 UserRouter.use(userAuth.isLogOut);
