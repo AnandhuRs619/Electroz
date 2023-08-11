@@ -86,7 +86,7 @@
 					<!-- /LOGO -->
 
 					<!-- SEARCH BAR -->
-					<div class="col-md-6">
+					<div class="col-md-5 ">
 						<div class="header-search">
 							<form>
 								<select class="input-select">
@@ -102,11 +102,11 @@
 					<!-- /SEARCH BAR -->
 
 					<!-- ACCOUNT -->
-					<div class="col-md-3 clearfix">
-						<div class="header-ctn">
+					<div class="col-md-4 clearfix ">
+						<div class="header-ctn d-flex">
 							<!-- Wishlist -->
 							<div>
-								<a href="#">
+								<a href="">
 									<i class="fa fa-heart-o"></i>
 									<span>Your Wishlist</span>
 									<div class="qty">2</div>
@@ -457,12 +457,12 @@
 																	<td>
 																		<% if (couponName) { %>
 																		  Discount <span class="text-muted"><%= couponName %></span> :
-																		  <button class="btn btn-danger remove-coupon-button">&times;</button>
+																		  <button id="coupon_name"  class="btn btn-danger remove-coupon-button">&times;</button>
 																		<% } else { %>
 																		  No coupon applied.
 																		<% } %>
 																	  </td>
-																	<td class="text-end" id="cart-discount">- ₹<%=discountAmount %></td>
+																	<td class="text-end" id="cart-discount">- ₹<%=CouponAmount %></td>
 																</tr>
 																<tr>
 																	<td>Shipping Charge :</td>
@@ -471,7 +471,7 @@
 																<tr class="table-active">
 																	<th>Total :</th>
 																	<td class="text-end">
-																		<span class="fw-semibold" id="cart-total">₹ <%=finalAmount %></span>
+																		<span class="fw-semibold" id="cart-total">₹ <%= user.subtotal +shippingCharge%></span>
 																	</td>
 																</tr>
 															</tbody>
@@ -717,7 +717,7 @@
       contentType: 'application/json',
       success: function (response) {
         if (response.finalAmount) {
-          document.getElementById('cart-subtotal').innerText = response.finalAmount;
+          document.getElementById('cart-total').innerText = response.finalAmount;
           document.getElementById('cart-discount').innerText = 0; // Reset discount amount to zero
           const total = document.getElementById('cart-total');
           total.innerText = response.finalAmount;
@@ -756,10 +756,9 @@
 					contentType: 'application/json',
 					success: function (response) {
 						if (response.finalAmount) {
-							document.getElementById('cart-subtotal').innerText = response.finalAmount
+							// document.getElementById('cart-subtotal').innerText = response.finalAmount
 							document.getElementById('cart-discount').innerText = response.discountAmount
-							const total = document.getElementById('cart-total')
-							total.innerText
+							document.getElementById('coupon_name').innerText = response.couponName
 						}
 						console.log(response);
 					},

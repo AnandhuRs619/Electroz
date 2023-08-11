@@ -44,7 +44,9 @@ const userSchema = new mongoose.Schema({
       },
     }]
   },
-  
+  discountAmount: {
+    type: Number
+  },
   subtotal: {
     type: Number,
     default: 0

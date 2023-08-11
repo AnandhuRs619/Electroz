@@ -1,5 +1,5 @@
 <%-include("../layout/header.ejs")%>
-
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 	<!-- BREADCRUMB -->
 	<div id="breadcrumb" class="section">
 		<!-- container -->
@@ -169,6 +169,10 @@
 											</div>
 											<button class="btn btn-danger profile-button" type="button" data-toggle="modal"
 								data-target="#editAddressModal-<%= address._id %>" data-address-id="">Edit Address</button>
+								
+								<button class="btn btn-danger profile-button delete-address-button" type="button" data-address-id="<%= address._id %>">
+									<i class="ri-delete-bin-5-fill"></i>
+								</button>
 										<% }); %>
 									</div>
 									<% } else { %>
@@ -223,6 +227,29 @@
 	</div>
 	</div>
 	</div>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			$(document).on('click', '.delete-address-button', function() {
+				const addressId = $(this).data('address-id');
+				console.log(addressId);
+				$.ajax({
+					url: '/profile/deleteAddress', // Change this URL to your backend route
+					method: 'POST',
+					data: { addressId: addressId },
+					success: function(response) {
+						console.log('Address deleted successfully');
+						// Refresh the page or update the address list as needed
+						window.location.href = '/manageAddress';
+					},
+					error: function(error) {
+						console.error('Error deleting address', error);
+					}
+				});
+			});
+		});
+	</script>
 
 
 	<!-- /User Profile -->

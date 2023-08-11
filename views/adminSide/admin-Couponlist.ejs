@@ -129,7 +129,7 @@
                                                                         </a>
                                                                     </li>
                                                                     <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" data-bs-target="#deleteRecordModal" data-coupon-id="<%= coupon._id %>">
+                                                                        <a id="delete-coupon" class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" data-bs-target="#deleteRecordModal" data-coupon-id="<%= coupon._id %>">
                                                                             <i class="ri-delete-bin-5-fill fs-16"></i>
                                                                         </a>
                                                                     </li>
@@ -154,7 +154,8 @@
                                 
                                                                             <div class="mb-3">
                                                                                 <label for="couponname-field" class="form-label">Coupon Name</label>
-                                                                                <input type="text" id="couponname-field" name="couponName" class="form-control" value="<%= coupon.couponName %>" required />
+                                                                                <input type="text" id="couponname-field" name="couponName" class="form-control" value="<%= coupon.couponName %>" required oninvalid="this.setCustomValidity('Please enter a coupon name.')"
+                                                                                oninput="this.setCustomValidity('')" />
                                                                                 <div class="invalid-feedback">Please enter a coupon name.</div>
                                                                             </div>
                                 
@@ -237,7 +238,8 @@
             
                                                         <div class="mb-3">
                                                             <label for="couponname-field" class="form-label">Coupon Name</label>
-                                                            <input type="text" id="couponname-field" name="couponName" class="form-control" value="" required />
+                                                            <input type="text" id="couponname-field" name="couponName" class="form-control" value="" required oninvalid="this.setCustomValidity('Please enter a coupon name.')"
+                                                            oninput="this.setCustomValidity('')" />
                                                             <div class="invalid-feedback">Please enter a coupon name.</div>
                                                         </div>
             
@@ -250,7 +252,7 @@
                                                         
                                                         <div class="mb-3">
                                                             <label for="maxvalue-field" class="form-label">Max %</label>
-                                                            <input type="text" id="maxvalue-field" name="maxValue" class="form-control" value="" required />
+                                                            <input type="text" id="maxvalue-field" name="maxValue" class="form-control" value="" required  />
                                                             <div class="invalid-feedback">Please enter a max value.</div>
                                                         </div>
                                                         
@@ -274,9 +276,7 @@
                                                 </form>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    
+                                    </div>                                   
 <!-- Modal -->
 <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -313,33 +313,61 @@
                 <!-- container-fluid -->
             </div>
             <!-- End Page-content -->
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+    $(document).ready(function() {
+    $('#update-btn').click(function(event) {
+        const couponValue = $('#couponvalue-field').val();
+        const maxValue = $('#maxvalue-field').val();
+        const minValue = $('#minvalue-field').val();
+
+        if (couponValue <= 0 || couponValue > 100) {
+            alert('Coupon Value must be between 1 and 100.');
+            event.preventDefault(); // Prevent form submission
+        }
+
+        if (maxValue <= 0 || maxValue > 10000 || minValue <= 0 || minValue > 10000 || minValue > maxValue) {
+            alert('Invalid Max/Min Values. They should be between 1 and 100, and Min should be less than Max.');
+            event.preventDefault(); // Prevent form submission
+        }
+    });
+});
+
+</script>
+
 
             <script>
+        
 
-$(document).ready(function() {
-        $(document).on('click', '.delete-bin', function() {
-            var couponId = $(this).data('coupon-id');
-            console.log(couponId);
-            $('#couponId').val(couponId);
-            $('#deleteRecordModal').modal('show');
-        });
+                $(document).ready(function() {
+    let couponIdToDelete;
 
-        $(document).on('click', '#delete-record', function() {
-            var couponId = $('#couponId').val();
+    $(document).on('click', '.remove-item-btn', function() {
+        couponIdToDelete = $(this).data('coupon-id');
+        $('#deleteRecordModal').modal('show');
+    });
+
+    $(document).on('click', '#delete-record', function() {
+        if (couponIdToDelete) {
             $.ajax({
-                url: '/admin/deleteCoupon',
+                url: '/admin/removeCoupon',
                 method: 'POST',
-                data: { couponId: couponId },
+                data: { couponId: couponIdToDelete },
                 success: function(response) {
                     console.log('Coupon deleted successfully');
-                    window.location.href = '/admin/coupons';
+                    window.location.href = '/admin/couponList';
                 },
                 error: function(error) {
                     console.error('Error deleting coupon', error);
                 }
             });
-        });
+        } else {
+            console.error('Coupon ID not available.');
+        }
     });
+});
             </script>
 
             <%-include("../layout/adminFooter.ejs")%>

@@ -41,6 +41,7 @@ UserRouter.post('/passwordChange/sendOTP',userController.paswordChange);
 UserRouter.post('/profile/changePassword',userController.changePassword);
 UserRouter.post('/profie/addAddress',userController.addAddress);
 UserRouter.post('/profie/editAddress',userController.editAddress);
+UserRouter.post('/profile/deleteAddress',userController.deleteAdress);
 UserRouter.get('/Mywishlist',userController.myWishlist);
 UserRouter.post('/Mywishlist/addtoWishlist',userController.addToWishlist);
 UserRouter.get('/Myorders',userController.myOrder);

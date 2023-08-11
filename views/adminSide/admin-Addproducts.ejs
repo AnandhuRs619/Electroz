@@ -156,7 +156,7 @@
                                                     <div class="col-lg-3 col-sm-6">
                                                         <div class="mb-3">
                                                             <label class="form-label" for="stocks-input">Stocks</label>
-                                                            <input type="text" class="form-control" name="stock" id="stocks-input" placeholder="Stocks" required>
+                                                            <input type="number" class="form-control" name="stock" id="stocks-input" placeholder="Stocks" required min="1">
                                                             <div class="invalid-feedback">Please Enter a product stocks.</div>
                                                         </div>
                                                     </div>
@@ -165,7 +165,7 @@
                                                             <label class="form-label" for="product-price-input">Price</label>
                                                             <div class="input-group has-validation mb-3">
                                                                 <span class="input-group-text" id="product-price-addon">₹</span>
-                                                                <input type="text" name="price" class="form-control" id="product-price-input" placeholder="Enter price" aria-label="Price" aria-describedby="product-price-addon" required>
+                                                                <input type="text" name="price" class="form-control" id="product-price-input" placeholder="Enter price" aria-label="Price" aria-describedby="product-price-addon" required min="1">
                                                                 <div class="invalid-feedback">Please Enter a product price.</div>
                                                             </div>
 
@@ -295,7 +295,44 @@
                 <!-- container-fluid -->
             </div>
             <!-- End Page-content -->
-
+            <script>
+                const stocksInput = document.getElementById('stocks-input');
+                const stocksFeedback = document.getElementById('stocks-feedback');
+                const productForm = document.getElementById('createproduct-form'); // Get the form element
+            
+                stocksInput.addEventListener('input', function () {
+                    if (stocksInput.value < 0) {
+                        stocksInput.setCustomValidity('Stock value cannot be negative.');
+                        stocksFeedback.style.display = 'block';
+                    } else {
+                        stocksInput.setCustomValidity('');
+                        stocksFeedback.style.display = 'none';
+                    }
+                });
+            
+                const priceInput = document.getElementById('product-price-input');
+                const priceFeedback = document.getElementById('price-feedback');
+            
+                priceInput.addEventListener('input', function () {
+                    if (priceInput.value < 1) {
+                        priceInput.setCustomValidity('Price cannot be less than ₹1.');
+                        priceFeedback.style.display = 'block';
+                    } else {
+                        priceInput.setCustomValidity('');
+                        priceFeedback.style.display = 'none';
+                    }
+                });
+            
+                // Form submit event handler
+                productForm.addEventListener('submit', function (event) {
+                    // Check if the stock input value is 0 or less
+                    if (stocksInput.value <= 0||priceInput.value<=0 ) {
+                        event.preventDefault(); // Prevent form submission
+                        alert('Cannot submit form with stock 0 or less.');
+                    }
+                    // Add similar checks for other conditions if needed
+                });
+            </script>
 
             <script src="path/to/ckeditor/ckeditor.js"></script>
 

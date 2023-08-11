@@ -42,7 +42,7 @@
                                         <div>
                                             <label>Product Description</label>
 
-                                            <textarea class="form-control"  id="product-description" name="description" value="<%=product.description%>" rows="5" required></textarea>
+                                            <textarea class="form-control" id="product-description" name="description" rows="5" required><%= product.description %></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -57,7 +57,12 @@
 
                                             <div class="dropzone">
                                                 <div class="fallback">
-                                                    <input  name="image" value="<%=product.image%>" type="file" multiple="multiple">
+                                                    <% product.image.forEach(function(path) { %>
+                                                        <input type="hidden" name="existingImages[]" value="<%= path %>">
+                                                      <% }) %>
+                                                      <h3 class="" style="color:gray;font-size: medium;">image</h3>
+                                                  
+                                                      <input type="file" style="width: 70%; height: 30px;"  name="image" multiple  class="border border-dark file " required>
                                                 </div>
                                                 <div class="dz-message needsclick">
                                                     <div class="mb-3">
@@ -122,7 +127,7 @@
                                                     <div class="col-lg-6">
                                                         <div class="mb-3">
                                                             <label class="form-label" for="manufacturer-brand-input">Manufacturer Brand</label>
-                                                            <input type="text" class="form-control" name="Brand_name" id="manufacturer-brand-input" value="<%=product.Brand_name%>">
+                                                            <input type="text" class="form-control" name="Brand_name" id="manufacturer-brand-input" value="<%=product.Brand_name%>" required>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -132,7 +137,7 @@
                                                     <div class="col-lg-3 col-sm-6">
                                                         <div class="mb-3">
                                                             <label class="form-label" for="stocks-input">Stocks</label>
-                                                            <input type="text" class="form-control" name="stock" id="stocks-input" value="<%=product.stock%>" required>
+                                                            <input type="number" class="form-control" name="stock" id="stocks-input" value="<%=product.stock%>" required min="1">
                                                             <div class="invalid-feedback">Please Enter a product stocks.</div>
                                                         </div>
                                                     </div>
@@ -141,7 +146,7 @@
                                                             <label class="form-label" for="product-price-input">Price</label>
                                                             <div class="input-group has-validation mb-3">
                                                                 <span class="input-group-text" id="product-price-addon">₹</span>
-                                                                <input type="text" name="price" class="form-control" id="product-price-input" value="<%=product.price%>" aria-label="Price" aria-describedby="product-price-addon" required>
+                                                                <input type="number" name="price" class="form-control" id="product-price-input" value="<%=product.price%>" aria-label="Price" aria-describedby="product-price-addon" required min="1">
                                                                 <div class="invalid-feedback">Please Enter a product price.</div>
                                                             </div>
 
@@ -273,5 +278,44 @@
                 <!-- container-fluid -->
             </div>
             <!-- End Page-content -->
+            <script>
+                const stocksInput = document.getElementById('stocks-input');
+                const stocksFeedback = document.getElementById('stocks-feedback');
+                const productForm = document.getElementById('createproduct-form'); // Get the form element
+            
+                stocksInput.addEventListener('input', function () {
+                    if (stocksInput.value < 0) {
+                        stocksInput.setCustomValidity('Stock value cannot be negative.');
+                        stocksFeedback.style.display = 'block';
+                    } else {
+                        stocksInput.setCustomValidity('');
+                        stocksFeedback.style.display = 'none';
+                    }
+                });
+            
+                const priceInput = document.getElementById('product-price-input');
+                const priceFeedback = document.getElementById('price-feedback');
+            
+                priceInput.addEventListener('input', function () {
+                    if (priceInput.value < 1) {
+                        priceInput.setCustomValidity('Price cannot be less than ₹1.');
+                        priceFeedback.style.display = 'block';
+                    } else {
+                        priceInput.setCustomValidity('');
+                        priceFeedback.style.display = 'none';
+                    }
+                });
+            
+                // Form submit event handler
+                productForm.addEventListener('submit', function (event) {
+                    // Check if the stock input value is 0 or less
+                    if (stocksInput.value <= 0||priceInput.value<=0 )  {
+                        event.preventDefault(); // Prevent form submission
+                        alert('Cannot submit form with stock 0 or less.');
+                    }
+                    // Add similar checks for other conditions if needed
+                });
+            </script>
+
 
 <%-include("../layout/adminFooter.ejs")%>

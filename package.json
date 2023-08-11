@@ -15,6 +15,7 @@
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "connect-mongo": "^3.2.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "easyinvoice": "^3.0.23",
     "ejs": "^3.1.9",

@@ -504,6 +504,7 @@ const Cart = async (req, res) => {
       const category = await Category.findOne({
         categoryName: product.productId.category,
       });
+  
 
       // Calculate the category discount amount for the current product based on percentage
       const categoryDiscountPercentage = category ? category.discount : 0;
@@ -513,15 +514,30 @@ const Cart = async (req, res) => {
       // Add the category discount amount to the total
       totalCategoryDiscountAmount += categoryDiscountAmount;
     }
-
+    const couponIds = user.appliedCoupon;
+    console.log(couponIds);
+  
+    // let discount = 0; // Default value for discount
+    // let CouponAmount = 0; // Default value for CouponAmount
+  
+    // if (couponIds) {
+    //   const appliedCoupon = await Coupon.findById(couponIds);
+    //   if (appliedCoupon) {
+    //     discount = appliedCoupon.couponValue;
+    //     console.log(discount);
+    //     CouponAmount = Math.floor((discount / 100) * user.subtotal);
+    //     console.log(CouponAmount);
+    //   }
+    // }
+    const CouponAmount = user.discountAmount;
     let discountAmount = 0;
     let discountedTotalAmount = subtotal;
 
-    // if (selectedCouponValue > 0) {
-    //   // If a coupon is selected, apply the discount
-    //   discountAmount = selectedCouponValue;
-    //   discountedTotalAmount = subtotal - discountAmount ;
-    // }
+    if (selectedCouponValue > 0) {
+      // If a coupon is selected, apply the discount
+      discountAmount = selectedCouponValue;
+      discountedTotalAmount = subtotal - discountAmount ;
+    }
 
     // Calculate shipping charge
     const shippingCharge = 100.0;
@@ -540,6 +556,7 @@ const Cart = async (req, res) => {
       shippingCharge,
       finalAmount,
       totalCategoryDiscountAmount,
+      CouponAmount,
     });
   } catch (error) {
     console.error(error);
@@ -569,32 +586,46 @@ const searchProduct = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 const cartAdding = async (req, res) => {
   try {
-    const Id = req.body.productId;
+    const productId = req.body.productId;
     const userId = req.session.user;
-    const userDetails = await User.findById({ _id: userId });
+    const userDetails = await User.findById(userId);
     const cart = userDetails.cart.items;
-    const existingCartItem = cart.find((items) => items.productId == Id);
-    const product = await productModel.findById({ _id: Id });
+    const existingCartItem = cart.find((item) => item.productId == productId);
+    const product = await productModel.findById(productId);
+
+    if (!product) {
+      return res.status(404).json("Product not found");
+    }
+
     const productPrice = parseInt(product.discountedPrice);
+
     if (existingCartItem) {
       existingCartItem.quantity += 1;
       existingCartItem.price = existingCartItem.quantity * productPrice;
     } else {
       const newCartItem = {
-        productId: Id,
+        productId: productId,
         quantity: 1,
         price: productPrice,
         realPrice: product.discountedPrice,
       };
       userDetails.cart.items.push(newCartItem);
     }
-    await userDetails.save();
-    res.json("successfully Added Your Cart");
+
+    // Check if there's enough stock to add the requested quantity
+    if (product.stock >= 1) {
+      product.stock -= 1; // Deduct the requested quantity from the stock
+      await product.save(); // Save the updated stock count
+      await userDetails.save(); // Save the updated cart
+      return res.json("Successfully Added to Your Cart");
+    } else {
+      return res.status(400).json("Insufficient stock");
+    }
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    res.status(500).json("Internal Server Error");
   }
 };
 
@@ -616,9 +647,22 @@ const cartRemove = async (req, res) => {
       return res.status(404).json({ error: "Product not found in cart" });
     }
 
+    const removedItem = user.cart.items[itemIndex];
+    const removedQuantity = removedItem.quantity;
+
     user.cart.items.splice(itemIndex, 1);
 
+    // Retrieve the product details from the database
+    const productDetails = await productModel.findById(productId);
+    if (!productDetails) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // Add the removed quantity back to the product's stock
+    productDetails.stock += removedQuantity;
+
     await user.save();
+    await productDetails.save();
 
     res.json({
       success: true,
@@ -634,26 +678,46 @@ const cartOuantity = async (req, res) => {
   try {
     const { quantity, productId } = req.body;
     const userId = req.session.user;
-    const userDetails = await User.findById({ _id: userId });
+    const userDetails = await User.findById(userId);
     const cart = userDetails.cart.items;
     const existingCartItem = cart.find((item) => item.productId == productId);
 
-    // Retrieve the product details from the database (assuming there's a Product model)
-    const productDetails = await productModel.findById({ _id: productId });
+    if (!existingCartItem) {
+      return res.status(404).json("CartItem not found");
+    }
+
+    // Retrieve the product details from the database
+    const productDetails = await productModel.findById(productId);
+
+    if (!productDetails) {
+      return res.status(404).json("Product not found");
+    }
+
+    // Check if the requested quantity exceeds the available stock
+    if (quantity > productDetails.stock) {
+      return res.status(400).json("Requested quantity exceeds available stock");
+    }
+
+    // Calculate the difference between the new and old quantity
+    const quantityDifference = quantity - existingCartItem.quantity;
 
     // Update the quantity and calculate the updated price
     existingCartItem.quantity = quantity;
-    existingCartItem.price =
-      existingCartItem.quantity * productDetails.discountedPrice; // Assuming productDetails contains the product's price
+    existingCartItem.price = existingCartItem.quantity * productDetails.discountedPrice;
 
-    userDetails.save();
-    res.json("halooo");
+    // Update the product's stock
+    const newStock = productDetails.stock - quantityDifference;
+    productDetails.stock = newStock;
+
+    await userDetails.save();
+    await productDetails.save();
+
+    res.json("Successfully updated quantity");
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 };
-
 const checkout = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -698,7 +762,7 @@ const checkout = async (req, res) => {
     // Calculate final amount including shipping charge and all discounts
     const discountedTotalAmount =
       totalAmount - discountAmount - totalCategoryDiscountAmount;
-    const finalAmount = discountedTotalAmount + shippingCharge;
+    const finalAmount = user.subtotal + shippingCharge;
 
     const address = userDetails.address;
     const cartItems = userDetails.cart.items;
@@ -755,7 +819,7 @@ const coupon = async (req, res) => {
     console.log(formattedExpiryDate);
     console.log(newDate);
 
-    if (formattedExpiryDate > newDate) {
+    if (formattedExpiryDate < newDate) {
       return res.status(400).json({ message: "Coupon has expired" });
     }
 
@@ -777,19 +841,28 @@ const coupon = async (req, res) => {
           "Discount percentage exceeds the maximum allowed for this coupon",
       });
     }
+    const couponName = couponValue.couponName
     // Calculate the discount amount as a percentage of the subtotal
-    const discountAmount = (couponPercentage / 100) * user.subtotal;
-    console.log(discountAmount);
-
+    const discountAmount = Math.floor((couponPercentage / 100) * user.subtotal);
+    // const lastDisc=  user.subtotal- discountAmount
+    console.log( discountAmount);
+   
     // Calculate the final amount after applying the discount
     const finalAmount = Math.floor(user.subtotal - discountAmount);
     console.log(finalAmount);
 
-    // Update the user's appliedCoupon field with the ID of the applied coupon
-    user.appliedCoupon = couponValue._id;
-    await user.save();
+await User.findByIdAndUpdate({_id:userId},{subtotal:finalAmount})
 
-    res.json({ finalAmount, discountAmount });
+
+
+    // Update the user's appliedCoupon field with the ID of the applied coupon
+   
+    user.discountAmount =discountAmount;
+    user.appliedCoupon = couponValue._id; // Set the applied coupon ID
+    await user.save(); // Save the user document
+    
+
+    res.json({ finalAmount, discountAmount,couponName });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -800,7 +873,8 @@ const removeCoupon = async (req, res) => {
   try {
     const userId = req.session.user;
     const user = await User.findById(userId);
-
+    const coupon = await Coupon.findById(user.appliedCoupon);
+    console.log(coupon);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -808,8 +882,9 @@ const removeCoupon = async (req, res) => {
     if (!user.appliedCoupon) {
       return res.status(400).json({ message: "No coupon applied" });
     }
-
+     
     // Remove the appliedCoupon field from the user
+    user.discountAmount =0;
     user.appliedCoupon = null;
     await user.save();
 
@@ -1033,6 +1108,37 @@ const editAddress = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
+const deleteAdress = async(req,res) =>{
+  try {
+    const addressId = req.body.addressId;
+    const userId = req.session.user; // Assuming you have a user session
+    console.log(addressId);
+    // Find the user by their ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Find the index of the address in the user's address array
+    const addressIndex = user.address.findIndex(address => address._id.toString() === addressId);
+
+    if (addressIndex === -1) {
+        return res.status(404).json({ error: 'Address not found' });
+    }
+
+    // Remove the address from the array
+    user.address.splice(addressIndex, 1);
+
+    await user.save();
+
+    res.json({ success: true, message: 'Address deleted successfully' });
+
+  }catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
 
 const myWishlist = async (req, res) => {
   try {
@@ -1313,8 +1419,8 @@ const orderDetails = async (req, res) => {
     });
 
     // Apply coupon discount if applicable
-    const coupon = await Coupon.findOne({ couponName: order.couponName });
-
+    // const coupon = await Coupon.findOne({ couponName: user.appliedCoupon });
+    // console.log(coupon); 
     let discountAmount = 0;
     let discountedTotalAmount = totalAmount;
 
@@ -1590,6 +1696,7 @@ module.exports = {
   cartOuantity,
   userProfile,
   editProfile,
+  deleteAdress,
   profileOtp,
   changePassword,
   Myprofile,

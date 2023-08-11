@@ -158,10 +158,12 @@
                                                                                     </div><!-- end card header -->
                                             
                                                                                     <div class="card-body">
-                                                                                        <input type="file" class="filepond filepond-input-multiple"  multiple name="image" data-allow-reorder="true" data-max-file-size="3MB" data-max-files="3">
+                                                                                        <% bdata.image.forEach(function(path) { %>
+                                                                                            <input type="hidden" name="existingImages[]" value="<%= path %>">
+                                                                                        <% }) %>
+                                                                                        <h3 class="" style="color: gray; font-size: medium;">image</h3>
+                                                                                        <input type="file" class="filepond filepond-input-multiple" multiple name="image"data-allow-reorder="true"data-max-file-size="3MB">
                                                                                     </div>
-                                                                                    <!-- end card body -->
-                                                                                </div>
                                                                                 <!-- end card -->
                                                                             </div> <!-- end col -->
                                                                         </div>

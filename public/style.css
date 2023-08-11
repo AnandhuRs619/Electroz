@@ -55,12 +55,12 @@ body{
   position: absolute;
   height: 100%;
   width: 100%;
-  background: #ff0202;
-  opacity: 0.5;
+  background: #ff7171;
+  /* opacity: 0.5; */
   z-index: 12;
 }
 .container .cover::after{
-  opacity: 0.3;
+  /* opacity: 0.3; */
   transform: rotateY(180deg);
   backface-visibility: hidden;
 }

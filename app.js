@@ -1,9 +1,11 @@
 const express = require("express");
 const app = express();
+// const cors = require('cors');
 const env = require("dotenv");
 const UserRouter = require("./routers/userRouter");
 const adminRouter = require("./routers/adminRouter");
 const Db = require("./confg/db");
+
 const session = require("express-session");
 // const MongoStore = require('connect-mongo')(session);
 // const mongoose = require('mongoose');
@@ -11,6 +13,13 @@ const session = require("express-session");
 env.config({ path: './.env' }); 
 // const url = process.env.URL
 // mongoose.connect(url);
+
+// app.use(cors({
+//   origin: ['https://electroz.shop', 'http://localhost:4000'], // Replace with your allowed origins
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   allowedHeaders: ['Content-Type'],
+//   credentials: true, 
+// }));
 
 app.use(
   session({

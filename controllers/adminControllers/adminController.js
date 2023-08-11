@@ -311,14 +311,7 @@ const productLists = async (req, res)=>{
 
 }
 
-const productDetails = async(req,res)=>{
-    try{
-        res.render('adminSide/admin-Productdetails',{admin:req.session.admin});
-    }catch(error){
-        console.error(error);
-        res.status(500).send("Internal  Server Error")
-    }
-}
+
 const productAdding = async(req,res)=>{
     try{
         
@@ -393,6 +386,9 @@ const editProduct = async(req,res)=>{
         const discountPercentage = parseFloat(discount);
         const discountedPrice = originalPrice - (originalPrice * (discountPercentage / 100));
 
+
+        const existingImages = req.body.existingImages || [];
+        const updatedImages = req.files ? req.files.map((file) => file.path) : [];
         const imagePaths = [];
 
     for (const image of files) {
@@ -403,11 +399,16 @@ const editProduct = async(req,res)=>{
       );
       
       await sharp(imagePath).resize(1500, 1500).toFile(croppedImagePath);
+      
+
+
 
       // Get the filename without the path and push it to the imagePaths array
    const imageName = path.basename(croppedImagePath);
    imagePaths.push(imageName);
-     }
+
+  }
+  const updatedImagePathList =updatedImages.length > 0 ? imagePaths : existingImages;
         const pData= await productModel.findByIdAndUpdate( id ,{
            $set:{
             name:name,
@@ -418,7 +419,7 @@ const editProduct = async(req,res)=>{
             discount:discount,
             description:description,
             discountedPrice: discountedPrice,
-            image: imagePaths
+            image: updatedImagePathList
            } 
         });
         
@@ -454,7 +455,7 @@ const removeProduct = async(req,res)=>{
 
 const categoryList = async(req,res)=>{
     try{
-        const category = await categorySchema.find();
+        const category = await categorySchema.find({ isAvailable: true });
         res.render('adminSide/admin-CategoriesList.ejs',{admin:req.session.admin,category:category});
     }catch(error){
         console.error(error);
@@ -462,21 +463,39 @@ const categoryList = async(req,res)=>{
     }
 
 }
+
+   
+
 const categoryAdding = async(req,res)=>{
     try{
-        const {categoryName,description,discount}=req.body;
+
+        const {description,discount}=req.body;
+
+        const categoryName= req.body.categoryName
+        console.log(categoryName);
+        const existingCategory = await categorySchema.findOne({
+          categoryName: { $regex: new RegExp(`^${categoryName}$`, "i") },
+        });
+     
+        if (existingCategory) {
+          return res.status(400).json({ message: "Category already exists. Please use a unique name." })
+        }
         const category = new categorySchema({
             categoryName,
             description,
             discount
         })
         await category.save()
-        res.redirect('/admin/categoryList');
+        res.status(200).json({ msg: "Category Added Successfully" })
+        // res.redirect('/admin/categoryList');
+
+
     }catch(error){
         console.error(error);
         res.status(500).send("Internal  Server Error")
     }
 }
+
 const categoryEdit = async (req,res)=>{
     try{
         const{ categoryName, description,discount,cataId}= req.body;
@@ -495,20 +514,27 @@ const categoryEdit = async (req,res)=>{
         res.status(500).send("Internal  Server Error")
     }
 }
-const removeCategory = async(req,res)=>{
-    try{
-        const cataId = req.params.id;
-        const category = categorySchema.findByIdAndUpdate(cataId,{isAvailable:false},{new:true})
-        if(!category){
-            return res.status(404).json({ error: 'Category not found' });
-        }
+const removeCategory = async (req, res) => {
+  try {
+      const cataId = req.body.categoryId;
+      
+      
+      const category = await categorySchema.findByIdAndUpdate(
+          cataId,
+          { isAvailable: false },
+          { new: true }
+      );
 
-        res.json(category);
-    }catch(error){
-        console.error(error);
-        res.status(500).send("Internal  Server Error")
-    }
-}
+      if (!category) {
+          return res.status(404).json({ error: 'Category not found' });
+      }
+
+      res.json(category);
+  } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+  }
+};
 // Customers Listing / Add & block 
 
 const customerList = async (req,res)=>{
@@ -556,6 +582,68 @@ const orderlist = async (req,res)=>{
       }
 };
 
+const orderDetials = async(req,res)=>{
+  try{
+    const orderId = req.query.orderId;
+    const order = await orderModel
+      .findById(orderId)
+      .populate("userId", "name email number");
+
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+    const userId = order.userId;
+    const user = await User.findById(userId).populate("address");
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    const address = user.address.find(
+      (address) => address._id.toString() === order.address.toString()
+    );
+
+    if (!address) {
+      return res.status(404).send("Address not found");
+    }
+    let totalAmount = 0;
+    order.products.forEach((product) => {
+      totalAmount += parseInt(product.price);
+    });
+
+    // Apply coupon discount if applicable
+    // const coupon = await Coupon.findOne({ couponName: user.appliedCoupon });
+    // console.log(coupon); 
+    let discountAmount = 0;
+    let discountedTotalAmount = totalAmount;
+
+    // if (coupon) {
+    //   if (totalAmount >= coupon.minValue && totalAmount <= coupon.maxValue) {
+    //     discountAmount = parseInt(coupon.couponValue);
+    //     discountedTotalAmount = totalAmount - discountAmount;
+    //   }
+    // }
+    // Calculate shipping charge
+    const shippingCharge = 100.0;
+
+    // Calculate final amount including shipping charge
+    const finalAmount = discountedTotalAmount + shippingCharge;
+
+    res.render("adminSide/admin-order-details", {
+      order,
+      address,
+      totalAmount,
+      discountAmount,
+      finalAmount,
+      shippingCharge,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+  
 const orderupdate = async (req, res) => {
     try {
         const orderId = req.body.orderId;
@@ -634,8 +722,7 @@ const editCoupon = async(req,res)=>{
 const removeCoupon = async (req, res) => {
   try {
     const couponId = req.body.couponId;
-    console.log(couponId);
-
+  
     // Delete the coupon from the database
     const deletedCoupon = await Coupon.findByIdAndDelete(couponId);
 
@@ -698,7 +785,11 @@ const editBanner = async(req,res)=>{
     try{
         const {BannerName,description,description2,bannerId}=req.body
         const images = req.files;
+
+        const existingImages = req.body.existingImages || [];
+        const updatedImages = req.files ? req.files.map((file) => file.path) : [];
         const imagePaths = [];
+
 
         for (const image of images) {
           const imagePath = image.path;
@@ -714,14 +805,14 @@ const editBanner = async(req,res)=>{
        const imageName = path.basename(croppedImagePath);
        imagePaths.push(imageName);
         }
-        
+        const updatedImagePathList =updatedImages.length > 0 ? imagePaths : existingImages;
         
         const data = await Banner.findByIdAndUpdate({_id:bannerId},{
             $set:{
             BannerName,
             description,
             description2,
-            image: imagePaths,
+            image: updatedImagePathList,
             }
         });
         res.redirect('/admin/bannarlist')
@@ -764,7 +855,6 @@ module.exports={
     salesReport,
     adminLogin,
     adminVerify,
-    productDetails,
     productLists,
     productAdding,
     loadedit,
@@ -778,6 +868,7 @@ module.exports={
     addingNewProduct,
     categoryEdit,
     orderlist,
+    orderDetials,
     couponList,
     addCoupon,
     editCoupon,

@@ -1,17 +1,17 @@
-fetch("http://localhost:4000/admin/Dashboard/chart")
+fetch("/admin/Dashboard/chart")
 .then((response) => response.json())
 .then((data)=>{
 
-   const labels=data.mostSoldCategory.map(categoryData => `${categoryData.category} (${categoryData.count})`);
+   
 
     var ctx2 = document.getElementById('doughnut').getContext('2d');
 var myChart2 = new Chart(ctx2, {
     type: 'doughnut',
     data: {
-
+        labels: ['Academic', 'Non-Academic', 'Administration', 'Others'],
         datasets: [{
-            label: labels,
-            data:data.mostSoldCategory.map(categoryData => categoryData.count),
+            label: 'Employees',
+            data:[42, 12, 8, 6],
             backgroundColor: [
                 'rgba(41, 155, 99, 1)',
                 'rgba(54, 162, 235, 1)',
