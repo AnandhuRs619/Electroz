@@ -153,10 +153,27 @@ const dashboard = async (req, res) => {
         const monthIndex = monthData._id - 1;
         earningsByMonth[monthIndex] = monthData.total;
       });
+
+      const  salesByProductName = await orderModel.aggregate(
+        [
+          {
+            '$unwind': {
+              'path': '$products'
+            }
+          }, {
+            '$group': {
+              '_id': '$products.p_name', 
+              'total': {
+                '$sum': 1
+              }
+            }
+          }
+        ]
+      )
       
       // Send the earnings data as a JSON response
       res.json({
-        labels,earningsByMonth,
+        labels,earningsByMonth,salesByProductName
       });
     } catch (error) {
       console.error(error);
@@ -847,6 +864,15 @@ const adminLogout = async(req,res)=>{
         res.status(500).send("Internal  Server Error")
     }
 }
+const errorPage = async (req,res)=>{
+  try{
+    res.render("userSide/ErrorPage")
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
 
 
 module.exports={
@@ -879,4 +905,5 @@ module.exports={
     addBanner,
     editBanner,
     hideBanner,
+    errorPage,
 }

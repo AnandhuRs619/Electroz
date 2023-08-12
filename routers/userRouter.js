@@ -12,7 +12,7 @@ UserRouter.get('/' ,userAuth.isLogin,userController.landingpage);
 UserRouter.get('/login',userAuth.isLogin,userController.login);
 UserRouter.get('/home',userAuth.isLogOut,userController.home);
 UserRouter.post('/signup',userController.Signup);
-
+UserRouter.get('/Erorr',userController.errorPage);
 UserRouter.post("/otpPage",userController.verifyOtp);
 UserRouter.post('/login',userAuth.isLogin,userController.verifyLogin);
 UserRouter.get('/forgotPassword',userController.forgotpassword);

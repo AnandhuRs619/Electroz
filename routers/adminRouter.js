@@ -16,7 +16,7 @@ adminRouter.get('/Dashboard',adminAuth.isLogOut, adminController.dashboard);
 adminRouter.get('/Dashboard/chart',adminController.ChartData);
 adminRouter.post('/adminLogin',adminAuth.isAdmin,adminController.adminVerify);
 adminRouter.get('/Logout',adminController.adminLogout);
-
+adminRouter.get('/Erorr',adminController.errorPage);
 adminRouter.use(adminAuth.isLogOut);
 adminRouter.post('/salesReport',adminController.salesReport);
 adminRouter.get('/productLists',adminController.productLists);

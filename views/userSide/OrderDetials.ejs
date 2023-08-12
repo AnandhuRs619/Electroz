@@ -225,12 +225,11 @@
 	<!-- Start right Content here -->
 	<!-- ============================================================== -->
 	<div class="main-content">
-
 		<div class="page-content">
 			<div class="container-fluid">
 				<div class="row">
-					<div class="col-xl-9">
-						<div class="card">
+					<div class="col-xl-12 d-flex overflow-hidden">
+						<div class="card col-xl-6">
 							<div class="card-header">
 								<div class="d-flex align-items-center">
 									<h5 class="card-title flex-grow-1 mb-0">Order #<%= order._id %>
@@ -309,9 +308,6 @@
 									</table>
 								</div>
 							</div>
-						</div>
-						<!--end card-->
-						<div class="card">
 							<div class="card-header">
 								<div class="d-sm-flex align-items-center">
 									<h5 class="card-title flex-grow-1 mb-0">Order Status</h5>
@@ -343,18 +339,19 @@
 															</div>
 														</div>
 														<div class="flex-grow-1 ms-3">
-															<h6 class="fs-15 mb-0 fw-semibold">Order Placed - <span
-																	class="fw-normal">
-																	<%= order.createdAt.toLocaleDateString()%>
-																</span>
-																<input id="createdAt" type="hidden"value="<%= order.createdAt.toLocaleDateString()%>">
+															<h6 class="fs-15 mb-0 fw-semibold">
+																<%=order.status%> - <span class="fw-normal">
+																		<%= order.createdAt.toLocaleDateString()%>
+																	</span>
+																	<input id="createdAt" type="hidden"
+																		value="<%= order.createdAt.toLocaleDateString()%>">
 
 															</h6>
 														</div>
 													</div>
 												</a>
 											</div>
-											<div id="collapseOne" class="accordion-collapse collapse show"
+											<!-- <div id="collapseOne" class="accordion-collapse collapse show"
 												aria-labelledby="headingOne" data-bs-parent="#accordionExample">
 												<div class="accordion-body ms-2 ps-5 pt-0">
 													<h6 class="mb-1">An order has been placed.</h6>
@@ -454,209 +451,280 @@
 												</a>
 											</div>
 										</div>
+									</div> -->
+											<!--end accordion-->
+										</div>
 									</div>
-									<!--end accordion-->
 								</div>
+								<!--end card-->
 							</div>
 						</div>
 						<!--end card-->
-					</div>
-					<!--end col-->
-					<div class="col-xl-3">
-
-						<!--end card-->
-
-						<div class="card">
-							<div class="card-header">
-								<div class="d-flex">
-									<h5 class="card-title flex-grow-1 mb-0">Customer Details</h5>
-									<div class="flex-shrink-0">
-										<a href="javascript:void(0);" class="link-secondary">View Profile</a>
-									</div>
-								</div>
-							</div>
-							<div class="card-body">
-								<ul class="list-unstyled mb-0 vstack gap-3">
-									<li>
-										<div class="d-flex align-items-center">
+						<div class="card col-xl-5">
+							<!--end col-->
+							<div class="col-xl-3">
+								<!--end card-->
+								<div class="card">
+									<div class="card-header">
+										<div class="d-flex">
+											<h5 class="card-title flex-grow-1 mb-0">Customer Details</h5>
 											<div class="flex-shrink-0">
-												<img src="/assets/images/users/avatar-3.jpg" alt=""
-													class="avatar-sm rounded shadow">
-											</div>
-											<div class="flex-grow-1 ms-3">
-												<h6 class="fs-14 mb-1">
-													<%= order.userId.name %>
-												</h6>
-												<p class="text-muted mb-0">Customer</p>
+												<a href="javascript:void(0);" class="link-secondary">View Profile</a>
 											</div>
 										</div>
-									</li>
-									<li><i class="ri-mail-line me-2 align-middle text-muted fs-16"></i>
-										<%= order.userId.email %>
-									</li>
-									<li><i class="ri-phone-line me-2 align-middle text-muted fs-16">
-											<%= order.userId.number %>
-												<input id="number" type="hidden" value="<%= order.userId.number %>">
+									</div>
+									<div class="card-body">
+										<ul class="list-unstyled mb-0 vstack gap-3">
+											<li>
+												<div class="d-flex align-items-center">
+													<div class="flex-shrink-0">
+														<img src="/assets/images/users/avatar-3.jpg" alt=""
+															class="avatar-sm rounded shadow">
+													</div>
+													<div class="flex-grow-1 ms-3">
+														<h6 class="fs-14 mb-1">
+															<%= order.userId.name %>
+														</h6>
+														<p class="text-muted mb-0">Customer</p>
+													</div>
+												</div>
+											</li>
+											<li><i class="ri-mail-line me-2 align-middle text-muted fs-16"></i>
+												<%= order.userId.email %>
+											</li>
+											<li><i class="ri-phone-line me-2 align-middle text-muted fs-16">
+													<%= order.userId.number %>
+														<input id="number" type="hidden"
+															value="<%= order.userId.number %>">
+												</i></li>
+										</ul>
+									</div>
+								</div>
+								<!--end card-->
+								<div class="card">
+									<div class="card-header">
+										<h5 class="card-title mb-0"><i
+												class="ri-map-pin-line align-middle me-1 text-muted"></i>
+											Billing Address</h5>
+									</div>
+									<div class="card-body">
+										<ul class="list-unstyled vstack gap-2 fs-13 mb-0">
+											<li class="fw-medium fs-14">
+												<%= address.name %>
+													<input id="AddressName" type="hidden" value="<%= address.name %>">
+											</li>
+											<li>
+												<%= address.addressline %>
+													<input id="housename" type="hidden"
+														value="<%= address.addressline %>">
+
+											</li>
+											<li>
+												<%= address.street %>
+													<input id="street" type="hidden" value="<%= address.street %>">
+
+											</li>
+											<li>
+												<%= address.city %> - <%= address.postCode %>
+														<input id="city" type="hidden" value="<%= address.city %>">
+														<input id="postcode" type="hidden"
+															value="<%= address.postCode %>">
+
+											</li>
+											<li>
+												<%= address.country %>
+													<input id="country" type="hidden" value="<%= address.country %>">
+											</li>
+									</div>
+								</div>
+								<!--end card-->
 
 
-										</i></li>
-								</ul>
+								<div class="card">
+									<div class="card-header">
+										<h5 class="card-title mb-0"><i
+												class="ri-secure-payment-line align-bottom me-1 text-muted"></i> Payment
+											Details
+										</h5>
+									</div>
+									<div class="card-body">
+										<div class="d-flex align-items-center mb-2">
+											<div class="flex-shrink-0">
+												<p class="text-muted mb-0">Transactions:</p>
+											</div>
+											<div class="flex-grow-1 ms-2">
+												<h6 class="mb-0">#VLZ124561278124</h6>
+											</div>
+										</div>
+										<div class="d-flex align-items-center mb-2">
+											<div class="flex-shrink-0">
+												<p class="text-muted mb-0">Payment Method:</p>
+											</div>
+											<div class="flex-grow-1 ms-2">
+												<h6 class="mb-0">
+													<%= order.payment.method %>
+														<input id="paymentmethod" type="hidden"
+															value="<%= order.payment.method %>">
+
+												</h6>
+											</div>
+										</div>
+										<div class="d-flex align-items-center mb-2">
+											<div class="flex-shrink-0">
+												<p class="text-muted mb-0">Card Holder Name:</p>
+											</div>
+											<div class="flex-grow-1 ms-2">
+												<h6 class="mb-0">
+													<%= order.userId.name %>
+												</h6>
+											</div>
+										</div>
+										<div class="d-flex align-items-center mb-2">
+											<div class="flex-shrink-0">
+												<p class="text-muted mb-0">Card Number:</p>
+											</div>
+											<div class="flex-grow-1 ms-2">
+												<h6 class="mb-0">xxxx xxxx xxxx 2456</h6>
+											</div>
+										</div>
+										<div class="d-flex align-items-center">
+											<div class="flex-shrink-0">
+												<p class="text-muted mb-0">Total Amount:</p>
+											</div>
+											<div class="flex-grow-1 ms-2">
+												<h6 class="mb-0">₹<%= order.payment.amount %>
+														<input id="paymentamount" type="hidden"
+															value="<%= order.payment.amount %>">
+												</h6>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!--end card-->
+							</div>
+							<!--end col-->
+						</div>
+						<!--end row-->
+						<!-- Add this code wherever you want to display the modal -->
+						<div class="modal" id="cancelOrderModal" tabindex="-1" role="dialog"
+							aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="cancelOrderModalLabel">Order Cancelled</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<p>Your order has been cancelled successfully.</p>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary"
+											data-dismiss="modal">Close</button>
+									</div>
+								</div>
 							</div>
 						</div>
-						<!--end card-->
-						<div class="card">
-							<div class="card-header">
-								<h5 class="card-title mb-0"><i class="ri-map-pin-line align-middle me-1 text-muted"></i>
-									Billing Address</h5>
-							</div>
-							<div class="card-body">
-								<ul class="list-unstyled vstack gap-2 fs-13 mb-0">
-									<li class="fw-medium fs-14">
-										<%= address.name %>
-											<input id="AddressName" type="hidden" value="<%= address.name %>">
-									</li>
-									<li>
-										<%= address.addressline %>
-											<input id="housename" type="hidden" value="<%= address.addressline %>">
-
-									</li>
-									<li>
-										<%= address.street %>
-											<input id="street" type="hidden" value="<%= address.street %>">
-
-									</li>
-									<li>
-										<%= address.city %> - <%= address.postCode %>
-												<input id="city" type="hidden" value="<%= address.city %>">
-												<input id="postcode" type="hidden" value="<%= address.postCode %>">
-
-									</li>
-									<li>
-										<%= address.country %>
-											<input id="country" type="hidden" value="<%= address.country %>">
-									</li>
-							</div>
-						</div>
-						<!--end card-->
-
-
-						<div class="card">
-							<div class="card-header">
-								<h5 class="card-title mb-0"><i
-										class="ri-secure-payment-line align-bottom me-1 text-muted"></i> Payment Details
-								</h5>
-							</div>
-							<div class="card-body">
-								<div class="d-flex align-items-center mb-2">
-									<div class="flex-shrink-0">
-										<p class="text-muted mb-0">Transactions:</p>
-									</div>
-									<div class="flex-grow-1 ms-2">
-										<h6 class="mb-0">#VLZ124561278124</h6>
-									</div>
-								</div>
-								<div class="d-flex align-items-center mb-2">
-									<div class="flex-shrink-0">
-										<p class="text-muted mb-0">Payment Method:</p>
-									</div>
-									<div class="flex-grow-1 ms-2">
-										<h6 class="mb-0">
-											<%= order.payment.method %>
-												<input id="paymentmethod" type="hidden"
-													value="<%= order.payment.method %>">
-
-										</h6>
-									</div>
-								</div>
-								<div class="d-flex align-items-center mb-2">
-									<div class="flex-shrink-0">
-										<p class="text-muted mb-0">Card Holder Name:</p>
-									</div>
-									<div class="flex-grow-1 ms-2">
-										<h6 class="mb-0">
-											<%= order.userId.name %>
-										</h6>
-									</div>
-								</div>
-								<div class="d-flex align-items-center mb-2">
-									<div class="flex-shrink-0">
-										<p class="text-muted mb-0">Card Number:</p>
-									</div>
-									<div class="flex-grow-1 ms-2">
-										<h6 class="mb-0">xxxx xxxx xxxx 2456</h6>
-									</div>
-								</div>
-								<div class="d-flex align-items-center">
-									<div class="flex-shrink-0">
-										<p class="text-muted mb-0">Total Amount:</p>
-									</div>
-									<div class="flex-grow-1 ms-2">
-										<h6 class="mb-0">₹<%= order.payment.amount %>
-											<input id="paymentamount" type="hidden"value="<%= order.payment.amount %>">
-										</h6>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!--end card-->
+					</div><!-- container-fluid -->
+				</div><!-- End Page-content -->
+			</div>
+		</div>
+	</div>
+	<!-- NEWSLETTER -->
+	<div id="newsletter" class="section">
+		<!-- container -->
+		<div class="container">
+			<!-- row -->
+			<div class="row">
+				<div class="col-md-12">
+					<div class="newsletter">
+						<p>Sign Up for the <strong>NEWSLETTER</strong></p>
+						<form>
+							<input class="input" type="email" placeholder="Enter Your Email">
+							<button class="newsletter-btn"><i class="fa fa-envelope"></i> Subscribe</button>
+						</form>
+						<ul class="newsletter-follow">
+							<li>
+								<a href="#"><i class="fa fa-facebook"></i></a>
+							</li>
+							<li>
+								<a href="#"><i class="fa fa-twitter"></i></a>
+							</li>
+							<li>
+								<a href="#"><i class="fa fa-instagram"></i></a>
+							</li>
+							<li>
+								<a href="#"><i class="fa fa-pinterest"></i></a>
+							</li>
+						</ul>
 					</div>
-					<!--end col-->
 				</div>
-				<!--end row-->
-				<!-- Add this code wherever you want to display the modal -->
-				<div class="modal" id="cancelOrderModal" tabindex="-1" role="dialog"
-					aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
-					<div class="modal-dialog" role="document">
-						<div class="modal-content">
-							<div class="modal-header">
-								<h5 class="modal-title" id="cancelOrderModalLabel">Order Cancelled</h5>
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
-							</div>
-							<div class="modal-body">
-								<p>Your order has been cancelled successfully.</p>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-							</div>
-						</div>
-					</div>
-				</div>
-
-
-			</div><!-- container-fluid -->
-		</div><!-- End Page-content -->
-
-
-
-
-		<!-- NEWSLETTER -->
-		<div id="newsletter" class="section">
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /NEWSLETTER -->
+	<!-- FOOTER -->
+	<footer id="footer">
+		<!-- top footer -->
+		<div class="section">
 			<!-- container -->
 			<div class="container">
 				<!-- row -->
-				<div class="row">
-					<div class="col-md-12">
-						<div class="newsletter">
-							<p>Sign Up for the <strong>NEWSLETTER</strong></p>
-							<form>
-								<input class="input" type="email" placeholder="Enter Your Email">
-								<button class="newsletter-btn"><i class="fa fa-envelope"></i> Subscribe</button>
-							</form>
-							<ul class="newsletter-follow">
-								<li>
-									<a href="#"><i class="fa fa-facebook"></i></a>
-								</li>
-								<li>
-									<a href="#"><i class="fa fa-twitter"></i></a>
-								</li>
-								<li>
-									<a href="#"><i class="fa fa-instagram"></i></a>
-								</li>
-								<li>
-									<a href="#"><i class="fa fa-pinterest"></i></a>
-								</li>
+				<div class="row d-flex">
+					<div class="col-md-3 col-xs-6">
+						<div class="">
+							<h3 class="footer-title text-white">About Us</h3>
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+								tempor
+								incididunt ut.</p>
+							<ul class="footer-links">
+								<li><a href="#"><i class="fa fa-map-marker"></i>1734 Stonecoal Road</a></li>
+								<li><a href="#"><i class="fa fa-phone"></i>+021-95-51-84</a></li>
+								<li><a href="#"><i class="fa fa-envelope-o"></i>email@email.com</a></li>
+							</ul>
+						</div>
+					</div>
+
+					<div class="col-md-3 col-xs-6">
+						<div class="">
+							<h3 class="footer-title text-white">Categories</h3>
+							<ul class="footer-links">
+								<li><a href="#">Hot deals</a></li>
+								<li><a href="#">Laptops</a></li>
+								<li><a href="#">Smartphones</a></li>
+								<li><a href="#">Cameras</a></li>
+								<li><a href="#">Accessories</a></li>
+							</ul>
+						</div>
+					</div>
+
+					<div class="clearfix visible-xs"></div>
+
+					<div class="col-md-3 col-xs-6">
+						<div class="">
+							<h3 class="footer-title text-white">Information</h3>
+							<ul class="footer-links">
+								<li><a href="#">About Us</a></li>
+								<li><a href="#">Contact Us</a></li>
+								<li><a href="#">Privacy Policy</a></li>
+								<li><a href="#">Orders and Returns</a></li>
+								<li><a href="#">Terms & Conditions</a></li>
+							</ul>
+						</div>
+					</div>
+
+					<div class="col-md-3 col-xs-6">
+						<div class="">
+							<h3 class="footer-title text-white">Service</h3>
+							<ul class="footer-links">
+								<li><a href="#">My Account</a></li>
+								<li><a href="#">View Cart</a></li>
+								<li><a href="#">Wishlist</a></li>
+								<li><a href="#">Track My Order</a></li>
+								<li><a href="#">Help</a></li>
 							</ul>
 						</div>
 					</div>
@@ -665,262 +733,193 @@
 			</div>
 			<!-- /container -->
 		</div>
-		<!-- /NEWSLETTER -->
+		<!-- /top footer -->
 
-		<!-- FOOTER -->
-		<footer id="footer">
-			<!-- top footer -->
-			<div class="section">
-				<!-- container -->
-				<div class="container">
-					<!-- row -->
-					<div class="row d-flex">
-						<div class="col-md-3 col-xs-6">
-							<div class="">
-								<h3 class="footer-title text-white">About Us</h3>
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-									incididunt ut.</p>
-								<ul class="footer-links">
-									<li><a href="#"><i class="fa fa-map-marker"></i>1734 Stonecoal Road</a></li>
-									<li><a href="#"><i class="fa fa-phone"></i>+021-95-51-84</a></li>
-									<li><a href="#"><i class="fa fa-envelope-o"></i>email@email.com</a></li>
-								</ul>
-							</div>
-						</div>
-
-						<div class="col-md-3 col-xs-6">
-							<div class="">
-								<h3 class="footer-title text-white">Categories</h3>
-								<ul class="footer-links">
-									<li><a href="#">Hot deals</a></li>
-									<li><a href="#">Laptops</a></li>
-									<li><a href="#">Smartphones</a></li>
-									<li><a href="#">Cameras</a></li>
-									<li><a href="#">Accessories</a></li>
-								</ul>
-							</div>
-						</div>
-
-						<div class="clearfix visible-xs"></div>
-
-						<div class="col-md-3 col-xs-6">
-							<div class="">
-								<h3 class="footer-title text-white">Information</h3>
-								<ul class="footer-links">
-									<li><a href="#">About Us</a></li>
-									<li><a href="#">Contact Us</a></li>
-									<li><a href="#">Privacy Policy</a></li>
-									<li><a href="#">Orders and Returns</a></li>
-									<li><a href="#">Terms & Conditions</a></li>
-								</ul>
-							</div>
-						</div>
-
-						<div class="col-md-3 col-xs-6">
-							<div class="">
-								<h3 class="footer-title text-white">Service</h3>
-								<ul class="footer-links">
-									<li><a href="#">My Account</a></li>
-									<li><a href="#">View Cart</a></li>
-									<li><a href="#">Wishlist</a></li>
-									<li><a href="#">Track My Order</a></li>
-									<li><a href="#">Help</a></li>
-								</ul>
-							</div>
-						</div>
+		<!-- bottom footer -->
+		<div id="bottom-footer" class="section">
+			<div class="container">
+				<!-- row -->
+				<div class="row">
+					<div class="col-md-12 text-center">
+						<ul class="footer-payments">
+							<li>
+								<a href="#"><i class="fa fa-cc-visa"></i></a>
+							</li>
+							<li>
+								<a href="#"><i class="fa fa-credit-card"></i></a>
+							</li>
+							<li>
+								<a href="#"><i class="fa fa-cc-paypal"></i></a>
+							</li>
+							<li>
+								<a href="#"><i class="fa fa-cc-mastercard"></i></a>
+							</li>
+							<li>
+								<a href="#"><i class="fa fa-cc-discover"></i></a>
+							</li>
+							<li>
+								<a href="#"><i class="fa fa-cc-amex"></i></a>
+							</li>
+						</ul>
+						<span class="copyright">
+							<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+							Copyright &copy;
+							<script>
+								document.write(new Date().getFullYear());
+							</script>
+							All rights reserved | This site is made
+							<i class="fa fa-heart-o" aria-hidden="true"></i> by
+							<a href="https://colorlib.com" target="_blank">Anandhu R S</a>
+							<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+						</span>
 					</div>
-					<!-- /row -->
 				</div>
-				<!-- /container -->
+				<!-- /row -->
 			</div>
-			<!-- /top footer -->
+			<!-- /container -->
+		</div>
+		<!-- /bottom footer -->
+	</footer>
+	<!-- /FOOTER -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		const downloadInvoice = async (orderId) => {
+			try {
+				const name = document.getElementById("AddressName").value;
+				const address = document.getElementById("housename").value;
+				const postcode = document.getElementById("postcode").value;
+				const city = document.getElementById("city").value;
+				const country = document.getElementById("country").value;
+				const street = document.getElementById("street").value;
+				const phone = document.getElementById("number").value;
+				const date = document.getElementById("createdAt").value;
+				const Totalamount = document.getElementById("paymentamount").value;
+				const paymentmethod = document.getElementById("paymentmethod").value;
+				const Orderdetials = document.getElementById("Orderdetials").value;
 
-			<!-- bottom footer -->
-			<div id="bottom-footer" class="section">
-				<div class="container">
-					<!-- row -->
-					<div class="row">
-						<div class="col-md-12 text-center">
-							<ul class="footer-payments">
-								<li>
-									<a href="#"><i class="fa fa-cc-visa"></i></a>
-								</li>
-								<li>
-									<a href="#"><i class="fa fa-credit-card"></i></a>
-								</li>
-								<li>
-									<a href="#"><i class="fa fa-cc-paypal"></i></a>
-								</li>
-								<li>
-									<a href="#"><i class="fa fa-cc-mastercard"></i></a>
-								</li>
-								<li>
-									<a href="#"><i class="fa fa-cc-discover"></i></a>
-								</li>
-								<li>
-									<a href="#"><i class="fa fa-cc-amex"></i></a>
-								</li>
-							</ul>
-							<span class="copyright">
-								<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-								Copyright &copy;
-								<script>
-									document.write(new Date().getFullYear());
-								</script>
-								All rights reserved | This site is made
-								<i class="fa fa-heart-o" aria-hidden="true"></i> by
-								<a href="https://colorlib.com" target="_blank">Anandhu R S</a>
-								<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-							</span>
-						</div>
-					</div>
-					<!-- /row -->
-				</div>
-				<!-- /container -->
-			</div>
-			<!-- /bottom footer -->
-		</footer>
-		<!-- /FOOTER -->
-		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-		<script>
-			const downloadInvoice = async (orderId) => {
-				try {
-					const name = document.getElementById("AddressName").value;
-					const address = document.getElementById("housename").value;
-					const postcode = document.getElementById("postcode").value;
-					const city = document.getElementById("city").value;
-					const country = document.getElementById("country").value;
-					const street = document.getElementById("street").value;
-					const phone = document.getElementById("number").value;
-					const date = document.getElementById("createdAt").value;
-					const Totalamount = document.getElementById("paymentamount").value;
-					const paymentmethod = document.getElementById("paymentmethod").value;
-					const Orderdetials = document.getElementById("Orderdetials").value;
-					
-					console.log(Orderdetials);
-					const data = {
-						name: name,
-						address: address,
-						postcode: postcode,
-						city: city,
-						country: country,
-						street: street,
-						phone: phone,
-						date: date,
-						totalAmount: Totalamount,
-						paymentmethod: paymentmethod,
-						Orderdetials:Orderdetials,
-					}
-					fetch('/invoiceData', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-						},
-						body: JSON.stringify(data),
-						responseType: 'blob', // Set the response type to 'blob' for binary data
-					})
-						.then((response) => {
-							if (!response.ok) {
-								throw new Error('Network response was not ok');
-							}
-							return response.blob(); // Return the binary data (PDF blob)
-						})
-						.then((blob) => {
-							// Create a URL for the blob
-							const url = window.URL.createObjectURL(blob);
-
-							// Create a temporary link element to trigger the download
-							const a = document.createElement('a');
-							a.href = url;
-							a.download = 'invoice.pdf';
-							document.body.appendChild(a);
-							a.click();
-							document.body.removeChild(a);
-
-							// Clean up the URL object
-							window.URL.revokeObjectURL(url);
-						})
-						.catch((error) => {
-							console.error('Fetch error:', error);
-						});
-				} catch (error) {
-					console.log('Error generating invoice:', error);
-					throw error;
+				console.log(Orderdetials);
+				const data = {
+					name: name,
+					address: address,
+					postcode: postcode,
+					city: city,
+					country: country,
+					street: street,
+					phone: phone,
+					date: date,
+					totalAmount: Totalamount,
+					paymentmethod: paymentmethod,
+					Orderdetials: Orderdetials,
 				}
-			}
-			const downloadInvoiceBtn = document.getElementById("downloadInvoiceBtn");
-			downloadInvoiceBtn.addEventListener("click", (event) => {
-				event.preventDefault();
-				const orderId = event.target.getAttribute("data-order-id");
-				downloadInvoice(orderId);
-			});
-		</script>
-
-		<script>
-			$('.cancel-order-btn').click(function () {
-				const orderId = $(this).data('order-id');
-				console.log(orderId);
-				$.ajax({
-					url: `/orders/cancel/${orderId}`,
+				fetch('/invoiceData', {
 					method: 'POST',
-					success: function (data) {
-						// Show the modal
-						$('#cancelOrderModal').modal('show');
-						// Close the modal after 2 seconds
-						setTimeout(function () {
-							$('#cancelOrderModal').modal('hide');
-						}, 2000);
+					headers: {
+						'Content-Type': 'application/json',
 					},
-					error: function (xhr, status, error) {
-						console.error(xhr.responseJSON.error);
-					}
-				});
-			});
-		</script>
+					body: JSON.stringify(data),
+					responseType: 'blob', // Set the response type to 'blob' for binary data
+				})
+					.then((response) => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.blob(); // Return the binary data (PDF blob)
+					})
+					.then((blob) => {
+						// Create a URL for the blob
+						const url = window.URL.createObjectURL(blob);
 
+						// Create a temporary link element to trigger the download
+						const a = document.createElement('a');
+						a.href = url;
+						a.download = 'invoice.pdf';
+						document.body.appendChild(a);
+						a.click();
+						document.body.removeChild(a);
 
-		<script>
-			$('.return-order-btn').click(function () {
-				const orderId = $(this).data('order-id');
-				$.ajax({
-					url: `/orders/return/${orderId}`,
-					method: 'POST',
-					success: function (data) {
-						// Redirect to the Myorders page after successful return
-						window.location.href = "/Myorders";
-					},
-					error: function (xhr, status, error) {
-						console.error(xhr.responseJSON.error);
-					}
-				});
-			});
-
-
-		</script>
-
-		<script>
-			function calculateFinalAmount(totalAmount, discount) {
-				const discountAmount = (totalAmount * discount) / 100;
-				const finalAmount = totalAmount - discountAmount;
-				return finalAmount.toFixed(2);
+						// Clean up the URL object
+						window.URL.revokeObjectURL(url);
+					})
+					.catch((error) => {
+						console.error('Fetch error:', error);
+					});
+			} catch (error) {
+				console.log('Error generating invoice:', error);
+				throw error;
 			}
+		}
+		const downloadInvoiceBtn = document.getElementById("downloadInvoiceBtn");
+		downloadInvoiceBtn.addEventListener("click", (event) => {
+			event.preventDefault();
+			const orderId = event.target.getAttribute("data-order-id");
+			downloadInvoice(orderId);
+		});
+	</script>
 
-		</script>
+	<script>
+		$('.cancel-order-btn').click(function () {
+			const orderId = $(this).data('order-id');
+			console.log(orderId);
+			$.ajax({
+				url: `/orders/cancel/${orderId}`,
+				method: 'POST',
+				success: function (data) {
+					// Show the modal
+					$('#cancelOrderModal').modal('show');
+					// Close the modal after 2 seconds
+					setTimeout(function () {
+						$('#cancelOrderModal').modal('hide');
+					}, 2000);
+				},
+				error: function (xhr, status, error) {
+					console.error(xhr.responseJSON.error);
+				}
+			});
+		});
+	</script>
 
 
-		<script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-		<script src="/assets/libs/simplebar/simplebar.min.js"></script>
-		<script src="/assets/libs/node-waves/waves.min.js"></script>
-		<script src="/assets/libs/feather-icons/feather.min.js"></script>
-		<script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
-		<script src="/assets/js/plugins.js"></script>
+	<script>
+		$('.return-order-btn').click(function () {
+			const orderId = $(this).data('order-id');
+			$.ajax({
+				url: `/orders/return/${orderId}`,
+				method: 'POST',
+				success: function (data) {
+					// Redirect to the Myorders page after successful return
+					window.location.href = "/Myorders";
+				},
+				error: function (xhr, status, error) {
+					console.error(xhr.responseJSON.error);
+				}
+			});
+		});
 
-		<!-- input step init -->
-		<script src="/assets/js/pages/form-input-spin.init.js"></script>
 
-		<!-- ecommerce cart js -->
-		<script src="/assets/js/pages/ecommerce-cart.init.js"></script>
+	</script>
 
-		<!-- App js -->
-		<script src="/assets/js/app.js"></script>
+	<script>
+		function calculateFinalAmount(totalAmount, discount) {
+			const discountAmount = (totalAmount * discount) / 100;
+			const finalAmount = totalAmount - discountAmount;
+			return finalAmount.toFixed(2);
+		}
+
+	</script>
+
+
+	<script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="/assets/libs/simplebar/simplebar.min.js"></script>
+	<script src="/assets/libs/node-waves/waves.min.js"></script>
+	<script src="/assets/libs/feather-icons/feather.min.js"></script>
+	<script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+	<script src="/assets/js/plugins.js"></script>
+
+	<!-- input step init -->
+	<script src="/assets/js/pages/form-input-spin.init.js"></script>
+
+	<!-- ecommerce cart js -->
+	<script src="/assets/js/pages/ecommerce-cart.init.js"></script>
+
+	<!-- App js -->
+	<script src="/assets/js/app.js"></script>

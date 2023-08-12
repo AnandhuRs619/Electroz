@@ -11,6 +11,7 @@ const Razorpay = require("razorpay");
 const Bannar = require("../../models/bannarModel");
 const easyinvoice = require("easyinvoice");
 const sms = require("../../middleware/SmsVarification");
+const { render } = require("ejs");
 //  Razorpoy
 const key_id = process.env.RAZORPAY_API_Id;
 const key_secret = process.env.RAZORPAY_API_Key;
@@ -26,7 +27,7 @@ const landingpage = async (req, res) => {
     res.render("userSide/landingpage", { banner });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal  Server Error");
+    res.redirect('/Erorr');
   }
 };
 
@@ -37,7 +38,7 @@ const home = async (req, res) => {
     res.render("userSide/Home", { banner });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal  Server Error");
+    res.redirect('/Erorr');
   }
 };
 
@@ -46,7 +47,7 @@ const login = async (req, res) => {
     res.render("userSide/userLogin");
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal  Server Error");
+    res.redirect('/Erorr');
   }
 };
 
@@ -97,7 +98,7 @@ const Signup = async (req, res) => {
       });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal  Server Error");
+    res.redirect('/Erorr');
   }
 };
 
@@ -117,7 +118,7 @@ const verifyOtp = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal  Server Error");
+    res.redirect('/Erorr');
   }
 };
 
@@ -126,7 +127,14 @@ const verifyLogin = async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const userData = await User.findOne({ email: email });
+
     if (userData) {
+      if (userData.isBlocked== true) {
+        return res.render("userSide/userLogin", {
+          message: "Your account is blocked. Please contact support.",
+        });
+      }
+
       const passwordMatch = await bcrypt.compare(password, userData.password);
       if (passwordMatch) {
         req.session.user = userData._id;
@@ -134,26 +142,27 @@ const verifyLogin = async (req, res) => {
         res.redirect("/");
       } else {
         res.render("userSide/userLogin", {
-          message: "email and password are incorrect",
+          message: "Email and password are incorrect.",
         });
       }
     } else {
       res.render("userSide/userLogin", {
-        message: "email and password are incorrect",
+        message: "Email and password are incorrect.",
       });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal  Server Error");
+    res.redirect('/Erorr');
   }
 };
+
 // Password Resetting using otp
 const forgotpassword = async (req, res) => {
   try {
     res.render("userSide/forgotPassword");
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.redirect('/Erorr');
   }
 };
 
@@ -237,7 +246,7 @@ const verifyotpforpassword = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal  Server Error");
+    res.redirect('/Erorr');
   }
 };
 
@@ -278,7 +287,7 @@ const userLogout = async (req, res) => {
     res.redirect("/");
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal  Server Error");
+    res.redirect('/Erorr');
   }
 };
 const productList = async (req, res) => {
@@ -352,7 +361,7 @@ const productList = async (req, res) => {
     });
 
     const brands = await productModel.distinct("Brand_name");
-    console.log(productsWithCategory);
+  
     res.render("userSide/productList", {
       product: productsWithCategory,
       category: categories,
@@ -371,7 +380,7 @@ const productList = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.redirect('/Erorr');
   }
 };
 
@@ -462,7 +471,7 @@ const productDetails = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal  Server Error");
+    res.redirect('/Erorr');
   }
 };
 const Cart = async (req, res) => {
@@ -560,7 +569,7 @@ const Cart = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.redirect('/Erorr');
   }
 };
 const searchProduct = async (req, res) => {
@@ -583,7 +592,7 @@ const searchProduct = async (req, res) => {
     res.json(products);
   } catch (error) {
     console.log(error.message);
-    res.status(500).send("Internal Server Error");
+    res.redirect('/Erorr');
   }
 };
 const cartAdding = async (req, res) => {
@@ -779,7 +788,7 @@ const checkout = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.redirect('/Erorr');
   }
 };
 
@@ -841,7 +850,9 @@ const coupon = async (req, res) => {
           "Discount percentage exceeds the maximum allowed for this coupon",
       });
     }
-    const couponName = couponValue.couponName
+    const couponName = couponValue.couponName;
+
+const couponDisplay = couponName ? couponName : "No Coupon";
     // Calculate the discount amount as a percentage of the subtotal
     const discountAmount = Math.floor((couponPercentage / 100) * user.subtotal);
     // const lastDisc=  user.subtotal- discountAmount
@@ -862,10 +873,10 @@ await User.findByIdAndUpdate({_id:userId},{subtotal:finalAmount})
     await user.save(); // Save the user document
     
 
-    res.json({ finalAmount, discountAmount,couponName });
+    res.json({ finalAmount, discountAmount,couponDisplay });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.redirect('/Erorr');
   }
 };
 
@@ -882,17 +893,19 @@ const removeCoupon = async (req, res) => {
     if (!user.appliedCoupon) {
       return res.status(400).json({ message: "No coupon applied" });
     }
-     
+    const couponName = coupon.couponName;
+
+    const couponDisplay = couponName ? couponName : "No Coupon";
     // Remove the appliedCoupon field from the user
     user.discountAmount =0;
     user.appliedCoupon = null;
     await user.save();
 
     // Update the response to remove the discount amount
-    res.json({ finalAmount: user.subtotal, discountAmount: 0 });
+    res.json({ finalAmount: user.subtotal, discountAmount: 0,couponDisplay:couponDisplay });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.redirect('/Erorr');
   }
 };
 const userProfile = async (req, res) => {
@@ -937,11 +950,11 @@ const editProfile = async (req, res) => {
     await user.save();
 
     // Send a response indicating the update was successful
-    return res.status(200).json({ message: "Profile updated successfully" });
+    return redirect('/myprofile');
   } catch (error) {
     console.log(error);
     // Handle any errors that occurred during the update process
-    return res.status(500).json({ message: "Internal server error" });
+    return res.redirect('/Erorr');
   }
 };
 const profileOtp = async (req, res) => {
@@ -970,7 +983,7 @@ const profileOtp = async (req, res) => {
       });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.redirect('/Erorr');
   }
 };
 
@@ -1001,7 +1014,7 @@ const paswordChange = async (req, res) => {
       });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.redirect('/Erorr');
   }
 };
 const changePassword = async (req, res) => {
@@ -1031,7 +1044,7 @@ const changePassword = async (req, res) => {
     res.status(200).json({ message: "Password changed successfully" });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.redirect('/Erorr');
   }
 };
 const addAddress = async (req, res) => {
@@ -1136,7 +1149,7 @@ const deleteAdress = async(req,res) =>{
 
   }catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.redirect('/Erorr');
   }
 }
 
@@ -1150,7 +1163,7 @@ const myWishlist = async (req, res) => {
     res.render("userSide/MyWishlist", { productDetails });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.redirect('/Erorr');
   }
 };
 
@@ -1181,7 +1194,7 @@ const addToWishlist = async (req, res) => {
     res.status(200).json({ message: "Product added to wishlist successfully" });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.redirect('/Erorr');
   }
 };
 
@@ -1446,7 +1459,7 @@ const orderDetails = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal Server Error");
+    res.redirect('/Erorr');
   }
 };
 
@@ -1669,9 +1682,18 @@ const downloadInvoice = async (req, res) => {
     res.send(invoiceBuffer);
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal Server Error");
+    res.redirect('/Erorr');
   }
 };
+
+const errorPage = async (req,res)=>{
+  try{
+    res.render("userSide/ErrorPage")
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+}
 
 //  EXPORTING
 module.exports = {
@@ -1718,4 +1740,5 @@ module.exports = {
   WalletHistory,
   generateInvoice,
   downloadInvoice,
+  errorPage,
 };

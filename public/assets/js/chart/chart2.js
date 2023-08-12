@@ -2,16 +2,17 @@ fetch("/admin/Dashboard/chart")
 .then((response) => response.json())
 .then((data)=>{
 
-   
+    const outputNames = data.salesByProductName.map(item => item._id);
+    const outputTotals =  data.salesByProductName.map(item => item.total);
 
     var ctx2 = document.getElementById('doughnut').getContext('2d');
 var myChart2 = new Chart(ctx2, {
     type: 'doughnut',
     data: {
-        labels: ['Academic', 'Non-Academic', 'Administration', 'Others'],
+        labels: outputNames,
         datasets: [{
             label: 'Employees',
-            data:[42, 12, 8, 6],
+            data:outputTotals,
             backgroundColor: [
                 'rgba(41, 155, 99, 1)',
                 'rgba(54, 162, 235, 1)',

@@ -719,6 +719,7 @@
         if (response.finalAmount) {
           document.getElementById('cart-total').innerText = response.finalAmount;
           document.getElementById('cart-discount').innerText = 0; // Reset discount amount to zero
+		//   document.getElementById('coupon_name').innerText = response.couponDisplay
           const total = document.getElementById('cart-total');
           total.innerText = response.finalAmount;
         }
@@ -758,7 +759,7 @@
 						if (response.finalAmount) {
 							// document.getElementById('cart-subtotal').innerText = response.finalAmount
 							document.getElementById('cart-discount').innerText = response.discountAmount
-							document.getElementById('coupon_name').innerText = response.couponName
+							// document.getElementById('coupon_name').innerText = response.couponDisplay
 						}
 						console.log(response);
 					},
