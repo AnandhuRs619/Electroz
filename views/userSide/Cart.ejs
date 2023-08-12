@@ -471,7 +471,7 @@
 																<tr class="table-active">
 																	<th>Total :</th>
 																	<td class="text-end">
-																		<span class="fw-semibold" id="cart-total">₹ <%= user.subtotal +shippingCharge%></span>
+																		<span class="fw-semibold" id="cart-total">₹ <%= user.subtotal-CouponAmount +shippingCharge%></span>
 																	</td>
 																</tr>
 															</tbody>
@@ -757,7 +757,7 @@
 					contentType: 'application/json',
 					success: function (response) {
 						if (response.finalAmount) {
-							// document.getElementById('cart-subtotal').innerText = response.finalAmount
+							document.getElementById('cart-total').innerText = response.finalAmount
 							document.getElementById('cart-discount').innerText = response.discountAmount
 							// document.getElementById('coupon_name').innerText = response.couponDisplay
 						}

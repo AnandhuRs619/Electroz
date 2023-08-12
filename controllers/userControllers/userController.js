@@ -541,7 +541,7 @@ const Cart = async (req, res) => {
     const CouponAmount = user.discountAmount;
     let discountAmount = 0;
     let discountedTotalAmount = subtotal;
-
+console.log(CouponAmount);
     if (selectedCouponValue > 0) {
       // If a coupon is selected, apply the discount
       discountAmount = selectedCouponValue;
@@ -549,11 +549,10 @@ const Cart = async (req, res) => {
     }
 
     // Calculate shipping charge
-    const shippingCharge = 100.0;
+    const shippingCharge = 100;
 
     // Calculate final amount including shipping charge
-    const finalAmount =
-      discountedTotalAmount + shippingCharge - totalCategoryDiscountAmount;
+    const finalAmount = user.subtotal - user.discountAmount  + shippingCharge;
 
     const cartItems = userDetails.cart.items;
     res.render("userSide/Cart", {
@@ -771,7 +770,7 @@ const checkout = async (req, res) => {
     // Calculate final amount including shipping charge and all discounts
     const discountedTotalAmount =
       totalAmount - discountAmount - totalCategoryDiscountAmount;
-    const finalAmount = user.subtotal + shippingCharge;
+    const finalAmount = user.subtotal -user.discountAmount + shippingCharge;
 
     const address = userDetails.address;
     const cartItems = userDetails.cart.items;
@@ -859,10 +858,10 @@ const couponDisplay = couponName ? couponName : "No Coupon";
     console.log( discountAmount);
    
     // Calculate the final amount after applying the discount
-    const finalAmount = Math.floor(user.subtotal - discountAmount);
+    const finalAmount = Math.floor(user.subtotal - discountAmount +100);
     console.log(finalAmount);
 
-await User.findByIdAndUpdate({_id:userId},{subtotal:finalAmount})
+// await User.findByIdAndUpdate({_id:userId},{subtotal:finalAmount})
 
 
 
@@ -900,9 +899,10 @@ const removeCoupon = async (req, res) => {
     user.discountAmount =0;
     user.appliedCoupon = null;
     await user.save();
-
+    const finalAmount = Math.floor(user.subtotal + discountAmount+100);
+    console.log(finalAmount);
     // Update the response to remove the discount amount
-    res.json({ finalAmount: user.subtotal, discountAmount: 0,couponDisplay:couponDisplay });
+    res.json({ finalAmount: finalAmount, discountAmount: 0,couponDisplay:couponDisplay });
   } catch (error) {
     console.error(error);
     res.redirect('/Erorr');
