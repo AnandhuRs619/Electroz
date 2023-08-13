@@ -44,7 +44,7 @@ const home = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    res.render("userSide/userLogin");
+    res.render("userSide/userLogin" );
   } catch (error) {
     console.error(error);
     res.redirect('/Erorr');
@@ -552,7 +552,7 @@ console.log(CouponAmount);
     const shippingCharge = 100;
 
     // Calculate final amount including shipping charge
-    const finalAmount = user.subtotal - user.discountAmount  + shippingCharge;
+    const finalAmount = user.subtotal - (user.discountAmount ? user.discountAmount : 0) + shippingCharge;
 
     const cartItems = userDetails.cart.items;
     res.render("userSide/Cart", {
@@ -770,7 +770,7 @@ const checkout = async (req, res) => {
     // Calculate final amount including shipping charge and all discounts
     const discountedTotalAmount =
       totalAmount - discountAmount - totalCategoryDiscountAmount;
-    const finalAmount = user.subtotal -user.discountAmount + shippingCharge;
+    const finalAmount = user.subtotal -(user.discountAmount ? user.discountAmount : 0) + shippingCharge;
 
     const address = userDetails.address;
     const cartItems = userDetails.cart.items;
@@ -791,6 +791,35 @@ const checkout = async (req, res) => {
   }
 };
 
+const checkoutaddAdderss = async(req,res)=>{
+  try {
+    const userId = req.session.user;
+    const { name, address, street, city, state, country, postCode, phone } = req.body;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    // Create a new address object
+    const newAddress = {
+      name,
+      addressline:address,
+      street,
+      city,
+      state,
+      phone,
+      country,
+      postCode,
+    };
+    user.address.push(newAddress);
+
+    // Save the updated user
+    await user.save();
+   res.status(200).json({ message: "Address saved successfully", address:  newAddress  });
+  }catch (error) {
+    console.log(error);
+    res.redirect('/Erorr');
+  }
+}
 const coupon = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -852,6 +881,7 @@ const coupon = async (req, res) => {
     const couponName = couponValue.couponName;
 
 const couponDisplay = couponName ? couponName : "No Coupon";
+console.log(couponDisplay);
     // Calculate the discount amount as a percentage of the subtotal
     const discountAmount = Math.floor((couponPercentage / 100) * user.subtotal);
     // const lastDisc=  user.subtotal- discountAmount
@@ -895,14 +925,16 @@ const removeCoupon = async (req, res) => {
     const couponName = coupon.couponName;
 
     const couponDisplay = couponName ? couponName : "No Coupon";
+    const discountAmount= user.discountAmount
+    console.log(couponDisplay);
     // Remove the appliedCoupon field from the user
+    const finalAmount = Math.floor(user.subtotal + discountAmount+100);
     user.discountAmount =0;
     user.appliedCoupon = null;
     await user.save();
-    const finalAmount = Math.floor(user.subtotal + discountAmount+100);
     console.log(finalAmount);
     // Update the response to remove the discount amount
-    res.json({ finalAmount: finalAmount, discountAmount: 0,couponDisplay:couponDisplay });
+    res.json({ finalAmount: finalAmount, discountAmount: 0 ,couponDisplay:couponDisplay });
   } catch (error) {
     console.error(error);
     res.redirect('/Erorr');
@@ -917,6 +949,7 @@ const userProfile = async (req, res) => {
       userDetails: {
         name: userDetails.name,
         email: userDetails.email,
+        walletamount:userDetails.walletamount,
       },
       userAddress: userAddress,
     });
@@ -1079,7 +1112,7 @@ const addAddress = async (req, res) => {
     res.redirect("/manageAddress");
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "Server error" });
+    return res.redirect('/Erorr');
   }
 };
 
@@ -1118,7 +1151,7 @@ const editAddress = async (req, res) => {
     res.redirect("/profile");
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "Server error" });
+    res.redirect('/Erorr');
   }
 };
 const deleteAdress = async(req,res) =>{
@@ -1286,6 +1319,8 @@ const order = async (req, res) => {
 
       // Clear the cart after successful COD order
       user.cart.items.splice(0, productIds.length);
+      user.appliedCoupon=null;
+      user.discountAmount=0
       await user.save();
 
       console.log("created COD order");
@@ -1309,6 +1344,8 @@ const order = async (req, res) => {
 
         // Clear the cart after successful wallet order
         user.cart.items.splice(0, productIds.length);
+        user.appliedCoupon=null;
+        user.discountAmount=0
         await user.save();
         console.log("created wallet order");
         return res.status(200).json({ message: "Order created successfully" });
@@ -1391,6 +1428,8 @@ const savePayment = async (req, res) => {
     // Save the order with Online Payment method
     await order.save();
     user.cart.items.splice(0, productIds.length);
+    user.appliedCoupon=null;
+    user.discountAmount=0;
     await user.save();
 
     // Send a success response to the frontend
@@ -1707,6 +1746,7 @@ module.exports = {
   userLogout,
   verifyOtp,
   checkout,
+  checkoutaddAdderss,
   forgotpassword,
   verifyotpforpassword,
   sendOtp,

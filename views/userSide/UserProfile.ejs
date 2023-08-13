@@ -35,16 +35,16 @@
 			  </div>
 		  
 			  <p class="card-text text-muted">Wallet Balance</p>
-			  <h6 class="mb-1">$15,548</h6>
-			  <a href="javascript:void(0)" class="btn btn-primary btn-sm">See Details</a>
+			  <h6 class="mb-1">₹<%= userDetails.walletamount %></h6>
+			  <a href="/profile/WalletHistory" class="btn btn-primary btn-sm">See Details</a>
 			  </div>
 				<div class="col-md-12">
 					      <!-- Menu -->
 						  <div class="list-group m-12">
-							<a href="#" class="list-group-item list-group-item-action">
+							<a href="/myprofile" class="list-group-item list-group-item-action">
 					  <i class="fas fa-user"></i> Profile Information
 					</a>
-					<a href="#" class="list-group-item list-group-item-action">
+					<a href="/profile/WalletHistory" class="list-group-item list-group-item-action">
 					  <i class="fas fa-wallet"></i> Wallet
 					</a>
 					<a href="/manageAddress" class="list-group-item list-group-item-action">
@@ -191,30 +191,30 @@
 					<div class="row mt-2">
 						<form action="/profie/addAddress" method="post">
 							<div class="col-md-6"><label class="labels">Name</label><input type="text"
-									class="form-control" name="name" placeholder="Enter your name" value=""></div>
+									class="form-control" name="name" placeholder="Enter your name" value="" required></div>
 
 					</div>
 					<div class="row mt-3">
 						<div class="col-md-6"><label class="labels">Mobile Number</label><input type="text"
-								class="form-control" name="phone" placeholder="enter phone number" value=""></div>
+								class="form-control" name="phone" placeholder="enter phone number" value="" required></div>
 						<div class="col-md-6"><label class="labels">Email ID</label><input type="text"
-								class="form-control" name="email" placeholder="enter email id" value=""></div>
+								class="form-control" name="email" placeholder="enter email id" value="" required></div>
 						<div class="col-md-12"><label class="labels">Address Line 1</label><input type="text"
-								class="form-control" name="addressline" placeholder="enter address line 1" value="">
+								class="form-control" name="addressline" placeholder="enter address line 1" value="" required>
 						</div>
 						<div class="col-md-6"><label class="labels">Street</label><input type="text"
-								class="form-control" name="street" placeholder="enter address street" value=""></div>
+								class="form-control" name="street" placeholder="enter address street" value="" required></div>
 						<div class="col-md-6"><label class="labels">City</label><input type="text" class="form-control"
-								name="city" placeholder="enter address line 2" value=""></div>
+								name="city" placeholder="enter address line 2" value="" required></div>
 						<div class="col-md-6"><label class="labels">State</label><input type="text" class="form-control"
-								name="state" placeholder="enter address line 2" value=""></div>
+								name="state" placeholder="enter address line 2" value="" required></div>
 						<div class="col-md-6"><label class="labels">Postcode</label><input type="text" name="postCode"
-								class="form-control" placeholder="enter address line 2" value=""></div>
+								class="form-control" placeholder="enter address line 2" value="" required></div>
 
 					</div>
 					<div class="row mt-3">
 						<div class="col-md-6"><label class="labels">Country</label><input type="text"
-								class="form-control" name="country" placeholder="country" value=""></div>
+								class="form-control" name="country" placeholder="country" value="" required></div>
 					</div>
 
 

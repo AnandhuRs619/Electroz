@@ -77,7 +77,7 @@ const orderSchema = new mongoose.Schema({
       type: String,
     },
     amount: {
-      type: String,
+      type: Number,
     },
   },
   proCartDetail: {

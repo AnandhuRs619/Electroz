@@ -49,7 +49,7 @@
         <div class="col-md-12 ">
           <!-- Menu -->
           <div class="list-group m-12">
-            <a href="#" class="list-group-item list-group-item-action">
+            <a href="/myprofile" class="list-group-item list-group-item-action">
               <i class="fas fa-user"></i> Profile Information
             </a>
             <a href="/profile/WalletHistory" class="list-group-item list-group-item-action">
@@ -75,7 +75,7 @@
             <form action="/myprofile/editProfile" method="post">
               <div class="col-md-6">
                 <label class="labels">Name</label>
-                <input type="text" class="form-control" name="name" value="<%= userDetails.name %>">
+                <input type="text" class="form-control" name="name" value="<%= userDetails.name %>" required>
               </div>
               <div class="col-md-6">
                 <label class="labels">Mobile Number</label>
@@ -85,7 +85,7 @@
               <div class="col-md-6">
                 <label class="labels">Email ID</label>
                 <input type="text" class="form-control" name="email" placeholder="<%= userDetails.email %>" 
-                  value="<%= userDetails.email %>">
+                  value="<%= userDetails.email %>" required>
               </div>
           </div>
           <div class="row mt-3">

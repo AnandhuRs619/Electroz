@@ -26,6 +26,7 @@ UserRouter.use(userAuth.isLogOut);
 UserRouter.get('/productList',userController.productList);
 UserRouter.get('/productList/filter',userController.filterProducts);
 UserRouter.get('/checkout',userController.checkout);
+UserRouter.post('/checkout/addAddress',userController.checkoutaddAdderss);
 UserRouter.get('/cart',userController.Cart);
 UserRouter.post("/cart/addingCart",userController.cartAdding);
 UserRouter.post('/cart/quantity', userController.cartOuantity);

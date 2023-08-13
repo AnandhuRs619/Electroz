@@ -445,22 +445,20 @@
 																			user.subtotal %>
 																	</td>
 																</tr>
-																<tr>
+																<!-- <tr> -->
 																	<!-- Display the category offer here -->
-																	<td>Category Offer <span class="text-muted"></span>
+																	<!-- <td>Category Offer <span class="text-muted"></span>
 																		:</td>
 																	<td class="text-end" id="category-discount">- ₹ <%=
 																			totalCategoryDiscountAmount %>
 																	</td>
-																</tr>
+																</tr> -->
 																<tr>
 																	<td>
-																		<% if (couponName) { %>
-																		  Discount <span class="text-muted"><%= couponName %></span> :
-																		  <button id="coupon_name"  class="btn btn-danger remove-coupon-button">&times;</button>
-																		<% } else { %>
-																		  No coupon applied.
-																		<% } %>
+																		
+																		  Discount <span id="coupon_name" class="text-end"><%= couponName %></span> :
+																		  <button  class="btn btn-danger remove-coupon-button">&times;</button>
+																		
 																	  </td>
 																	<td class="text-end" id="cart-discount">- ₹<%=CouponAmount %></td>
 																</tr>
@@ -471,7 +469,7 @@
 																<tr class="table-active">
 																	<th>Total :</th>
 																	<td class="text-end">
-																		<span class="fw-semibold" id="cart-total">₹ <%= user.subtotal-CouponAmount +shippingCharge%></span>
+																		<span class="fw-semibold" id="cart-total">₹ <%= finalAmount%></span>
 																	</td>
 																</tr>
 															</tbody>
@@ -709,21 +707,32 @@
 		</script>
 
 		<script>
-			  $('.remove-coupon-button').click(function () {
+	 $('.remove-coupon-button').click(function () {
     // Make the API call to remove the applied coupon
+	var selectedCouponValue = $('#selectedCouponValue').val();
+				var totalAmount = parseInt($('#cart-subtotal').text().replace('₹', '').trim());
+
+				// Create the request body object
+				var requestBody = {
+					selectedCouponValue: selectedCouponValue,
+					totalAmount: totalAmount
+				};
+				
     $.ajax({
       url: '/cart/remove-coupon',
       method: 'POST',
       contentType: 'application/json',
+	  data: JSON.stringify(requestBody),
       success: function (response) {
+		console.log(response);
         if (response.finalAmount) {
           document.getElementById('cart-total').innerText = response.finalAmount;
           document.getElementById('cart-discount').innerText = 0; // Reset discount amount to zero
-		//   document.getElementById('coupon_name').innerText = response.couponDisplay
+		  document.getElementById('coupon_name').innerText = 'No Coupon';
           const total = document.getElementById('cart-total');
           total.innerText = response.finalAmount;
         }
-        console.log(response);
+        
       },
       error: function (xhr, status, error) {
         // Handle the error response from the backend
@@ -748,7 +757,7 @@
 					selectedCouponValue: selectedCouponValue,
 					totalAmount: totalAmount
 				};
-				console.log(requestBody);
+				
 				// Make the API call to the backend
 				$.ajax({
 					url: '/cart/apply-coupon',
@@ -756,12 +765,15 @@
 					data: JSON.stringify(requestBody),
 					contentType: 'application/json',
 					success: function (response) {
-						if (response.finalAmount) {
+						console.log(response);
+						
 							document.getElementById('cart-total').innerText = response.finalAmount
 							document.getElementById('cart-discount').innerText = response.discountAmount
-							// document.getElementById('coupon_name').innerText = response.couponDisplay
-						}
-						console.log(response);
+							document.getElementById('coupon_name').innerText = response.couponDisplay
+
+							
+						
+						
 					},
 					error: function (xhr, status, error) {
       // Handle the error response from the backend
