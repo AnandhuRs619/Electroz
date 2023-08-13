@@ -46,6 +46,9 @@
                 <input type="password" name="password" id="Password" placeholder="Enter your password" required>
                 <span id="passwordError"></span>
               </div>
+              <% if (message) { %>
+                <p class="error-message"><%= message %></p>
+              <% } %>
               <a href="/forgotPassword"><p class="forgot-password" >Forgot password?</p></a>
               <div class="button input-box">
                 <input type="submit" value="Submit">

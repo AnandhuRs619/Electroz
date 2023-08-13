@@ -44,7 +44,9 @@ const home = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    res.render("userSide/userLogin" );
+    res.render("userSide/userLogin", {
+      message: "",
+    });
   } catch (error) {
     console.error(error);
     res.redirect('/Erorr');
@@ -927,8 +929,8 @@ const removeCoupon = async (req, res) => {
     const couponDisplay = couponName ? couponName : "No Coupon";
     const discountAmount= user.discountAmount
     console.log(couponDisplay);
+    const finalAmount = Math.floor(user.subtotal+100);
     // Remove the appliedCoupon field from the user
-    const finalAmount = Math.floor(user.subtotal + discountAmount+100);
     user.discountAmount =0;
     user.appliedCoupon = null;
     await user.save();
